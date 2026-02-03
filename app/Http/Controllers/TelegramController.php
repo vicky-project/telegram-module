@@ -31,7 +31,7 @@ class TelegramController extends Controller
 				return redirect()
 					->route("login")
 					->withErrors(
-						"User not found or user not connected to telegram yet. Please login using another credential or register an account to connect with telegram."
+						"No user found with connection to telegram. Please login with another credentials."
 					);
 			}
 
@@ -46,7 +46,7 @@ class TelegramController extends Controller
 			return redirect()
 				->route("register")
 				->withErrors(
-					"Can not login or register using telegram. Please create user manual or login with another credential."
+					"Can not login using telegram. Please create user manual or login with another credential."
 				);
 		} catch (\Exception $e) {
 			\Log::error("Failed to login using telegram", [

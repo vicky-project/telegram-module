@@ -13,4 +13,8 @@ return [
 	| Where to redirect after success login using telegram. Using route name.
 	*/
 	"auth_redirect_to_route" => "cores.dashboard",
+
+	"webhook_url" => env("TELEGRAM_WEBHOOK_URL", "/api/telegram/webhook"),
+	"webhook_secret" => env("TELEGRAM_WEBHOOK_SECRET"),
+	"admin" => env("TELEGRAM_ADMINS", ""), // String of id with comma separated
 ];
