@@ -31,7 +31,7 @@ class LinkService
 		return [
 			"code" => $code,
 			"expires_at" => Carbon::parse(
-				$user->telegram()->fresh()->telegram_code_expires_at
+				$user->telegram()->fresh()->code_expires_at
 			),
 			"bot_username" => config("telegram.username", "your_bot_username"),
 		];
@@ -50,7 +50,7 @@ class LinkService
 
 		$user = User::find($cached["user_id"]);
 
-		if (!$user || !$user->verifyTelegramCode($code)) {
+		if (!$user || !$user->telegram->verifyTelegramCode($code)) {
 			Cache::forget("telegram_link:{$code}");
 			return null;
 		}

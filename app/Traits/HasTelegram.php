@@ -38,4 +38,80 @@ trait HasTelegram
 			"code_expires_at" => null,
 		]);
 	}
+
+	/**
+	 * Verify Telegram linking code
+	 */
+	public function verifyTelegramCode(string $code): bool
+	{
+		if (
+			!$this->verification_code ||
+			!$this->code_expires_at ||
+			$this->verification_code !== $code ||
+			Carbon::now()->gt($this->code_expires_at)
+		) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Unlink Telegram account
+	 */
+	public function unlinkTelegramAccount(): bool
+	{
+		return $this->update([
+			"telegram_id" => null,
+			"username" => null,
+			"verification_code" => null,
+			"code_expires_at" => null,
+		]);
+	}
+
+	/**
+	 * Check if user has linked Telegram
+	 */
+	public function hasLinkedTelegram(): bool
+	{
+		return !is_null($this->telegram_id);
+	}
+
+	/**
+	 * Get Telegram notification settings
+	 */
+	public function getTelegramSetting(string $key, $default = null)
+	{
+		$settings = $this->telegram_settings ?? [];
+
+		if (!isset($settings[$key])) {
+			return $default;
+		}
+
+		return $settings[$key] ?? $default;
+	}
+
+	public function getAllTelegramSettings()
+	{
+		return $this->telegram_settings ?? [];
+	}
+
+	public function setTelegramNotification(bool $active)
+	{
+		$this->update([
+			"telegram_notifications" => $active,
+		]);
+	}
+
+	/**
+	 * Update Telegram settings
+	 */
+	public function updateTelegramSettings(array $settings): bool
+	{
+		$current = $this->getAllTelegramSettings();
+
+		return $this->update([
+			"telegram_settings" => array_merge($current, $settings),
+		]);
+	}
 }
