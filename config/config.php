@@ -6,7 +6,7 @@ return [
 	"username" => env("TELEGRAM_BOT_USERNAME"),
 	"redirect_url" => env(
 		"TELEGRAM_AUTH_REDIRECT_URL",
-		route("telegram.redirect")
+		url("/telegram/redirect")
 	),
 
 	/*
