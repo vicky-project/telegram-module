@@ -2,13 +2,13 @@
 namespace Modules\Telegram\Services\Handlers\Commands;
 
 use Modules\Telegram\Interfaces\TelegramCommandInterface;
-use Modules\Telegram\Services\Handlers\TelegramCommandDispatcher;
+use Modules\Telegram\Services\Handlers\CommandDispatcher;
 
 class ListCommandsCommand implements TelegramCommandInterface
 {
-	protected TelegramCommandDispatcher $dispatcher;
+	protected CommandDispatcher $dispatcher;
 
-	public function __construct(TelegramCommandDispatcher $dispatcher)
+	public function __construct(CommandDispatcher $dispatcher)
 	{
 		$this->dispatcher = $dispatcher;
 	}
