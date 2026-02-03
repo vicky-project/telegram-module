@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Telegram\Models;
 
-use Illuminate\Database\Eloquent\Models;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Telegram extends Model
