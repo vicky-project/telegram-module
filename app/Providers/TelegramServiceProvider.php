@@ -47,7 +47,7 @@ class TelegramServiceProvider extends ServiceProvider
 	// Register middleware
 	protected function registerMiddlewares(CommandDispatcher $dispatcher): void
 	{
-		$dispatcher->registerMiddlerware(
+		$dispatcher->registerMiddleware(
 			$this->app->make(EnsureUserLinkedMiddleware::class)
 		);
 	}
