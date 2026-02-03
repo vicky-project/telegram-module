@@ -1,6 +1,8 @@
 {
 	"name": "vicky-project/telegram-module",
+	"type": "laravel-module",
 	"description": "Telegram module for application.",
+	"license": "MIT",
 	"authors": [
 		{
 			"name": "Vicky Rahman",
@@ -12,6 +14,12 @@
 			"providers": [],
 			"aliases": {}
 		}
+	},
+	"require": {
+		"php": "^8.2",
+		"joshbrw/laravel-module-installer": "^1.0",
+		"irazasyed/telegram-bot-sdk": "^3.15",
+		"vicky-project/core-module": "^1.0"
 	},
 	"autoload": {
 		"psr-4": {
