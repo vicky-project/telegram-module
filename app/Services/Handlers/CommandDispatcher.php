@@ -3,6 +3,7 @@ namespace Modules\Telegram\Services\Handlers;
 
 use Modules\Telegram\Interfaces\TelegramCommandInterface;
 use Modules\Telegram\Interfaces\TelegramMiddlewareInterface;
+use Modules\Telegram\Services\Support\TelegramApi;
 use Illuminate\Support\Facades\Log;
 
 class CommandDispatcher
