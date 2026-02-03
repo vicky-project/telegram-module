@@ -1,30 +1,28 @@
 {
-    "name": "nwidart/telegram",
-    "description": "",
-    "authors": [
-        {
-            "name": "Nicolas Widart",
-            "email": "n.widart@gmail.com"
-        }
-    ],
-    "extra": {
-        "laravel": {
-            "providers": [],
-            "aliases": {
-
-            }
-        }
-    },
-    "autoload": {
-        "psr-4": {
-            "Modules\\Telegram\\": "app/",
-            "Modules\\Telegram\\Database\\Factories\\": "database/factories/",
-            "Modules\\Telegram\\Database\\Seeders\\": "database/seeders/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Modules\\Telegram\\Tests\\": "tests/"
-        }
-    }
+	"name": "vicky-project/telegram-module",
+	"description": "Telegram module for application.",
+	"authors": [
+		{
+			"name": "Vicky Rahman",
+			"email": "pratamavr@gmail.com"
+		}
+	],
+	"extra": {
+		"laravel": {
+			"providers": [],
+			"aliases": {}
+		}
+	},
+	"autoload": {
+		"psr-4": {
+			"Modules\\Telegram\\": "app/",
+			"Modules\\Telegram\\Database\\Factories\\": "database/factories/",
+			"Modules\\Telegram\\Database\\Seeders\\": "database/seeders/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Modules\\Telegram\\Tests\\": "tests/"
+		}
+	}
 }
