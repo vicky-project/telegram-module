@@ -1,5 +1,5 @@
 <?php
-namespace Modules\Wallet\Services\Telegram\Support;
+namespace Modules\Telegram\Services\Support;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;

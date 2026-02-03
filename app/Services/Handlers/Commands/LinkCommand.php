@@ -5,7 +5,7 @@ use Modules\Telegram\Interfaces\TelegramCommandInterface;
 use Modules\Telegram\Services\LinkService;
 use Modules\Telegram\Services\Support\TelegramApi;
 
-class linkCommand implements TelegramCommandInterface
+class LinkCommand implements TelegramCommandInterface
 {
 	protected TelegramApi $telegramApi;
 	protected LinkService $linkService;
