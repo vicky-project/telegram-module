@@ -12,7 +12,7 @@ trait HasTelegram
 		return $this->hasOne(Telegram::class);
 	}
 
-	public function isHasTelegram(): bool
+	public function isHasTelegram()
 	{
 		return $this->telegram;
 	}
