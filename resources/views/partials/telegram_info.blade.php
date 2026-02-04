@@ -66,19 +66,19 @@
     
     const telegram = @json($telegram);
     if(telegram.length == 0) {
-      telegramBtnLink.classList.remove('d-none');
-      container.classList.remove('d-none');
-      container.classList.add('d-none');
+      elems.telegramBtnLink.classList.remove('d-none');
+      elems.container.classList.remove('d-none');
+      elems.container.classList.add('d-none');
     } else {
-      telegramBtnLink.classList.remove('d-none');
-      telegramBtnLink.classList.add('d-none');
-      container.classList.remove('d-none');
+      elems.telegramBtnLink.classList.remove('d-none');
+      elems.telegramBtnLink.classList.add('d-none');
+      elems.container.classList.remove('d-none');
       
-      username.textContent = `@${telegram.username}`;
-      chatId.textContent = `Chat ID: ${telegram.telegram_id}`;
-      connectedIcon.className = getIconConnected(true) + ' me-1';
-      connectedStatus.textContent = 'Connected';
-      switchConnectContainer.innerHtml = `
+      elems.username.textContent = `@${telegram.username}`;
+      elems.chatId.textContent = `Chat ID: ${telegram.telegram_id}`;
+      elems.connectedIcon.className = getIconConnected(true) + ' me-1';
+      elems.connectedStatus.textContent = 'Connected';
+      elems.switchConnectContainer.innerHtml = `
         <button class="btn btn-sm btn-outline-danger" onclick="disconnect();">Disconnect</button>
       `;
     }
