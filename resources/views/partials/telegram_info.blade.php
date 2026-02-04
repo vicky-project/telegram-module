@@ -26,7 +26,6 @@
   @endif
   ></script>
 </div>
-@endif
 
 <script type="text/javascript">
   function disconnect() {
