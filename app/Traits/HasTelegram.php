@@ -12,13 +12,19 @@ trait HasTelegram
 		return $this->hasOne(Telegram::class);
 	}
 
+	public function hasTelegram(): bool
+	{
+		return $this->telegram()->isNotEmpty();
+	}
+
 	/**
 	 * Generate verification code for Telegram linking
 	 */
-	public function generateTelegramVerificationCode(): string
+	public function generateTelegramVerificationCode($userId): string
 	{
 		$code = strtoupper(Str::random(6));
-		$this->update([
+		$this->telegram()->update([
+			"user_id" => $userId,
 			"verification_code" => $code,
 			"code_expires_at" => Carbon::now()->addMinutes(10),
 		]);
@@ -33,7 +39,7 @@ trait HasTelegram
 		int $chatId,
 		string $username = null
 	): bool {
-		return $this->update([
+		return $this->telegram()->update([
 			"telegram_id" => $chatId,
 			"username" => $username,
 			"verification_code" => null,
@@ -46,11 +52,15 @@ trait HasTelegram
 	 */
 	public function verifyTelegramCode(string $code): bool
 	{
+		if (!$this->hasTelegram()) {
+			return false;
+		}
+
 		if (
-			!$this->verification_code ||
-			!$this->code_expires_at ||
-			$this->verification_code !== $code ||
-			Carbon::now()->gt($this->code_expires_at)
+			!$this->telegram->verification_code ||
+			!$this->telegram->code_expires_at ||
+			$this->telegram->verification_code !== $code ||
+			Carbon::now()->gt($this->telegram->code_expires_at)
 		) {
 			return false;
 		}
@@ -63,7 +73,7 @@ trait HasTelegram
 	 */
 	public function unlinkTelegramAccount(): bool
 	{
-		return $this->update([
+		return $this->telegram()->update([
 			"telegram_id" => null,
 			"username" => null,
 			"verification_code" => null,
@@ -76,7 +86,7 @@ trait HasTelegram
 	 */
 	public function hasLinkedTelegram(): bool
 	{
-		return !is_null($this->telegram_id);
+		return $this->hasTelegram() && !is_null($this->telegram->telegram_id);
 	}
 
 	/**
@@ -84,7 +94,7 @@ trait HasTelegram
 	 */
 	public function getTelegramSetting(string $key, $default = null)
 	{
-		$settings = $this->telegram_settings ?? [];
+		$settings = $this->getAllTelegramSettings() ?? [];
 
 		if (!isset($settings[$key])) {
 			return $default;
@@ -95,13 +105,13 @@ trait HasTelegram
 
 	public function getAllTelegramSettings()
 	{
-		return $this->telegram_settings ?? [];
+		return $this->telegram->settings ?? [];
 	}
 
 	public function setTelegramNotification(bool $active)
 	{
-		$this->update([
-			"telegram_notifications" => $active,
+		$this->telegram()->update([
+			"notifications" => $active,
 		]);
 	}
 
@@ -112,8 +122,8 @@ trait HasTelegram
 	{
 		$current = $this->getAllTelegramSettings();
 
-		return $this->update([
-			"telegram_settings" => array_merge($current, $settings),
+		return $this->telegram()->update([
+			"settings" => array_merge($current, $settings),
 		]);
 	}
 }

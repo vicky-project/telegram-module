@@ -14,7 +14,7 @@ class LinkService
 	 */
 	public function generateLinkingCode(User $user): array
 	{
-		$code = $user->telegram()->generateTelegramVerificationCode();
+		$code = $user->generateTelegramVerificationCode($user->id);
 
 		// Store in cache for quick validation
 		Cache::put(
@@ -50,7 +50,12 @@ class LinkService
 
 		$user = User::find($cached["user_id"]);
 
-		if (!$user || !$user->telegram()->verifyTelegramCode($code)) {
+		if (!$user || !$user->hasTelegram()) {
+			Cache::forget("telegram_link:{$code}");
+			return null;
+		}
+
+		if (!$user->verifyTelegramCode($code)) {
 			Cache::forget("telegram_link:{$code}");
 			return null;
 		}
@@ -67,7 +72,7 @@ class LinkService
 		string $username = null
 	): bool {
 		try {
-			$linked = $user->telegram()->linkTelegramAccount($chatId, $username);
+			$linked = $user->linkTelegramAccount($chatId, $username);
 
 			if ($linked) {
 				$code = $user->telegram->verification_code;
@@ -97,11 +102,6 @@ class LinkService
 	 */
 	public function getUserByChatId(int $chatId): ?User
 	{
-		$telegram = Telegram::where("telegram_id", $chatId)->first();
-		if ($telegram) {
-			return User::find($telegram->user_id);
-		}
-
-		return null;
+		return Telegram::where("telegram_id", $chatId)->first()->user ?? null;
 	}
 }

@@ -2,6 +2,8 @@
 
 namespace Modules\Telegram\Providers;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
@@ -41,6 +43,13 @@ class TelegramServiceProvider extends ServiceProvider
 			$this->registerMiddlewares($dispatcher);
 
 			$this->registerCommandHandlers($dispatcher);
+
+			if (Auth::check()) {
+				$user = Auth::user();
+				if (!$user->hasTelegram()) {
+					$user->telegram()->create(["user_id" => $user->id]);
+				}
+			}
 		});
 	}
 
