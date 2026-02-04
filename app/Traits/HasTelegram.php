@@ -12,7 +12,7 @@ trait HasTelegram
 		return $this->hasOne(Telegram::class);
 	}
 
-	public function hasTelegram(): bool
+	public function isHasTelegram(): bool
 	{
 		return $this->hasTelegram();
 	}
@@ -52,7 +52,7 @@ trait HasTelegram
 	 */
 	public function verifyTelegramCode(string $code): bool
 	{
-		if (!$this->hasTelegram()) {
+		if (!$this->isHasTelegram()) {
 			return false;
 		}
 
@@ -86,7 +86,7 @@ trait HasTelegram
 	 */
 	public function hasLinkedTelegram(): bool
 	{
-		return $this->hasTelegram() && !is_null($this->telegram->telegram_id);
+		return $this->isHasTelegram() && !is_null($this->telegram->telegram_id);
 	}
 
 	/**

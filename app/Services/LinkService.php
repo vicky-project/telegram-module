@@ -50,7 +50,7 @@ class LinkService
 
 		$user = User::find($cached["user_id"]);
 
-		if (!$user || !$user->hasTelegram()) {
+		if (!$user || !$user->isHasTelegram()) {
 			Cache::forget("telegram_link:{$code}");
 			return null;
 		}
