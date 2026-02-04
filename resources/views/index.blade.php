@@ -460,7 +460,7 @@
                     disableButton(generateCodeBtn, 'Membuat kode...');
                     
                     try {
-                        const response = await fetch('{{ secure_url(config("app.url")) }}/telegram/generate-code', {
+                        const response = await fetch('{{ secure_url(config("app.url")) }}/api/telegram/generate-code', {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': csrfToken,
