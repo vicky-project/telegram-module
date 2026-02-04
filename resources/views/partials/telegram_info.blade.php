@@ -70,8 +70,6 @@
       telegramBtnLink.classList.remove('d-none');
       container.classList.remove('d-none');
       container.classList.add('d-none');
-      connectedIcon.className = getIconConnected() + ' me-1';
-      connectedStatus.textContent = 'Not Connect';
     } else {
       telegramBtnLink.classList.remove('d-none');
       telegramBtnLink.classList.add('d-none');
@@ -79,7 +77,7 @@
       
       username.textContent = `@${telegram.username}`;
       chatId.textContent = `Chat ID: ${telegram.telegram_id}`;
-      connectedIcon.className = getIconConnected() + ' me-1';
+      connectedIcon.className = getIconConnected(true) + ' me-1';
       connectedStatus.textContent = 'Connected';
       switchConnectContainer.innerHtml = `
         <button class="btn btn-sm btn-outline-danger" onclick="disconnect();">Disconnect</button>
