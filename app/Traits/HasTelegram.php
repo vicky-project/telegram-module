@@ -24,7 +24,6 @@ trait HasTelegram
 	{
 		$code = strtoupper(Str::random(6));
 		$this->telegram()->update([
-			"user_id" => $userId,
 			"verification_code" => $code,
 			"code_expires_at" => Carbon::now()->addMinutes(10),
 		]);

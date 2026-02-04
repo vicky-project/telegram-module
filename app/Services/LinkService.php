@@ -14,7 +14,7 @@ class LinkService
 	 */
 	public function generateLinkingCode(User $user): array
 	{
-		$code = $user->generateTelegramVerificationCode($user->id);
+		$code = $user->generateTelegramVerificationCode();
 
 		// Store in cache for quick validation
 		Cache::put(
@@ -30,9 +30,7 @@ class LinkService
 
 		return [
 			"code" => $code,
-			"expires_at" => Carbon::parse(
-				$user->telegram()->fresh()->code_expires_at
-			),
+			"expires_at" => Carbon::parse($user->telegram->code_expires_at),
 			"bot_username" => config("telegram.username", "your_bot_username"),
 		];
 	}
