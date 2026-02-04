@@ -94,7 +94,7 @@ trait HasTelegram
 				return false;
 			}
 
-			if (Carbon::now()->gt($telegram->code_expires_at)) {
+			if (Carbon::now()->gt(Carbon::parse($telegram->code_expires_at))) {
 				return false;
 			}
 
