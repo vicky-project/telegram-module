@@ -140,7 +140,7 @@
                   <i class="bi bi-link-45deg me-2"></i>Status Koneksi
                 </h5>
 
-                @if($user->telegram && $user->telegram->hasLinkedTelegram())
+                @if($user->hasLinkedTelegram())
                   <div class="d-flex align-items-center mb-2">
                     <div class="me-3">
                       <span class="badge bg-success status-badge">
@@ -171,7 +171,7 @@
                 @endif
               </div>
               <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                @if($user->telegram && $user->telegram->hasLinkedTelegram())
+                @if($user->hasLinkedTelegram())
                   <button id="unlinkBtn" class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-unlink me-1"></i>Putuskan Koneksi
                   </button>
