@@ -12,7 +12,7 @@ class TelegramLinkController extends Controller
 
 	public function __construct(LinkService $telegramLinkService)
 	{
-		$this->middleware("auth:web");
+		$this->middleware("auth");
 		$this->telegramLinkService = $telegramLinkService;
 	}
 
