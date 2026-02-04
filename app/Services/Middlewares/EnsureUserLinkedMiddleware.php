@@ -27,11 +27,16 @@ class EnsureUserLinkedMiddleware implements TelegramMiddlewareInterface
 		callable $next
 	): array {
 		// Command yang tidak memerlukan user terhubung
-		$exemptCommands = ["start", "help", "link"];
+		$exceptCommand = ["start", "help", "link"];
 
-		if (in_array($command, $exemptCommands)) {
+		if (in_array($command, $exceptCommand)) {
 			return $next($chatId, $command, $argument, $username);
 		}
+
+		Log::debug("Using chat id: " . $chatId, [
+			"chat_id" => $chatId,
+			"command" => $command,
+		]);
 
 		$user = $this->linkService->getUserByChatId($chatId);
 
