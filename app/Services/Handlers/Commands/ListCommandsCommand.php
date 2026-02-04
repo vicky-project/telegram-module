@@ -23,7 +23,7 @@ class ListCommandsCommand implements TelegramCommandInterface
 	}
 	public function requiresLinkedUser(): bool
 	{
-		return false;
+		return true;
 	}
 	public function getCategory(): string
 	{
