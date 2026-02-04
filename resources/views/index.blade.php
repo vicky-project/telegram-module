@@ -322,7 +322,9 @@
               <div class="flex-grow-1 ms-3">
                 <h6 class="card-title mb-1">Informasi Bot Telegram</h6>
                 <p class="card-text mb-2">
-                  Nama Bot: <strong><span>@</span>{{ $botUsername }}</strong>
+                  Nama Bot: <a href="https://t.me/{{ $botUsername }}">
+                  <strong><span>@</span>{{ $botUsername }}</strong>
+                  </a>
                 </p>
                 <small class="text-muted">
                   <i class="bi bi-info-circle me-1"></i>
