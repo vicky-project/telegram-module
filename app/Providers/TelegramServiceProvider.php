@@ -5,6 +5,7 @@ namespace Modules\Telegram\Providers;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
@@ -53,6 +54,10 @@ class TelegramServiceProvider extends ServiceProvider
 				}
 			}
 		});
+
+		if (config($this->nameLower . ".injection.enabled", false)) {
+			$this->injectToUserProfile();
+		}
 	}
 
 	// Register middleware
@@ -92,6 +97,20 @@ class TelegramServiceProvider extends ServiceProvider
 				$this->app->make(TelegramApi::class)
 			);
 		});
+	}
+
+	protected function injectToUserProfile(): void
+	{
+		if (View::exists(config($this->nameLower . ".injection.view"))) {
+			View::composer(config($this->nameLower . ".injection.view"), function (
+				$view
+			) {
+				$content = view("telegram::partials.telegram_info")->render();
+				$view
+					->getFactory()
+					->startPush(config($this->nameLower . ".inejection.stack"), $content);
+			});
+		}
 	}
 
 	/**

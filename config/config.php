@@ -25,4 +25,11 @@ return [
 		// For EnsureUserLoginMiddleware to except from checking
 		"no_auth" => ["start", "help", "link"],
 	],
+
+	// Inject telegram connect button and detail to User Management Module profile.
+	"injection" => [
+		"enabled" => true,
+		"view" => "usermanagement::settings.index",
+		"stack" => "user_telegram_components",
+	],
 ];
