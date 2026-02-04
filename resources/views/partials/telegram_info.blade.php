@@ -64,9 +64,8 @@
       switchConnectContainer: document.getElementById('switch-connect-container'),
     }:
     
-    const hasTelegram = {{ $hasTelegram }};
     const telegram = @json($telegram);
-    if(!hasTelegram) {
+    if(telegram.length == 0) {
       telegramBtnLink.classList.remove('d-none');
       container.classList.remove('d-none');
       container.classList.add('d-none');
