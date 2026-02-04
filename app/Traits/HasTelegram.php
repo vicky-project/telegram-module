@@ -4,6 +4,7 @@ namespace Modules\Telegram\Traits;
 use Modules\Telegram\Models\Telegram;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 trait HasTelegram
 {
@@ -12,21 +13,41 @@ trait HasTelegram
 		return $this->hasOne(Telegram::class);
 	}
 
-	public function isHasTelegram()
+	public function hasTelegram(): bool
 	{
-		return $this->telegram;
+		if ($this->relationLoaded("telegram")) {
+			return !is_null($this->telegram);
+		}
+
+		return $this->telegram()->exists();
 	}
 
 	/**
 	 * Generate verification code for Telegram linking
 	 */
-	public function generateTelegramVerificationCode($userId): string
+	public function generateTelegramVerificationCode(): string
 	{
 		$code = strtoupper(Str::random(6));
-		$this->telegram()->update([
-			"verification_code" => $code,
-			"code_expires_at" => Carbon::now()->addMinutes(10),
-		]);
+
+		$telegram = $this->telegram()->firstOrCreate(
+			[],
+			[
+				"user_id" => $this->id,
+				"verification_code" => $code,
+				"code_expires_at" => Carbon::now()->addMinutes(10),
+			]
+		);
+
+		if ($telegram->wasRecentlyCreated === false) {
+			$telegram->update([
+				"verification_code" => $code,
+				"code_expires_at" => Carbon::now()->addMinutes(10),
+			]);
+		}
+
+		if ($this->relationLoaded("telegram")) {
+			$this->load("telegram");
+		}
 
 		return $code;
 	}
@@ -38,7 +59,13 @@ trait HasTelegram
 		int $chatId,
 		string $username = null
 	): bool {
-		return $this->telegram()->update([
+		if (!$this->hasTelegram()) {
+			return false;
+		}
+
+		$telegram = $this->telegram()->first();
+
+		return $telegram->update([
 			"telegram_id" => $chatId,
 			"username" => $username,
 			"verification_code" => null,
@@ -51,20 +78,27 @@ trait HasTelegram
 	 */
 	public function verifyTelegramCode(string $code): bool
 	{
-		if (!$this->isHasTelegram()) {
+		if (!$this->hasTelegram()) {
 			return false;
 		}
 
-		if (
-			!$this->telegram->verification_code ||
-			!$this->telegram->code_expires_at ||
-			$this->telegram->verification_code !== $code ||
-			Carbon::now()->gt($this->telegram->code_expires_at)
-		) {
+		try {
+			$telegram = $this->telegram()->first();
+
+			if (
+				!$telegram ||
+				!$telegram->verification_code ||
+				!$telegram->code_expires_at ||
+				$telegram->verification_code !== $code ||
+				Carbon::now()->gt($telegram->code_expires_at)
+			) {
+				return false;
+			}
+
+			return true;
+		} catch (ModelNotFoundException $e) {
 			return false;
 		}
-
-		return true;
 	}
 
 	/**
@@ -72,12 +106,22 @@ trait HasTelegram
 	 */
 	public function unlinkTelegramAccount(): bool
 	{
-		return $this->telegram()->update([
+		if (!$this->hasTelegram()) {
+			return true;
+		}
+
+		$success = $this->telegram()->update([
 			"telegram_id" => null,
 			"username" => null,
 			"verification_code" => null,
 			"code_expires_at" => null,
 		]);
+
+		if ($success && $this->relationLoaded("telegram")) {
+			$this->load("telegram");
+		}
+
+		return $success;
 	}
 
 	/**
@@ -85,7 +129,13 @@ trait HasTelegram
 	 */
 	public function hasLinkedTelegram(): bool
 	{
-		return $this->isHasTelegram() && !is_null($this->telegram->telegram_id);
+		if ($this->relationLoaded("telegram") && $this->telegram) {
+			return !is_null($this->telegram->telegram_id);
+		}
+
+		return $this->telegram()
+			->whereNotNull("telegram_id")
+			->exists();
 	}
 
 	/**
@@ -93,25 +143,44 @@ trait HasTelegram
 	 */
 	public function getTelegramSetting(string $key, $default = null)
 	{
-		$settings = $this->getAllTelegramSettings() ?? [];
-
-		if (!isset($settings[$key])) {
-			return $default;
-		}
+		$settings = $this->getAllTelegramSettings();
 
 		return $settings[$key] ?? $default;
 	}
 
-	public function getAllTelegramSettings()
+	public function getAllTelegramSettings(): array
 	{
+		if (!$this->hasTelegram()) {
+			return [];
+		}
+
+		if (!$this->relationLoaded("telegram")) {
+			$this->load("telegram");
+		}
+
 		return $this->telegram->settings ?? [];
 	}
 
-	public function setTelegramNotification(bool $active)
+	public function setTelegramNotification(bool $active): bool
 	{
-		$this->telegram()->update([
+		if (!$this->hasTelegram()) {
+			$this->telegram()->create([
+				"user_id" => $this->id,
+				"notifications" => $active,
+			]);
+
+			return true;
+		}
+
+		$success = $this->telegram()->update([
 			"notifications" => $active,
 		]);
+
+		if ($success && $this->relationLoaded("telegram")) {
+			$this->load("telegram");
+		}
+
+		return $success;
 	}
 
 	/**
@@ -119,10 +188,25 @@ trait HasTelegram
 	 */
 	public function updateTelegramSettings(array $settings): bool
 	{
-		$current = $this->getAllTelegramSettings();
+		if (!$this->hasTelegram()) {
+			return (bool) $this->telegram()->create([
+				"user_id" => $this->id,
+				"settings" => $settings,
+			]);
+		}
 
-		return $this->telegram()->update([
-			"settings" => array_merge($current, $settings),
+		$telegram = $this->telegram()->first();
+		$current = $telegram->settings ?? [];
+		$mergeSettings = array_merge($current, $settings);
+
+		$success = $this->telegram()->update([
+			"settings" => $mergeSettings,
 		]);
+
+		if ($success && $this->relationLoaded("telegram")) {
+			$this->load("telegram");
+		}
+
+		return $success;
 	}
 }
