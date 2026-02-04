@@ -14,7 +14,7 @@ trait HasTelegram
 
 	public function hasTelegram(): bool
 	{
-		return $this->telegram()->isNotEmpty();
+		return $this->telegram()->exists;
 	}
 
 	/**
