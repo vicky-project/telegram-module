@@ -56,7 +56,9 @@ class TelegramServiceProvider extends ServiceProvider
 		});
 
 		if (config($this->nameLower . ".injection.enabled", false)) {
+			\Log::info("Starting to inject View.");
 			$this->injectToUserProfile();
+			\Log::info('View injected done.');
 		}
 	}
 
