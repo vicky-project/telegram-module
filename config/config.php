@@ -31,5 +31,6 @@ return [
 		"enabled" => true,
 		"view" => "usermanagement::settings.index",
 		"stack" => "user_telegram_components",
+		"icon-provider" => "fontawesome", // fontawesome, bootstrap-icon
 	],
 ];

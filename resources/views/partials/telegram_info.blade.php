@@ -8,7 +8,7 @@
   <div class="col-md-6 mb-3"></div>
 </div>
 @else
-  <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="{{ config('telegram.bot.username') }}" data-size="large" data-auth-url="{{ config('telegram.widgets.redirect_url') }}" data-request-access="write"
+  <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="{{ config('telegram.bot.username') }}" data-size="{{ config('telegram.widgets.size') }}" data-auth-url="{{ config('telegram.widgets.redirect_url') }}" data-request-access="write"
   @if(config('telegram.widgets.userpic') === false)
   data-userpic="false"
   @endif

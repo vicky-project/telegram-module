@@ -58,7 +58,7 @@ class TelegramServiceProvider extends ServiceProvider
 		if (config($this->nameLower . ".injection.enabled", false)) {
 			\Log::info("Starting to inject View.");
 			$this->injectToUserProfile();
-			\Log::info('View injected done.');
+			\Log::info("View injected done.");
 		}
 	}
 
@@ -103,10 +103,10 @@ class TelegramServiceProvider extends ServiceProvider
 
 	protected function injectToUserProfile(): void
 	{
-		if (View::exists(config($this->nameLower . ".injection.view"))) {
-			View::composer(config($this->nameLower . ".injection.view"), function (
-				$view
-			) {
+		$injectionView = config($this->nameLower . ".injection.view");
+		if (View::exists($injectionView)) {
+			\Log::info("View exists: " . $injectionView);
+			View::composer($injectionView, function ($view) {
 				$content = view("telegram::partials.telegram_info")->render();
 				$view
 					->getFactory()
