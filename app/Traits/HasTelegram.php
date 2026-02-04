@@ -2,6 +2,8 @@
 namespace Modules\Telegram\Traits;
 
 use Modules\Telegram\Models\Telegram;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 trait HasTelegram
 {
