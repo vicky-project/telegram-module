@@ -7,17 +7,7 @@ use Modules\Telegram\Http\Controllers\TelegramWebhookController;
 
 Route::prefix("telegram")->group(function () {
 	Route::middleware(["auth:web"])->group(function () {
-		Route::post("generate-code", [
-			TelegramLinkController::class,
-			"generateCode",
-		])->name("generate-code");
-		Route::post("unlink", [TelegramLinkController::class, "unlink"])->name(
-			"unlink"
-		);
-		Route::post("update-settings", [
-			TelegramLinkController::class,
-			"updateSettings",
-		])->name("update-settings");
+		
 	});
 
 	Route::post("webhook", [TelegramWebhookController::class, "handleWebhook"])
