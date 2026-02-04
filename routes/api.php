@@ -6,7 +6,7 @@ use Modules\Telegram\Http\Controllers\TelegramLinkController;
 use Modules\Telegram\Http\Controllers\TelegramWebhookController;
 
 Route::prefix("telegram")->group(function () {
-	Route::middleware(["auth"])->group(function () {
+	Route::middleware(["auth:web"])->group(function () {
 		Route::post("generate-code", [
 			TelegramLinkController::class,
 			"generateCode",
