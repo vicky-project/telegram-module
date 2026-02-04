@@ -8,6 +8,15 @@ use Modules\Telegram\Models\Telegram;
 
 class TelegramController extends Controller
 {
+	public function index(Request $request)
+	{
+		$user = Auth::user();
+		$botUsername = config("telegram.username");
+		$settings = $user->getAllTelegramSettings();
+
+		return view("telegram::index", compact("user", "botUsername", "settings"));
+	}
+
 	/**
 	 * Display a listing of the resource.
 	 */
@@ -83,50 +92,5 @@ class TelegramController extends Controller
 			throw new \Exception("Data is outdated");
 		}
 		return $auth_data;
-	}
-
-	/**
-	 * Show the form for creating a new resource.
-	 */
-	public function create()
-	{
-		return view("telegram::create");
-	}
-
-	/**
-	 * Store a newly created resource in storage.
-	 */
-	public function store(Request $request)
-	{
-	}
-
-	/**
-	 * Show the specified resource.
-	 */
-	public function show($id)
-	{
-		return view("telegram::show");
-	}
-
-	/**
-	 * Show the form for editing the specified resource.
-	 */
-	public function edit($id)
-	{
-		return view("telegram::edit");
-	}
-
-	/**
-	 * Update the specified resource in storage.
-	 */
-	public function update(Request $request, $id)
-	{
-	}
-
-	/**
-	 * Remove the specified resource from storage.
-	 */
-	public function destroy($id)
-	{
 	}
 }

@@ -2,6 +2,7 @@
 
 return [
 	"name" => "Telegram",
+	"backto_server_url" => "",
 	"token" => env("TELEGRAM_BOT_TOKEN"),
 	"username" => env("TELEGRAM_BOT_USERNAME"),
 	"redirect_url" => env(
