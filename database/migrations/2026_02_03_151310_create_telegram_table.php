@@ -16,7 +16,10 @@ return new class extends Migration {
 				->foreignId("user_id")
 				->constrained()
 				->onDelete("cascade");
-			$table->unsignedBigInteger("telegram_id")->unique();
+			$table
+				->unsignedBigInteger("telegram_id")
+				->unique()
+				->nullable();
 			$table->string("username")->nullable();
 			$table->string("first_name")->nullable();
 			$table->string("last_name")->nullable();
