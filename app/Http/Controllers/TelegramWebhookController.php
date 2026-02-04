@@ -39,9 +39,9 @@ class TelegramWebhookController extends Controller
 		]);
 
 		// Verify secret token if set
-		if (config("telegram.webhook_secret")) {
+		if (config("telegram.bot.webhook_secret")) {
 			$secret = $request->header("X-Telegram-Bot-Api-Secret-Token");
-			if ($secret !== config("telegram.webhook_secret")) {
+			if ($secret !== config("telegram.bot.webhook_secret")) {
 				Log::warning("Invalid webhook secret", ["provided" => $secret]);
 				abort(403, "Invalid secret token");
 			}
@@ -73,12 +73,12 @@ class TelegramWebhookController extends Controller
 	{
 		$this->validateAdmin();
 
-		$url = config("telegram.webhook_url", url("/api/telegram/webhook"));
+		$url = config("telegram.bot.webhook_url", url("/api/telegram/webhook"));
 
 		try {
 			$response = $this->telegram->setWebhook([
 				"url" => $url,
-				"secret_token" => config("telegram.webhook_secret"),
+				"secret_token" => config("telegram.bot.webhook_secret"),
 				"max_connections" => 40,
 				"allowed_updates" => ["message", "callback_query"],
 			]);
@@ -168,7 +168,7 @@ class TelegramWebhookController extends Controller
 	 */
 	private function validateAdmin()
 	{
-		$admins = explode(",", config("telegram.admin", ""));
+		$admins = explode(",", config("telegram.bot.admin", ""));
 
 		if (!in_array(auth()->id(), $admins)) {
 			abort(403, "Unauthorized");
@@ -183,8 +183,11 @@ class TelegramWebhookController extends Controller
 		return response()->json([
 			"status" => "ok",
 			"timestamp" => now(),
-			"bot_username" => config("telegram.username"),
-			"webhook_url" => config("telegram.webhook_url", "/api/telegram/webhook"),
+			"bot_username" => config("telegram.bot.username"),
+			"webhook_url" => config(
+				"telegram.bot.webhook_url",
+				"/api/telegram/webhook"
+			),
 		]);
 	}
 }

@@ -12,7 +12,7 @@ class TelegramController extends Controller
 	public function index(Request $request)
 	{
 		$user = Auth::user();
-		$botUsername = config("telegram.username");
+		$botUsername = config("telegram.bot.username");
 		$settings = $user->getAllTelegramSettings();
 
 		return view("telegram::index", compact("user", "botUsername", "settings"));

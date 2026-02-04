@@ -3,19 +3,26 @@
 return [
 	"name" => "Telegram",
 	"backto_server_url" => "",
-	"token" => env("TELEGRAM_BOT_TOKEN"),
-	"username" => env("TELEGRAM_BOT_USERNAME"),
-	"redirect_url" => env(
-		"TELEGRAM_AUTH_REDIRECT_URL",
-		url("/telegram/redirect")
-	),
 
-	/*
-	| Where to redirect after success login using telegram. Using route name.
-	*/
-	"auth_redirect_to_route" => "cores.dashboard",
+	"bot" => [
+		"token" => env("TELEGRAM_BOT_TOKEN"),
+		"username" => env("TELEGRAM_BOT_USERNAME"),
+		"webhook_url" => env("TELEGRAM_WEBHOOK_URL", "/api/telegram/webhook"),
+		"webhook_secret" => env("TELEGRAM_WEBHOOK_SECRET"),
+		"admin" => env("TELEGRAM_ADMINS", ""), // String of id with comma separated
+	],
 
-	"webhook_url" => env("TELEGRAM_WEBHOOK_URL", "/api/telegram/webhook"),
-	"webhook_secret" => env("TELEGRAM_WEBHOOK_SECRET"),
-	"admin" => env("TELEGRAM_ADMINS", ""), // String of id with comma separated
+	"widgets" => [
+		"size" => "large",
+		"userpic" => false,
+		"redirect_url" => env(
+			"TELEGRAM_AUTH_REDIRECT_URL",
+			url("/telegram/redirect")
+		),
+	],
+
+	"commands" => [
+		// For EnsureUserLoginMiddleware to except from checking
+		"no_auth" => ["start", "help", "link"],
+	],
 ];

@@ -11,7 +11,7 @@ class TelegramApi
 
 	public function __construct()
 	{
-		$token = config("telegram.token");
+		$token = config("telegram.bot.token");
 		if ($token) {
 			$this->telegram = new Api($token);
 		}

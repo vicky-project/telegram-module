@@ -25,7 +25,7 @@ class NotificationService
 		LinkService $telegramLinkService,
 		CallbackHandlerFactory $handlerFactory
 	) {
-		$token = config("wallet.telegram_bot.token");
+		$token = config("telegram.bot.token");
 		if ($token) {
 			$this->telegram = new Api($token);
 		}
