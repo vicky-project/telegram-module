@@ -26,11 +26,10 @@ return [
 		"no_auth" => ["start", "help", "link"],
 	],
 
-	// Inject telegram connect button and detail to User Management Module profile.
-	"injection" => [
+	// Inject telegram connect button and detail to User Management Module profile via hook core's.
+	"hooks" => [
 		"enabled" => true,
-		"view" => "usermanagement::settings.index",
-		"stack" => "user_telegram_components",
+		"class" => \Modules\Core\Services\HookService::class,
 		"icon-provider" => "fontawesome", // fontawesome, bootstrap-icon
 	],
 ];

@@ -55,10 +55,11 @@ class TelegramServiceProvider extends ServiceProvider
 			}
 		});
 
-		if (config($this->nameLower . ".injection.enabled", false)) {
-			\Log::info("Starting to inject View.");
-			$this->injectToUserProfile();
-			\Log::info("View injected done.");
+		if (
+			config($this->nameLower . ".hooks.enabled", false) &&
+			class_exists($class = config($this->nameLower . ".hooks.class"))
+		) {
+			$this->registerHooks($class);
 		}
 	}
 
@@ -101,18 +102,20 @@ class TelegramServiceProvider extends ServiceProvider
 		});
 	}
 
-	protected function injectToUserProfile(): void
+	protected function registerHooks($hookService): void
 	{
-		$injectionView = config($this->nameLower . ".injection.view");
-		if (View::exists($injectionView)) {
-			\Log::info("View exists: " . $injectionView);
-			View::composer($injectionView, function ($view) {
-				$content = view("telegram::partials.telegram_info")->render();
-				$view
-					->getFactory()
-					->startPush(config($this->nameLower . ".inejection.stack"), $content);
-			});
-		}
+		$hookService::add(
+			"social.accounts",
+			function ($data) {
+				if (Auth::check()) {
+					return view("telegram::partials.telegram_info", [
+						"user" => Auth::user(),
+					])->render();
+				}
+				return "";
+			},
+			10
+		);
 	}
 
 	/**
