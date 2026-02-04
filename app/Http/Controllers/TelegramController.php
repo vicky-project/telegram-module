@@ -3,6 +3,7 @@
 namespace Modules\Telegram\Http\Controllers;
 
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Modules\Telegram\Models\Telegram;
 
