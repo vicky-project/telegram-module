@@ -89,9 +89,12 @@ trait HasTelegram
 				!$telegram ||
 				!$telegram->verification_code ||
 				!$telegram->code_expires_at ||
-				$telegram->verification_code !== $code ||
-				Carbon::now()->gt($telegram->code_expires_at)
+				$telegram->verification_code !== $code
 			) {
+				return false;
+			}
+
+			if (Carbon::now()->gt($telegram->code_expires_at)) {
 				return false;
 			}
 
