@@ -23,7 +23,7 @@ class TelegramLinkController extends Controller
 	{
 		$user = Auth::user();
 
-		if ($user->telegram->hasLinkedTelegram()) {
+		if ($user->telegram()->hasLinkedTelegram()) {
 			return response()->json(
 				[
 					"success" => false,
