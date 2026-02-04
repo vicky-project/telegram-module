@@ -556,7 +556,7 @@
                     disableButton(saveSettingsBtn, 'Menyimpan...');
                     
                     try {
-                        const response = await fetch('{{ secure_url(config("app.url")) }}/telegram/update-settings', {
+                        const response = await fetch('{{ secure_url(config("app.url")) }}/api/telegram/update-settings', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
