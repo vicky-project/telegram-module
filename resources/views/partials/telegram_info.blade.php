@@ -62,7 +62,7 @@
       connectedStatus: document.getElementById('telegram-connected-status'),
       telegramBtnLink: document.getElementById('telegram-btn-connect'),
       switchConnectContainer: document.getElementById('switch-connect-container'),
-    }:
+    };
     
     const telegram = @json($telegram);
     if(telegram.length == 0) {
