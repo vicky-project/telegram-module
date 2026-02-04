@@ -238,7 +238,7 @@
                 <div class="col-md-6">
                   <div class="sub-setting">
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="newTransaction" @checked($settings['new_transaction'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <input class="form-check-input me-2" type="checkbox" id="newTransaction" @checked($settings['new_transaction'] ?? false) @readonly($settings['notifications'] ?? false)>
                       <label class="form-check-label" for="newTransaction">
                         <i class="bi bi-cash-coin me-2"></i>Transaksi Baru
                       </label>
@@ -247,7 +247,7 @@
 
                   <div class="sub-setting">
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="dailySummary" @checked($settings['daily_summary'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <input class="form-check-input me-2" type="checkbox" id="dailySummary" @checked($settings['daily_summary'] ?? false) @readonly($settings['notifications'] ?? false)>
                       <label class="form-check-label" for="dailySummary">
                         <i class="bi bi-calendar-day me-2"></i>Ringkasan Harian
                       </label>
@@ -256,7 +256,7 @@
 
                   <div class="sub-setting">
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="weeklySummary" @checked($settings['weekly_summary'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <input class="form-check-input me-2" type="checkbox" id="weeklySummary" @checked($settings['weekly_summary'] ?? false) @readonly($settings['notifications'] ?? false)>
                       <label class="form-check-label" for="weeklySummary">
                         <i class="bi bi-calendar-week me-2"></i>Ringkasan Mingguan
                       </label>
@@ -267,7 +267,7 @@
                 <div class="col-md-6">
                   <div class="sub-setting">
                     <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="budgetWarning" @checked($settings['budget_warning'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <input class="form-check-input me-2" type="checkbox" id="budgetWarning" @checked($settings['budget_warning'] ?? false) @readonly($settings['notifications'] ?? false)>
                       <label class="form-check-label" for="budgetWarning">
                         <i class="bi bi-exclamation-triangle me-2"></i>Peringatan Budget
                       </label>
