@@ -126,9 +126,14 @@
             </h1>
             <p class="text-muted mb-0">Kelola koneksi dan notifikasi Telegram Anda</p>
           </div>
-          <button id="refreshBtn" class="btn btn-outline-secondary btn-sm">
-            <i class="bi bi-arrow-clockwise"></i> Refresh
-          </button>
+          <div>
+            <a href="{{ config('telegeam.redirect_url') }}" class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-house"></i>
+            </a>
+            <button id="refreshBtn" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Status Card -->
