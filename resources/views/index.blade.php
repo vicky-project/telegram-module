@@ -176,9 +176,17 @@
                     <i class="bi bi-unlink me-1"></i>Putuskan Koneksi
                   </button>
                 @else
-                  <button id="generateCodeBtn" class="btn btn-telegram btn-sm">
-                    <i class="bi bi-key me-1"></i>Generate Kode Linking
-                  </button>
+                  <div class="d-flex justify-content-between align-items-center ">
+                    <button id="generateCodeBtn" class="btn btn-telegram btn-sm">
+                      <i class="bi bi-key me-1"></i>Generate Kode Linking
+                    </button>
+                    <div>
+                      <div id="code-display" class="display-4 font-weight-bold"></div>
+                      <button id="copyCodeBtn" class="btn btn-outline-secondary btn-sm d-none">
+                        <i class="bi bi-copy me-1"></i>Salin Kode
+                      </button>
+                    </div>
+                  </div>
                 @endif
               </div>
             </div>
@@ -474,6 +482,13 @@
                             // Show instructions
                             const instructionsSection = document.getElementById('instructionsSection');
                             const instructionsContent = document.getElementById('instructionsContent');
+                            const codeDisplay = document.getElementById('code-display');
+                            const copyCodeBtn = document.getElementById('copyCodeBtn');
+                            
+                            if(codeDisplay) {
+                            codeDisplay.textContent = data.code;
+                            copyCodeBtn.classList.toggle('d-none');
+                            }
                             
                             if (instructionsSection && instructionsContent) {
                                 instructionsContent.textContent = data.instructions;
