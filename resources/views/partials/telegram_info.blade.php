@@ -78,8 +78,8 @@
       elems.chatId.textContent = `Chat ID: ${telegram.telegram_id}`;
       elems.connectedIcon.className = getIconConnected(true) + ' me-1';
       elems.connectedStatus.textContent = 'Connected';
-      elems.switchConnectContainer.innerHtml = `
-        <button class="btn btn-sm btn-outline-danger" onclick="disconnect();">Disconnect</button>
+      elems.switchConnectContainer.innerHTML = `
+        <button type="button" class="btn btn-sm btn-outline-danger" onclick="disconnect();">Disconnect</button>
       `;
     }
   });
