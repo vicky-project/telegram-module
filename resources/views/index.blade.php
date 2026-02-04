@@ -157,7 +157,7 @@
                         <span class="text-muted">Akun:</span>
                         <strong>{{ $user->telegram->username }}</strong>
                       </p>
-                      <small class="text-muted">Chat ID: {{ $user->telegram_chat_id }}</small>
+                      <small class="text-muted">Chat ID: {{ $user->telegram->telegram_id }}</small>
                     </div>
                   </div>
                 @else

@@ -1,27 +1,35 @@
 <h1 class="card-title mb-4 pb-2 border-bottom border-success">Telegram</h1>
 @if($user->hasTelegram())
 <div class="row align-items-center">
-  <div class="col-md-6 mb-3 text-center">
-    <div class="border border-primary border-opacity-50 rounded-circle text-center">
-      <i class="
-      @switch(config('telegram.injection.icon-provider', 'fontawesome'))
-        @case('fontawesome')
-          fas fa-check
-          @break
-        @case('bootstrap-icon')
-          bi bi-check
-          @break
-      @endswitch
-      display-1"></i>
+  <div class="col-md-8">
+    <div class="d-flex align-items-center mb-2">
+      <div class="me-3">
+        <span class="badge bg-success status-badge">
+          <i class="
+          @switch(config('telegram.injection.icon-provider', 'fontawesome'))
+            @case('fontawesome')
+              fas fa-check-circle
+              @break
+            @case('bootstrap-icon')
+              bi bi-check-circle
+              @break
+          @endswitch
+          me-1"></i> Terhubung
+        </span>
+      </div>
+      <div>
+        <p class="mb-0">
+          <span class="text-muted">Akun:</span>
+          <strong>{{ $user->telegram->username }}</strong>
+        </p>
+        <small class="text-muted">Chat ID: {{ $user->telegram->telegram_id }}</small>
+      </div>
     </div>
-    <h2 class="fw-bold">Connected</h2>
   </div>
-  <div class="col-md-6 mb-3">
-     <p class="mb-0">
-        <span class="text-muted">Akun:</span>
-        <strong>{{ $user->telegram->username ?? $user->telegram->first_name.' '.$user->telegram->last_name }}</strong>
-      </p>
-      <small class="text-muted">Chat ID: {{ $user->telegram->telegram_id }}</small>
+  <div class="col-md-4 text-md-end mt-3 mt-md-0">
+    <button id="unlinkBtn" class="btn btn-outline-danger btn-sm">
+      <i class="bi bi-unlink me-1"></i>Putuskan Koneksi
+    </button>
   </div>
 </div>
 @else
