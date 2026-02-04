@@ -14,7 +14,7 @@ trait HasTelegram
 
 	public function isHasTelegram(): bool
 	{
-		return $this->hasTelegram();
+		return $this->telegram()->count() > 0;
 	}
 
 	/**
