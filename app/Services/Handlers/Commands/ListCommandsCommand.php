@@ -43,7 +43,7 @@ class ListCommandsCommand implements TelegramCommandInterface
 
 		foreach ($commands as $cmd => $handler) {
 			$message .= "• /{$cmd}\n";
-			$message .= "  └─ " . get_class($handler) . "\n";
+			$message .= "  └─ " . get_class($this) . "\n";
 			$message .=
 				"  └─ Requires linked user: " .
 				($handler->requiresLinkedUser() ? "Ya" : "Tidak") .
