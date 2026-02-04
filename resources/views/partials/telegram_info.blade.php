@@ -19,6 +19,41 @@
   <div class="col-md-4 text-md-end mt-3 mt-md-0" id="switch-connect-container">
   </div>
 </div>
+<div class="d-flex my-3 align-items-center">
+  <div class="flex-shrink-0">
+    <i class="
+    @switch(config('telegram.injection.icon-provider', 'fontawesome'))
+      @case('fontawesome')
+          fas fa-bot
+        @break
+      @case('bootstrap-icon')
+          bi bi-robot
+        @break
+    @endswitch
+    fs-2 text-secondary"></i>
+  </div>
+  <div class="flex-grow-1 ms-3">
+    <h6 class="card-title mb-1">Informasi Bot Telegram</h6>
+    <p class="card-text mb-2">
+      Nama Bot: <a href="https://t.me/{{ config('telegram.bot.username') }}">
+      <strong><span>@</span>{{ config('telegram.bot.username') }}</strong>
+      </a>
+    </p>
+    <small class="text-muted">
+      <i class="
+      @switch(config('telegram.injection.icon-provider', 'fontawesome'))
+        @case('fontawesome')
+          fas fa-info-circle
+          @break
+        @case('bootstrap-icon')
+          bi bi-info-circle
+          @break
+      @endswitch
+      me-1"></i>
+      Gunakan bot ini untuk menghubungkan akun Telegram Anda dengan sistem
+    </small>
+  </div>
+</div>
 <div class="d-none" id="telegram-btn-connect">
   <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="{{ config('telegram.bot.username') }}" data-size="{{ config('telegram.widgets.size') }}" data-auth-url="{{ config('telegram.widgets.redirect_url') }}" data-request-access="write"
   @if(config('telegram.widgets.userpic') === false)
