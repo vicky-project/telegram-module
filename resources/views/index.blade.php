@@ -463,7 +463,6 @@
                         const response = await fetch('{{ secure_url(config("app.url")) }}/api/telegram/generate-code', {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': csrfToken,
                                 'Accept': 'application/json'
                             }
