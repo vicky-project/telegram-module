@@ -485,6 +485,7 @@
                             
                             showToast('Berhasil!', 'Kode linking berhasil dibuat', 'success');
                         } else {
+                            console.error(data.message, data);
                             showToast('Gagal', data.message || 'Terjadi kesalahan', 'error');
                         }
                     } catch (error) {
@@ -570,6 +571,7 @@
                         if (data.success) {
                             showToast('Berhasil!', data.message, 'success');
                         } else {
+                            console.error(data.message, data);
                             showToast('Gagal', data.message || 'Terjadi kesalahan', 'error');
                         }
                     } catch (error) {
