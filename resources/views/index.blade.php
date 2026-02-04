@@ -140,7 +140,7 @@
                   <i class="bi bi-link-45deg me-2"></i>Status Koneksi
                 </h5>
 
-                @if($user->telegram->hasLinkedTelegram())
+                @if($user->telegram && $user->telegram->hasLinkedTelegram())
                   <div class="d-flex align-items-center mb-2">
                     <div class="me-3">
                       <span class="badge bg-success status-badge">
@@ -150,7 +150,7 @@
                     <div>
                       <p class="mb-0">
                         <span class="text-muted">Akun:</span>
-                        <strong>{{ $user->telegram_username }}</strong>
+                        <strong>{{ $user->telegram->username }}</strong>
                       </p>
                       <small class="text-muted">Chat ID: {{ $user->telegram_chat_id }}</small>
                     </div>
@@ -171,7 +171,7 @@
                 @endif
               </div>
               <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                @if($user->telegram->hasLinkedTelegram())
+                @if($user->telegram && $user->telegram->hasLinkedTelegram())
                   <button id="unlinkBtn" class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-unlink me-1"></i>Putuskan Koneksi
                   </button>
@@ -232,93 +232,75 @@
 
             <!-- Sub-settings -->
             <div id="notificationSettings" class="ps-2">
-                            <h6 class="mb-3 text-muted">Jenis Notifikasi:</h6>
-                            
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="sub-setting">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" 
-                                                   id="newTransaction" 
-                                                   {{ $settings['new_transaction'] ?? false ? 'checked' : '' }}
-                                                   {{ !($settings['notifications'] ?? false) ? 'disabled' : '' }}>
-                                            <label class="form-check-label" for="newTransaction">
-                                                <i class="bi bi-cash-coin me-2"></i>Transaksi Baru
-                                            </label>
-                                        </div>
-                                    </div>
+              <h6 class="mb-3 text-muted">Jenis Notifikasi:</h6>
+
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="sub-setting">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="newTransaction" @checked($settings['new_transaction'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <label class="form-check-label" for="newTransaction">
+                        <i class="bi bi-cash-coin me-2"></i>Transaksi Baru
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="sub-setting">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="dailySummary" @checked($settings['daily_summary'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <label class="form-check-label" for="dailySummary">
+                        <i class="bi bi-calendar-day me-2"></i>Ringkasan Harian
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="sub-setting">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="weeklySummary" @checked($settings['weekly_summary'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <label class="form-check-label" for="weeklySummary">
+                        <i class="bi bi-calendar-week me-2"></i>Ringkasan Mingguan
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="sub-setting">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="budgetWarning" @checked($settings['budget_warning'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <label class="form-check-label" for="budgetWarning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Peringatan Budget
+                      </label>
+                    </div>
+                  </div>
                                     
-                                    <div class="sub-setting">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" 
-                                                   id="dailySummary" 
-                                                   {{ $settings['daily_summary'] ?? false ? 'checked' : '' }}
-                                                   {{ !($settings['notifications'] ?? false) ? 'disabled' : '' }}>
-                                            <label class="form-check-label" for="dailySummary">
-                                                <i class="bi bi-calendar-day me-2"></i>Ringkasan Harian
-                                            </label>
-                                        </div>
-                                    </div>
+                  <div class="sub-setting">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="budgetExceeded" @checked($settings['budget_exceeded'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <label class="form-check-label" for="budgetExceeded">
+                        <i class="bi bi-exclamation-octagon me-2"></i>Budget Terlampaui
+                      </label>
+                    </div>
+                  </div>
                                     
-                                    <div class="sub-setting">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" 
-                                                   id="weeklySummary" 
-                                                   {{ $settings['weekly_summary'] ?? false ? 'checked' : '' }}
-                                                   {{ !($settings['notifications'] ?? false) ? 'disabled' : '' }}>
-                                            <label class="form-check-label" for="weeklySummary">
-                                                <i class="bi bi-calendar-week me-2"></i>Ringkasan Mingguan
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-md-6">
-                                    <div class="sub-setting">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" 
-                                                   id="budgetWarning" 
-                                                   {{ $settings['budget_warning'] ?? false ? 'checked' : '' }}
-                                                   {{ !($settings['notifications'] ?? false) ? 'disabled' : '' }}>
-                                            <label class="form-check-label" for="budgetWarning">
-                                                <i class="bi bi-exclamation-triangle me-2"></i>Peringatan Budget
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="sub-setting">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" 
-                                                   id="budgetExceeded" 
-                                                   {{ $settings['budget_exceeded'] ?? false ? 'checked' : '' }}
-                                                   {{ !($settings['notifications'] ?? false) ? 'disabled' : '' }}>
-                                            <label class="form-check-label" for="budgetExceeded">
-                                                <i class="bi bi-exclamation-octagon me-2"></i>Budget Terlampaui
-                                            </label>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="sub-setting">
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" 
-                                                   id="lowBalance" 
-                                                   {{ $settings['low_balance'] ?? false ? 'checked' : '' }}
-                                                   {{ !($settings['notifications'] ?? false) ? 'disabled' : '' }}>
-                                            <label class="form-check-label" for="lowBalance">
-                                                <i class="bi bi-coin me-2"></i>Saldo Rendah
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
+                  <div class="sub-setting">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="lowBalance" @checked($settings['low_balance'] ?? false) @readonly($settings['notifications'] ?? false)>
+                      <label class="form-check-label" for="lowBalance">
+                        <i class="bi bi-coin me-2"></i>Saldo Rendah
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Save Button -->
             <div class="text-end mt-4 pt-3 border-top">
-                            <button id="saveSettingsBtn" class="btn btn-telegram">
-                                <i class="bi bi-save me-1"></i>Simpan Pengaturan
-                            </button>
-                        </div>
+              <button id="saveSettingsBtn" class="btn btn-telegram">
+                <i class="bi bi-save me-1"></i>Simpan Pengaturan
+              </button>
+            </div>
           </div>
         </div>
 
