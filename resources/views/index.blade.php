@@ -126,7 +126,7 @@
             </h1>
             <p class="text-muted mb-0">Kelola koneksi dan notifikasi Telegram Anda</p>
           </div>
-          <div>
+          <div class="d-flex justify-content-between align-items-center gap-2">
             <a href="{{ config('telegeam.redirect_url') }}" class="btn btn-outline-secondary btn-sm">
               <i class="bi bi-house"></i>
             </a>
