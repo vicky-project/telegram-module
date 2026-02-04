@@ -98,7 +98,10 @@ class LinkService
 	public function getUserByChatId(int $chatId): ?User
 	{
 		$telegram = Telegram::where("telegram_id", $chatId)->first();
+		if ($telegram->exists()) {
+			return User::find($telegram->user_id);
+		}
 
-		return User::find($telegram->user_id);
+		return null;
 	}
 }
