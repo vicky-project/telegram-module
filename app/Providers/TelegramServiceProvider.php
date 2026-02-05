@@ -83,16 +83,16 @@ class TelegramServiceProvider extends ServiceProvider
 		$this->app->register(EventServiceProvider::class);
 		$this->app->register(RouteServiceProvider::class);
 
-		$this->app->singleton(CommandDispatcher::class, function ($app) {
-			return new CommandDispatcher($app->make(TelegramApi::class));
-		});
+		// $this->app->singleton(CommandDispatcher::class, function ($app) {
+		// 			return new CommandDispatcher($app->make(TelegramApi::class));
+		// 		});
 
-		/* 		$this->app->bind(MessageHandler::class, function ($app) {
+		$this->app->bind(MessageHandler::class, function ($app) {
 			return new MessageHandler(
 				$this->app->make(CommandDispatcher::class),
 				$this->app->make(TelegramApi::class)
 			);
-		}); */
+		});
 	}
 
 	protected function registerHooks($hookService): void
