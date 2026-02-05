@@ -109,7 +109,7 @@ class TelegramServiceProvider extends ServiceProvider
 			function ($data) {
 				if (Auth::check()) {
 					$user = Auth::user();
-					$hasSocialAccount = $user->socialAccounts->exists();
+					$hasSocialAccount = $user->socialAccounts->isNotEmpty();
 					return view("telegram::partials.telegram_info", [
 						"telegram" => $hasSocialAccount
 							? $user->socialAccounts()->byProvider("telegram")
