@@ -15,6 +15,6 @@ Route::prefix("telegram")
 	});
 
 Route::get("redirect-login", [
-	TelegramLinkController::class,
+	TelegramController::class,
 	"redirectLogin",
 ])->name("redirect-login");
