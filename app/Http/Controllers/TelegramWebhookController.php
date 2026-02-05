@@ -2,7 +2,6 @@
 namespace Modules\Telegram\Http\Controllers;
 
 use Illuminate\Routing\Controller;
-use Modules\Telegram\Services\LinkService;
 use Modules\Telegram\Services\UpdateHandler;
 use Modules\Telegram\Services\Support\TelegramApi;
 use Illuminate\Http\Request;
@@ -14,16 +13,12 @@ use Illuminate\Support\Facades\Log;
 class TelegramWebhookController extends Controller
 {
 	protected TelegramApi $telegram;
-	protected $linkService;
 	protected $updateHandler;
 
 	public function __construct(
-		LinkService $linkService,
 		UpdateHandler $updateHandler,
 		TelegramApi $telegram
 	) {
-		$this->linkService = $linkService;
-
 		$this->updateHandler = $updateHandler;
 		$this->telegram = $telegram;
 	}

@@ -19,9 +19,9 @@ Route::prefix("telegram")
 				TelegramLinkController::class,
 				"updateSettings",
 			])->name("update-settings");
-		});
 
-		Route::get("redirect", [TelegramController::class, "redirect"])->name(
-			"redirect"
-		);
+			Route::get("redirect", [TelegramController::class, "redirect"])->name(
+				"redirect"
+			);
+		});
 	});

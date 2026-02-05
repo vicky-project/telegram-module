@@ -2,20 +2,24 @@
 
 namespace Modules\Telegram\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Modules\Telegram\Models\Telegram;
+use Modules\Telegram\Services\TelegramService;
 
 class TelegramController extends Controller
 {
+	protected $service;
+
+	public function __construct(TelegramService $service)
+	{
+		$this->service = $service;
+	}
+
 	public function index(Request $request)
 	{
-		$user = Auth::user();
-		$botUsername = config("telegram.bot.username");
-		$settings = $user->getAllTelegramSettings();
-
-		return view("telegram::index", compact("user", "botUsername", "settings"));
 	}
 
 	/**
@@ -23,6 +27,7 @@ class TelegramController extends Controller
 	 */
 	public function redirect(Request $request)
 	{
+		dd($request->previous());
 		try {
 			$auth_data = $this->checkTelegramAuthorization(
 				$request->only([
@@ -35,27 +40,26 @@ class TelegramController extends Controller
 				])
 			);
 
-			$telegram = Telegram::where("telegram_id", $auth_data["id"])->first();
+			$user = Auth::user();
 
-			if (!$telegram || $telegram->isEmpty()) {
-				return redirect()
-					->route("login")
-					->withErrors(
-						"No user found with connection to telegram. Please login with another credentials."
-					);
+			$telegram = $this->saveTelegramData($user, $auth_data);
+
+			if ($telegram) {
+				return $request->wantsJson()
+					? response()->json([
+						"success" => true,
+						"message" => "Telegram connected",
+						"data" => $telegram,
+					])
+					: back()->with("success", " Telegram was connected.");
 			}
 
-			$user = $telegram->user;
-
-			if ($user) {
-				\Auth::loginUsingId($user->id);
-
-				return redirect()->route(config("telegram.auth_redirect_to_route"));
-			}
-
-			return redirect()
-				->route("register")
-				->withErrors(
+			return $request->wantsJson()
+				? response()->json([
+					"success" => false,
+					"message" => "Failed to save account telegram",
+				])
+				: back()->withErrors(
 					"Can not login using telegram. Please create user manual or login with another credential."
 				);
 		} catch (\Exception $e) {
@@ -64,9 +68,9 @@ class TelegramController extends Controller
 				"trace" => $e->getTraceAsString(),
 			]);
 
-			return redirect()
-				->route("login")
-				->withErrors($e->getMessage());
+			return $request->wantsJson()
+				? response()->json(["success" => false, "message" => $e->getMessage()])
+				: back()->withErrors($e->getMessage());
 		}
 	}
 
@@ -93,5 +97,15 @@ class TelegramController extends Controller
 			throw new \Exception("Data is outdated");
 		}
 		return $auth_data;
+	}
+
+	protected function saveTelegramData(User $user, array $data)
+	{
+		try {
+			$telegram = $this->service->saveAndConnectToSocialAccount($user, $data);
+			return $telegram;
+		} catch (\Exception $e) {
+			throw $e;
+		}
 	}
 }

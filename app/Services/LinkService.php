@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Telegram\Services;
 
-use App\Models\User;
+use Modules\UserManagement\Models\SocialAccount;
 use Carbon\Carbon;
 use Modules\Telegram\Models\Telegram;
 use Illuminate\Support\Facades\Cache;

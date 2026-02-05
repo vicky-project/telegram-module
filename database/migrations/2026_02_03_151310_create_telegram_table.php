@@ -13,10 +13,6 @@ return new class extends Migration {
 		Schema::create("telegram", function (Blueprint $table) {
 			$table->id();
 			$table
-				->foreignId("user_id")
-				->constrained()
-				->onDelete("cascade");
-			$table
 				->unsignedBigInteger("telegram_id")
 				->unique()
 				->nullable();
@@ -24,8 +20,6 @@ return new class extends Migration {
 			$table->string("first_name")->nullable();
 			$table->string("last_name")->nullable();
 			$table->timestamp("auth_date")->nullable();
-			$table->string("verification_code")->nullable();
-			$table->timestamp("code_expires_at")->nullable();
 			$table->boolean("notifications")->default(true);
 			$table->json("settings")->nullable();
 			$table->json("additional_data")->nullable();
