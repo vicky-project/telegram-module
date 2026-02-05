@@ -24,7 +24,9 @@ class TelegramRepository
 				"username" => $data["username"] ?? null,
 				"first_name" => $data["first_name"] ?? null,
 				"last_name" => $data["last_name"] ?? null,
-				"auth_date" => Carbon::parse($data["auth_date"])->toLocalDateTime(),
+				"auth_date" => Carbon::parse(
+					$data["auth_date"]
+				)->toDateTimeLocalString(),
 			]
 		);
 	}
