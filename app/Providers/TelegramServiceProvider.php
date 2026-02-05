@@ -87,12 +87,12 @@ class TelegramServiceProvider extends ServiceProvider
 			return new CommandDispatcher($app->make(TelegramApi::class));
 		});
 
-		$this->app->bind(MessageHandler::class, function ($app) {
+		/* 		$this->app->bind(MessageHandler::class, function ($app) {
 			return new MessageHandler(
 				$this->app->make(CommandDispatcher::class),
 				$this->app->make(TelegramApi::class)
 			);
-		});
+		}); */
 	}
 
 	protected function registerHooks($hookService): void
@@ -120,7 +120,7 @@ class TelegramServiceProvider extends ServiceProvider
 	 */
 	protected function registerCommands(): void
 	{
-		// $this->commands([\Modules\Telegram\Console\TelegramSetup::class]);
+		$this->commands([\Modules\Telegram\Console\TelegramSetup::class]);
 	}
 
 	/**
