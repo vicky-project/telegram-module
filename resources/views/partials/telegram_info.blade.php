@@ -68,15 +68,71 @@
 </div>
 
 <script type="text/javascript">
-  function disconnect() {
+  if(!csrfToken || csrfToken === 'undefined') {
+    // CSRF Token for AJAX requests
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+  }
+  
+  async function disconnect() {
     if (!confirm('Apakah Anda yakin ingin memutuskan koneksi Telegram?')) {
       return;
     }
     
-    if(typeof showToast === 'function') {
+    const toastExists = typeof showToast === 'function';
+    
+    if(toastExists) {
       showToast('Disconnect', 'Proses disconnecting...');
     } else {
       alert('Disconnect');
+    }
+    
+    const btnDisconnect = document.getElementById('btn-disconnect');
+    const oldBtnDisconnect = btnDisconnect.html;
+    
+    if(btnDisconnect) {
+      if(typeof disableButton === 'function') {
+        disableButton(btnDisconnect, 'Disconnecting...');
+      }
+    }
+    
+    try {
+      const response = await fetch('{{ secure_url(config("app.url")) }}/telegram/unlink', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+          'Accept': 'application/json'
+        }
+      })
+      const data = await response.json());
+      if (data.success) {
+        if(toastExists) {
+        showToast('Berhasil!', data.message, 'success');
+        } else {
+          alert('Berhasil: '+ data.message);
+        }
+        // Reload page after 1.5 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        if(toastExists) {
+          showToast('Gagal', data.message, 'error');
+        } else {
+          alert('Gagal: ' + data.message);
+        }
+      }
+    } catch(error) {
+      console.error(error)
+      if(toastExists) {
+        showToast('Error', error.message || 'Failed to disconnect telegram', 'error')
+      } else {
+        alert('Error: ' + error.message);
+      }
+    } finally {
+      if(btnDisconnect) {
+        enableButton(btnDisconnect, oldBtnDisconnect);
+      }
     }
   }
   
@@ -127,7 +183,7 @@
       elems.connectedIcon.className = getIconConnected(true) + ' me-1';
       elems.connectedStatus.textContent = 'Connected';
       elems.switchConnectContainer.innerHTML = `
-        <button type="button" class="btn btn-sm btn-outline-danger" onclick="disconnect();">Disconnect</button>
+        <button type="button" id="btn-disconnect" class="btn btn-sm btn-outline-danger" onclick="disconnect();">Disconnect</button>
       `;
     }
   });
