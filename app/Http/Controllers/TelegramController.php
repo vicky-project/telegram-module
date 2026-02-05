@@ -96,7 +96,7 @@ class TelegramController extends Controller
 	{
 		\Log::info("Get data from telegram.", ["data" => $auth_data]);
 
-		$bot_token = config("telegram.token");
+		$bot_token = config("telegram.bot.token");
 		$check_hash = $auth_data["hash"];
 		unset($auth_data["hash"]);
 		$data_check_arr = [];
