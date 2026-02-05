@@ -36,7 +36,7 @@ class MessageHandler
 
 		// Handle command
 		if ($this->isCommand($text)) {
-			return $this->commandDispatcher->handleCommand($chatId, $text, $username);
+			//return $this->commandDispatcher->handleCommand($chatId, $text, $username);
 		}
 
 		// Handle regular text message
