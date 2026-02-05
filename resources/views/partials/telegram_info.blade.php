@@ -20,7 +20,7 @@
   </div>
 </div>
 <div class="d-none" id="telegram-btn-connect">
-  <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="{{ config('telegram.bot.username') }}" data-size="{{ config('telegram.widgets.size') }}" data-auth-url="{{ config('telegram.widgets.redirect_url') }}" data-request-access="write"
+  <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="{{ config('telegram.bot.username') }}" data-size="{{ config('telegram.widgets.size') }}" data-onauth="onTelegramAuth(user)" data-request-access="write"
   @if(config('telegram.widgets.userpic') === false)
   data-userpic="false"
   @endif
@@ -68,9 +68,57 @@
 </div>
 
 <script type="text/javascript">
-  if(typeof csrfToken === 'undefined') {
+  if(typeof window.csrfToken === 'undefined') {
     // CSRF Token for AJAX requests
     window.csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+  }
+  
+  const toastExists = typeof window.showToast === 'function';
+  const disableBtnExists = typeof window.disableButton === 'function';
+    const enableBtnExists = typeof window.enableButton === 'function';
+  
+  async function onTelegramAuth(user){
+    const redirectUrl = "{{ config('telegram.widgets.redirect_url_auth') }}";
+    
+    if(toastExists) {
+      showToast('Connecting', 'Process conncting...');
+    }
+    
+    try {
+      const response = await fetch(secure_url(config('app.url')) + redirect_url_auth, {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
+          'Accept': 'application/json'
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        if(toastExists) {
+        showToast('Berhasil!', data.message, 'success');
+        } else {
+          alert('Berhasil: '+ data.message);
+        }
+        // Reload page after 1.5 seconds
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        if(toastExists) {
+          showToast('Gagal', data.message, 'error');
+        } else {
+          alert('Gagal: ' + data.message);
+        }
+      }
+    } cacth(error) {
+      if(toastExists){
+        showToast('Error', error.message || 'Gagal menyambungkan telegram');
+      } else {
+        alert('Gagal menyambungkan telegram.');
+      }
+    }
   }
   
   async function disconnect() {
@@ -78,12 +126,8 @@
       return;
     }
     
-    const toastExists = typeof showToast === 'function';
-    const disableBtnExists = typeof disableButton === 'function';
-    const enableBtnExists = typeof enableButton === 'function';
-    
     if(toastExists) {
-      showToast('Disconnect', 'Proses disconnecting...');
+      showToast('Disconnect', 'Proses disconnecting...', 'warning');
     } else {
       alert('Disconnect...');
     }

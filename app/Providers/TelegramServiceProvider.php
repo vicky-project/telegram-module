@@ -10,6 +10,7 @@ use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
 use Modules\Telegram\Services\Handlers\MessageHandler;
 use Modules\Telegram\Services\Handlers\Commands\HelpCommand;
@@ -97,6 +98,7 @@ class TelegramServiceProvider extends ServiceProvider
 
 	protected function registerHooks($hookService): void
 	{
+		// Add telegram section in user profile settings
 		$hookService::add(
 			"social.accounts",
 			function ($data) {
@@ -109,6 +111,21 @@ class TelegramServiceProvider extends ServiceProvider
 							: [],
 					])->render();
 				}
+
+				return "";
+			},
+			10
+		);
+
+		// Add telegram button login in auth form
+		$hookService::add(
+			"auth.socials",
+			function ($data) {
+				$service = app(TelegramService::class);
+				if ($service->checkDeviceKnown()) {
+					return view("telegram::auth.button")->render();
+				}
+
 				return "";
 			},
 			10

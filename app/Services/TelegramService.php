@@ -2,19 +2,23 @@
 namespace Modules\Telegram\Services;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use Modules\Telegram\Models\Telegram;
 use Modules\Telegram\Repositories\TelegramRepository;
 use Modules\UserManagement\Services\SocialAccountService;
 
 class TelegramService
 {
+	protected $request;
 	protected $telegram;
 	protected $service;
 
 	public function __construct(
+		Request $request,
 		TelegramRepository $telegram,
 		SocialAccountService $service
 	) {
+		$this->request = $request;
 		$this->telegram = $telegram;
 		$this->service = $service;
 	}
@@ -24,6 +28,36 @@ class TelegramService
 		if ($user) {
 			return $this->saveAndConnectToSocialAccount($user, $data);
 		}
+	}
+
+	public function checkDeviceKnown(): bool
+	{
+		// Need package rappasoft/laravel-authentication-log
+		if (
+			class_exists(
+				\Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint::class
+			)
+		) {
+			$deviceId = \Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint::generate(
+				$this->request
+			);
+
+			if (
+				\Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog::query()
+					->fromDevice($deviceId)
+					->successful()
+					->active()
+					->recent()
+					->first()
+			) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		// Otherwise we don't know this device
+		return false;
 	}
 
 	protected function saveAndConnectToSocialAccount(User $user, array $data)

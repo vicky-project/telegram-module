@@ -12,9 +12,9 @@ Route::prefix("telegram")
 				"redirectAuth",
 			])->name("redirect-auth");
 		});
-	});
 
-Route::get("redirect-login", [
-	TelegramController::class,
-	"redirectLogin",
-])->name("redirect-login");
+		Route::get("redirect-login", [
+			TelegramController::class,
+			"redirectLogin",
+		])->name("redirect-login");
+	});

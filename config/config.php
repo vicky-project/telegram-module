@@ -15,9 +15,16 @@ return [
 	"widgets" => [
 		"size" => "large",
 		"userpic" => false,
-		"redirect_url" => env(
+		// for user auth in setting profile page
+		"redirect_url_auth" => env(
 			"TELEGRAM_AUTH_REDIRECT_URL",
-			url("/telegram/redirect")
+			url("/telegram/redirect-auth")
+		),
+
+		// for form login
+		"redirect_url_login" => env(
+			"TELEGRAM_LOGIN_REDIRECT_URL",
+			url("/telegram/redirect-login")
 		),
 	],
 
