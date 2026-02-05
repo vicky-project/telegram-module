@@ -32,7 +32,7 @@ class TelegramService
 
 		$telegram = Telegram::query()
 			->byTelegramId($data["id"])
-			->firstOrFail();
+			->first();
 
 		if (!$telegram) {
 			return null;
