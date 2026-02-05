@@ -68,7 +68,7 @@
 </div>
 
 <script type="text/javascript">
-  if(!csrfToken || csrfToken === 'undefined') {
+  if(typeof csrfToken === 'undefined') {
     // CSRF Token for AJAX requests
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
   }
@@ -85,7 +85,7 @@
     if(toastExists) {
       showToast('Disconnect', 'Proses disconnecting...');
     } else {
-      alert('Disconnect');
+      alert('Disconnect...');
     }
     
     const btnDisconnect = document.getElementById('btn-disconnect');

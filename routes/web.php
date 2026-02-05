@@ -8,8 +8,6 @@ Route::prefix("telegram")
 	->name("telegram.")
 	->group(function () {
 		Route::middleware(["auth"])->group(function () {
-			Route::get("", [TelegramController::class, "index"]);
-
 			Route::post("generate-code", [
 				TelegramLinkController::class,
 				"generateCode",
