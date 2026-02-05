@@ -43,32 +43,28 @@ class TelegramController extends Controller
 
 			$telegram = $this->service->processTelegram($auth_data, $user);
 
-			if ($request->wantsJson()) {
-				// Jika request dari javascript (AJAX atau fetch API)
-				if ($telegram) {
-					return response()->json([
-						"success" => true,
-						"message" => "Telegram connected",
-						"data" => $telegram,
-					]);
-				} else {
-					return response()->json([
-						"success" => false,
-						"message" => "Failed connecting application to telegram",
-					]);
-				}
+			if ($telegram) {
+				return response()->json([
+					"success" => true,
+					"message" => "Telegram connected",
+					"data" => $telegram,
+				]);
+			} else {
+				return response()->json([
+					"success" => false,
+					"message" => "Failed connecting application to telegram",
+				]);
 			}
-
-			return back()->withErrors();
 		} catch (\Exception $e) {
 			\Log::error("Failed to login using telegram", [
 				"message" => $e->getMessage(),
 				"trace" => $e->getTraceAsString(),
 			]);
 
-			return $request->wantsJson()
-				? response()->json(["success" => false, "message" => $e->getMessage()])
-				: back()->withErrors($e->getMessage());
+			return response()->json([
+				"success" => false,
+				"message" => $e->getMessage(),
+			]);
 		}
 	}
 
@@ -86,7 +82,11 @@ class TelegramController extends Controller
 				])
 			);
 
-			$result = $this->service->processTelegram($auth_data);
+			$user = $this->service->processTelegram($auth_data);
+
+			return redirect()
+				->route("dashboard")
+				->with("success", "Welcome Back: " . $user->name);
 		} catch (\Exception $e) {
 			return back()->withErrors($e->getMessage());
 		}

@@ -26,7 +26,7 @@ class TelegramService
 		}
 	}
 
-	public function saveAndConnectToSocialAccount(User $user, array $data)
+	protected function saveAndConnectToSocialAccount(User $user, array $data)
 	{
 		try {
 			$telegram = $this->telegram->firstOrCreate($data);
@@ -38,6 +38,24 @@ class TelegramService
 			);
 
 			return $telegram;
+		} catch (\Exception $e) {
+			throw $e;
+		}
+	}
+
+	protected function tryLoginUsingTelegam(array $data)
+	{
+		try {
+			$telegram = Telegram::where("telegram_id", $data["id"])->firstOrFail();
+
+			if ($telegram) {
+				$user = $telegram->provider->user;
+
+				\Auth::login($user);
+				return $user;
+			}
+
+			return false;
 		} catch (\Exception $e) {
 			throw $e;
 		}
