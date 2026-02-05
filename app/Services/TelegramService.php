@@ -3,6 +3,7 @@ namespace Modules\Telegram\Services;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Modules\Telegram\Models\Telegram;
 use Modules\Telegram\Repositories\TelegramRepository;
 use Modules\UserManagement\Services\SocialAccountService;
@@ -33,14 +34,21 @@ class TelegramService
 			->byTelegramId($data["id"])
 			->firstOrFail();
 
-		if ($telegram) {
-			return $telegram
-				->provider()
-				->byProvider("telegram")
-				->first()?->user;
+		if (!$telegram) {
+			return null;
 		}
 
-		return null;
+		$user = $telegram
+			->provider()
+			->byProvider("telegram")
+			->first()?->user;
+
+		if (!$user) {
+			return null;
+		}
+
+		Auth::login($user);
+		return $user;
 	}
 
 	public function checkDeviceKnown(): bool
