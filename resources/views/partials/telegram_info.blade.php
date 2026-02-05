@@ -85,7 +85,7 @@
     }
     
     try {
-      const response = await fetch(secure_url(config('app.url')) + redirect_url_auth, {
+      const response = await fetch("{{ secure_url(config('app.url')) }}" + redirectUrl, {
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
