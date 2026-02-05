@@ -20,8 +20,14 @@ Route::prefix("telegram")
 				"updateSettings",
 			])->name("update-settings");
 
-			Route::get("redirect", [TelegramController::class, "redirect"])->name(
-				"redirect"
-			);
+			Route::get("redirect-auth", [
+				TelegramController::class,
+				"redirectAuth",
+			])->name("redirect-auth");
 		});
 	});
+
+Route::get("redirect-login", [
+	TelegramLinkController::class,
+	"redirectLogin",
+])->name("redirect-login");

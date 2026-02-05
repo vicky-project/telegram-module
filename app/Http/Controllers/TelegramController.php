@@ -25,9 +25,8 @@ class TelegramController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function redirectAuthUser(Request $request)
+	public function redirectAuth(Request $request)
 	{
-		dd($request);
 		try {
 			$auth_data = $this->checkTelegramAuthorization(
 				$request->only([
@@ -42,7 +41,7 @@ class TelegramController extends Controller
 
 			$user = Auth::user();
 
-			$telegram = $this->saveTelegramData($user, $auth_data);
+			$telegram = $this->service->processTelegram($auth_data, $user);
 
 			if ($request->wantsJson()) {
 				// Jika request dari javascript (AJAX atau fetch API)
@@ -53,22 +52,14 @@ class TelegramController extends Controller
 						"data" => $telegram,
 					]);
 				} else {
-					return redirect()
-						->route("login")
-						->withErrors("Telegram was connected.");
+					return response()->json([
+						"success" => false,
+						"message" => "Failed connecting application to telegram",
+					]);
 				}
 			}
 
-			return $request->wantsJson()
-				? response()->json([
-					"success" => false,
-					"message" => "Failed to save account telegram",
-				])
-				: redirect()
-					->route("login")
-					->withErrors(
-						"Can not login using telegram. Please create user manual or login with another credential."
-					);
+			return back()->withErrors();
 		} catch (\Exception $e) {
 			\Log::error("Failed to login using telegram", [
 				"message" => $e->getMessage(),
@@ -81,8 +72,24 @@ class TelegramController extends Controller
 		}
 	}
 
-	public function redirectFormLogin(Request $request)
+	public function redirectLogin(Request $request)
 	{
+		try {
+			$auth_data = $this->checkTelegramAuthorization(
+				$request->only([
+					"id",
+					"first_name",
+					"last_name",
+					"username",
+					"auth_date",
+					"hash",
+				])
+			);
+
+			$result = $this->service->processTelegram($auth_data);
+		} catch (\Exception $e) {
+			return back()->withErrors($e->getMessage());
+		}
 	}
 
 	private function checkTelegramAuthorization($auth_data)
@@ -108,15 +115,5 @@ class TelegramController extends Controller
 			throw new \Exception("Data is outdated");
 		}
 		return $auth_data;
-	}
-
-	protected function saveTelegramData(User $user, array $data)
-	{
-		try {
-			$telegram = $this->service->saveAndConnectToSocialAccount($user, $data);
-			return $telegram;
-		} catch (\Exception $e) {
-			throw $e;
-		}
 	}
 }
