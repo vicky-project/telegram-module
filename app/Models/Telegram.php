@@ -32,4 +32,9 @@ class Telegram extends Model implements SocialAccountInterface
 	{
 		return $this->morphOne(SocialAccount::class, "providerable");
 	}
+
+	public function scopeByTelegramId($query, $telegramId)
+	{
+		return $query->where("telegram_id", $telegramId);
+	}
 }

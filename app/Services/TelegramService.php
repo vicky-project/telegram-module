@@ -28,6 +28,19 @@ class TelegramService
 		if ($user) {
 			return $this->saveAndConnectToSocialAccount($user, $data);
 		}
+
+		$telegram = Telegram::query()
+			->byTelegramId($data["id"])
+			->firstOrFail();
+
+		if ($telegram) {
+			return $telegram
+				->provider()
+				->byProvider("telegram")
+				->first()?->user;
+		}
+
+		return null;
 	}
 
 	public function checkDeviceKnown(): bool

@@ -84,6 +84,12 @@ class TelegramController extends Controller
 
 			$user = $this->service->processTelegram($auth_data);
 
+			if (!$user) {
+				return back()->withErrors(
+					"User not found or telegram account not connect to user"
+				);
+			}
+
 			return redirect()
 				->route(config("telegram.widgets.route_after_auth", "home"))
 				->with("success", "Welcome Back: " . $user->name);
