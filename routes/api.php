@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Telegram\Http\Controllers\TelegramController;
-use Modules\Telegram\Http\Controllers\TelegramLinkController;
 use Modules\Telegram\Http\Controllers\TelegramWebhookController;
 
 Route::prefix("telegram")->group(function () {
