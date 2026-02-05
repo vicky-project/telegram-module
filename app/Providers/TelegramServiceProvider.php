@@ -46,13 +46,6 @@ class TelegramServiceProvider extends ServiceProvider
 			$this->registerMiddlewares($dispatcher);
 
 			$this->registerCommandHandlers($dispatcher);
-
-			if (Auth::check()) {
-				$user = Auth::user();
-				if (!$user->hasTelegram()) {
-					$user->telegram()->create(["user_id" => $user->id]);
-				}
-			}
 		});
 
 		if (
@@ -127,7 +120,7 @@ class TelegramServiceProvider extends ServiceProvider
 	 */
 	protected function registerCommands(): void
 	{
-		$this->commands([\Modules\Telegram\Console\TelegramSetup::class]);
+		// $this->commands([\Modules\Telegram\Console\TelegramSetup::class]);
 	}
 
 	/**

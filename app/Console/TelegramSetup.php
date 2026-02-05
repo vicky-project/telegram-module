@@ -46,17 +46,16 @@ class TelegramSetup extends Command
 		try {
 			$url =
 				$this->option("url") ??
-				url(config("telegram.bot.webhook_url") ?? "/api/telegram/webhook");
+				url(config("telegram.bot.webhook_url", "/api/telegram/webhook"));
 			$this->info("Setting webhook to: {$url}");
 
 			$secret = config("telegram.bot.webhook_secret");
 			if ($secret) {
-				$params["secret_token"] = $secret;
 				$this->info("Using secret token: {$secret}");
 			}
 
 			$handler = app(UpdateHandler::class);
-			$response = $handler->setWebhook($url, $params["secret_token"] ?? null);
+			$response = $handler->setWebhook($url, $secret ?? null);
 
 			if ($response) {
 				$this->info("✅ Webhook set successfully!");
