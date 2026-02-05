@@ -25,7 +25,7 @@ return new class extends Migration {
 			$table->json("additional_data")->nullable();
 			$table->timestamps();
 
-			$table->index(["user_id", "telegram_id"]);
+			$table->index(["telegram_id"]);
 		});
 	}
 
