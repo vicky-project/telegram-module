@@ -43,7 +43,7 @@ class TelegramServiceProvider extends ServiceProvider
 		$this->app->booted(function () {
 			$dispatcher = $this->app->make(CommandDispatcher::class);
 
-			$this->registerMiddlewares($dispatcher);
+			//$this->registerMiddlewares($dispatcher);
 
 			$this->registerCommandHandlers($dispatcher);
 		});
