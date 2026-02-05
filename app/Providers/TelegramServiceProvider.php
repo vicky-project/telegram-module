@@ -45,7 +45,7 @@ class TelegramServiceProvider extends ServiceProvider
 
 			//$this->registerMiddlewares($dispatcher);
 
-			$this->registerCommandHandlers($dispatcher);
+			//$this->registerCommandHandlers($dispatcher);
 		});
 
 		if (
@@ -83,9 +83,9 @@ class TelegramServiceProvider extends ServiceProvider
 		$this->app->register(EventServiceProvider::class);
 		$this->app->register(RouteServiceProvider::class);
 
-		// $this->app->singleton(CommandDispatcher::class, function ($app) {
-		// 			return new CommandDispatcher($app->make(TelegramApi::class));
-		// 		});
+		$this->app->singleton(CommandDispatcher::class, function ($app) {
+			return new CommandDispatcher($app->make(TelegramApi::class));
+		});
 
 		$this->app->bind(MessageHandler::class, function ($app) {
 			return new MessageHandler(
