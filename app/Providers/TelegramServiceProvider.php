@@ -40,13 +40,13 @@ class TelegramServiceProvider extends ServiceProvider
 		$this->registerViews();
 		$this->loadMigrationsFrom(module_path($this->name, "database/migrations"));
 
-		$this->app->booted(function () {
-			$dispatcher = $this->app->make(CommandDispatcher::class);
+		//$this->app->booted(function () {
+		//	$dispatcher = $this->app->make(CommandDispatcher::class);
 
-			//$this->registerMiddlewares($dispatcher);
+		//$this->registerMiddlewares($dispatcher);
 
-			//$this->registerCommandHandlers($dispatcher);
-		});
+		//$this->registerCommandHandlers($dispatcher);
+		//});
 
 		if (
 			config($this->nameLower . ".hooks.enabled", false) &&
