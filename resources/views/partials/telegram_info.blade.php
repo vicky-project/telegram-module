@@ -70,7 +70,7 @@
 <script type="text/javascript">
   if(typeof csrfToken === 'undefined') {
     // CSRF Token for AJAX requests
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+    window.csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
   }
   
   async function disconnect() {
@@ -100,7 +100,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': csrfToken,
+          'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
           'Accept': 'application/json'
         }
       });
