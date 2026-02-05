@@ -112,7 +112,7 @@
           alert('Gagal: ' + data.message);
         }
       }
-    } cacth(error) {
+    } catch(error) {
       if(toastExists){
         showToast('Error', error.message || 'Gagal menyambungkan telegram');
       } else {
