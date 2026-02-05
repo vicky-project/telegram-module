@@ -79,6 +79,8 @@
     }
     
     const toastExists = typeof showToast === 'function';
+    const disableBtnExists = typeof disableButton === 'function';
+    const enableBtnExists = typeof enableButton === 'function';
     
     if(toastExists) {
       showToast('Disconnect', 'Proses disconnecting...');
@@ -87,12 +89,10 @@
     }
     
     const btnDisconnect = document.getElementById('btn-disconnect');
-    const oldBtnDisconnect = btnDisconnect.html;
+    const oldBtnDisconnect = btnDisconnect.innerHTML;
     
-    if(btnDisconnect) {
-      if(typeof disableButton === 'function') {
-        disableButton(btnDisconnect, 'Disconnecting...');
-      }
+    if(btnDisconnect && disableBtnExists) {
+      disableButton(btnDisconnect, 'Disconnecting...');
     }
     
     try {
@@ -103,8 +103,9 @@
           'X-CSRF-TOKEN': csrfToken,
           'Accept': 'application/json'
         }
-      })
-      const data = await response.json());
+      });
+      
+      const data = await response.json();
       if (data.success) {
         if(toastExists) {
         showToast('Berhasil!', data.message, 'success');
@@ -130,7 +131,7 @@
         alert('Error: ' + error.message);
       }
     } finally {
-      if(btnDisconnect) {
+      if(btnDisconnect && enableBtnExists) {
         enableButton(btnDisconnect, oldBtnDisconnect);
       }
     }
