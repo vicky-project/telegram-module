@@ -39,7 +39,7 @@ class TelegramController extends Controller
 				])
 			);
 
-			$user = Auth::user();
+			$user = $request->user();
 
 			$telegram = $this->service->processTelegram($auth_data, $user);
 
