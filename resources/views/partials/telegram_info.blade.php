@@ -27,9 +27,9 @@
   ></script>
 </div>
 
-<div class="row">
+<div class="row mt-3">
   <div class="col-md-12">
-    <div class="d-flex my-3 align-items-center">
+    <div class="d-flex align-items-center">
       <div class="flex-shrink-0">
         <i class="
         @switch(config('telegram.injection.icon-provider', 'fontawesome'))
@@ -69,7 +69,15 @@
 
 <script type="text/javascript">
   function disconnect() {
-    alert('Disconnect!');
+    if (!confirm('Apakah Anda yakin ingin memutuskan koneksi Telegram?')) {
+      return;
+    }
+    
+    if(typeof showToast === 'function') {
+      showToast('Disconnect', 'Proses disconnecting...');
+    } else {
+      alert('Disconnect');
+    }
   }
   
   function getIconConnected(connect = false) {
