@@ -27,7 +27,7 @@ class EnsureUserLinkedMiddleware implements TelegramMiddlewareInterface
 		callable $next
 	): array {
 		// Command yang tidak memerlukan user terhubung
-		$exceptCommand = config("telegram.commands.no_auth");
+		$exceptCommand = config("telegram.commander.no_auth");
 
 		if (in_array($command, $exceptCommand)) {
 			return $next($chatId, $command, $argument, $username);

@@ -21,7 +21,7 @@ return [
 		),
 	],
 
-	"commands" => [
+	"commander" => [
 		// For EnsureUserLoginMiddleware to except from checking
 		"no_auth" => ["start", "help", "link"],
 	],
