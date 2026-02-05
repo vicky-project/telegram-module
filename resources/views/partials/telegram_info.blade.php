@@ -116,7 +116,7 @@
       if(toastExists){
         showToast('Error', error.message || 'Gagal menyambungkan telegram');
       } else {
-        alert('Gagal menyambungkan telegram.');
+        alert('Gagal menyambungkan telegram: '+ error.message);
       }
     }
   }
