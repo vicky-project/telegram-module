@@ -85,7 +85,7 @@
     }
     
     try {
-      const response = await fetch(redirectUrl, {
+      const response = await fetch(redirectUrl + '?' + new URLSearchParams(user), {
         headers: {
           'Content-Type': 'application/json',
           'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
