@@ -170,6 +170,7 @@
     };
     
     const telegram = @json($telegram);
+    alert(JSON.stringify(telegram));
     if(telegram.length == 0) {
       elems.telegramBtnLink.classList.remove('d-none');
       elems.container.classList.remove('d-none');
