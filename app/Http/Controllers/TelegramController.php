@@ -85,7 +85,7 @@ class TelegramController extends Controller
 			$user = $this->service->processTelegram($auth_data);
 
 			return redirect()
-				->route("dashboard")
+				->route(config("telegram.widgets.route_after_auth", "home"))
 				->with("success", "Welcome Back: " . $user->name);
 		} catch (\Exception $e) {
 			return back()->withErrors($e->getMessage());
