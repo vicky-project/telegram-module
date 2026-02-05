@@ -1,6 +1,7 @@
 <?php
 namespace Modules\Telegram\Repositories;
 
+use Carbon\Carbon;
 use Modules\Telegram\Models\Telegram;
 
 class TelegramRepository
@@ -23,7 +24,7 @@ class TelegramRepository
 				"username" => $data["username"] ?? null,
 				"first_name" => $data["first_name"] ?? null,
 				"last_name" => $data["last_name"] ?? null,
-				"auth_date" => $data["auth_date"],
+				"auth_date" => Carbon::parse($data["auth_date"])->toLocalDateTime(),
 			]
 		);
 	}
