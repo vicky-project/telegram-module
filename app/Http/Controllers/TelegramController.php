@@ -25,9 +25,9 @@ class TelegramController extends Controller
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function redirect(Request $request)
+	public function redirectAuthUser(Request $request)
 	{
-		dd($request->previous());
+		dd($request);
 		try {
 			$auth_data = $this->checkTelegramAuthorization(
 				$request->only([
@@ -44,14 +44,19 @@ class TelegramController extends Controller
 
 			$telegram = $this->saveTelegramData($user, $auth_data);
 
-			if ($telegram) {
-				return $request->wantsJson()
-					? response()->json([
+			if ($request->wantsJson()) {
+				// Jika request dari javascript (AJAX atau fetch API)
+				if ($telegram) {
+					return response()->json([
 						"success" => true,
 						"message" => "Telegram connected",
 						"data" => $telegram,
-					])
-					: back()->with("success", " Telegram was connected.");
+					]);
+				} else {
+					return redirect()
+						->route("login")
+						->withErrors("Telegram was connected.");
+				}
 			}
 
 			return $request->wantsJson()
@@ -59,9 +64,11 @@ class TelegramController extends Controller
 					"success" => false,
 					"message" => "Failed to save account telegram",
 				])
-				: back()->withErrors(
-					"Can not login using telegram. Please create user manual or login with another credential."
-				);
+				: redirect()
+					->route("login")
+					->withErrors(
+						"Can not login using telegram. Please create user manual or login with another credential."
+					);
 		} catch (\Exception $e) {
 			\Log::error("Failed to login using telegram", [
 				"message" => $e->getMessage(),
@@ -72,6 +79,10 @@ class TelegramController extends Controller
 				? response()->json(["success" => false, "message" => $e->getMessage()])
 				: back()->withErrors($e->getMessage());
 		}
+	}
+
+	public function redirectFormLogin(Request $request)
+	{
 	}
 
 	private function checkTelegramAuthorization($auth_data)
