@@ -30,7 +30,7 @@ class EnsureUserLinkedMiddleware implements TelegramMiddlewareInterface
 		$exceptCommand = config("telegram.commander.no_auth");
 
 		if (in_array($command, $exceptCommand)) {
-			return $next($chatId, $command, $argument, $username);
+			return $next($chatId, $command, $argument, $username, null);
 		}
 
 		Log::debug("Using chat id: " . $chatId, [

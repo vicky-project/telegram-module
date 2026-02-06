@@ -58,75 +58,46 @@ class CommandDispatcher
 
 		$handler = $this->handlers[$command];
 
-		foreach (array_reverse($this->middlewares) as $middleware) {
-			return $middleware->handle(
-				$chatId,
-				$command,
-				$argument,
-				$username,
-				function ($chatId, $command, $argument, $username, $user) use (
-					$handler
-				) {
-					\Log::debug("User found: " . $user->name, [
-						"user" => $user,
-						"chat_id" => $chatId,
-						"command" => $command,
-					]);
-
-					return $handler->handle($chatId, $argument, $username, $user);
-				}
-			);
-		}
+		return $this->execute($handler, $chatId, $command, $argument, $username);
 	}
 
-	protected function createPipeline(TelegramCommandInterface $handler): callable
-	{
-		Log::debug("Creating pipeline for handler", [
-			"handler" => get_class($handler),
-			"middleware_count" => count($this->middlewares),
-		]);
+	protected function execute(
+		TelegramCommandInterface $handler,
+		int $chatId,
+		string $command,
+		?string $argument,
+		?string $username
+	): array {
+		if (empty($this->middlewares)) {
+			return $this->executeHandler($handler, $chatId, $argument, $username);
+		}
 
 		// Handler akhir: panggil handler dengan 5 parameter
-		$handlerCallable = function (
+		$pipeline = function (
 			$chatId,
 			$command,
 			$argument,
 			$username,
 			$user = null
 		) use ($handler) {
-			Log::debug("🎯 FINAL HANDLER CALLABLE INVOKED", [
-				"chat_id" => $chatId,
-				"command" => $command,
-				"user_provided" => !is_null($user),
-				"user_id" => $user ? $user->id : null,
-				"handler_class" => get_class($handler),
-			]);
-
-			return $handler->handle($chatId, $argument, $username, $user);
+			return $this->executeHandler(
+				$handler,
+				$chatId,
+				$argument,
+				$username,
+				$user
+			);
 		};
 
-		// Bangun pipeline dari dalam ke luar
-		$pipeline = $handlerCallable;
-
 		// Balik urutan middleware (yang pertama didaftar dijalankan pertama)
-		foreach (array_reverse($this->middlewares) as $index => $middleware) {
-			$currentPipeline = $pipeline;
-			$middlewareClass = get_class($middleware);
-
+		foreach (array_reverse($this->middlewares) as $middleware) {
 			$pipeline = function (
 				$chatId,
 				$command,
 				$argument,
 				$username,
 				$user = null
-			) use ($middleware, $currentPipeline, $middlewareClass, $index) {
-				Log::debug("🔄 MIDDLEWARE #{$index} INVOKED: {$middlewareClass}", [
-					"chat_id" => $chatId,
-					"command" => $command,
-					"user_incoming" => !is_null($user),
-					"user_id" => $user ? $user->id : null,
-				]);
-
+			) use ($middleware, $pipeline) {
 				return $middleware->handle(
 					$chatId,
 					$command,
@@ -139,21 +110,9 @@ class CommandDispatcher
 						$nextArgument,
 						$nextUsername,
 						$nextUser = null
-					) use ($currentPipeline, $middlewareClass) {
-						Log::debug("➡️  MIDDLEWARE {$middlewareClass} CALLING NEXT", [
-							"user_passed" => !is_null($nextUser),
-							"user_id" => $nextUser ? $nextUser->id : null,
-							"next_params" => [
-								"chatId",
-								"command",
-								"argument",
-								"username",
-								"user",
-							],
-						]);
-
+					) use ($pipeline) {
 						// Panggil pipeline berikutnya dengan 5 parameter
-						return $currentPipeline(
+						return $pipeline(
 							$nextChatId,
 							$nextCommand,
 							$nextArgument,
@@ -165,15 +124,21 @@ class CommandDispatcher
 			};
 		}
 
-		Log::debug("Pipeline created successfully", [
-			"handler" => get_class($handler),
-			"middleware_stack" => array_map(
-				fn($mw) => get_class($mw),
-				$this->middlewares
-			),
-		]);
+		return $pipeline($chatId, $command, $argument, $username);
+	}
 
-		return $pipeline;
+	protected function executeHandler(
+		TelegramCommandInterface $handler,
+		int $chatId,
+		?string $argument,
+		?string $username,
+		$user = null
+	): array {
+		try {
+			return $handler->handle($chatId, $argument, $username, $user);
+		} catch (\Exception $e) {
+			return $handler->handle($chatId, $argument, $username);
+		}
 	}
 
 	private function handleUnknownCommand(int $chatId): array
