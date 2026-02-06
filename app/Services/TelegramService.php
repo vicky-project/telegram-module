@@ -68,13 +68,15 @@ class TelegramService
 
 		$authFound = \Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog::query()
 			->fromDevice($deviceId)
-			->latestOfMany("login_at");
+			->successful()
+			->recent()
+			->latestOfMant("login_at");
+		dd($authFound);
 
 		// Not found historical device login
 		if (!$authFound) {
 			return false;
 		}
-		dd($authFound);
 
 		$socialAccount = $this->service->getByAuthlogId($authFound->id);
 
