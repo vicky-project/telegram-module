@@ -141,6 +141,7 @@
       const response = await fetch('{{ secure_url(config("app.url")) }}/telegram/unlink', {
         method: 'POST',
         headers: {
+          'Content-Type': 'application/json',
           'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
           'Accept': 'application/json'
         },
