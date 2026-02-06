@@ -73,9 +73,7 @@
     window.csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
   }
   
-  const toastExists = typeof window.showToast === 'function';
-  const disableBtnExists = typeof window.disableButton === 'function';
-    const enableBtnExists = typeof window.enableButton === 'function';
+  let toastExists, disableBtnExists, enableBtnExists;
   
   async function onTelegramAuth(user){
     const redirectUrl = "{{ config('telegram.widgets.redirect_url_auth') }}";
@@ -204,6 +202,10 @@
   }
   
   document.addEventListener('DOMContentLoaded', function() {
+    const toastExists = typeof window.showToast === 'function';
+    const disableBtnExists = typeof window.disableButton === 'function';
+    const enableBtnExists = typeof window.enableButton === 'function';
+    
     const elems = {
       container: document.getElementById('telegram-info'),
       username: document.getElementById('telegram-username'),
