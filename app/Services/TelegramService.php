@@ -95,10 +95,15 @@ class TelegramService
 		return true;
 	}
 
+	public function getUserByChatId(int $chatId)
+	{
+		return $this->telegram->byTelegramId($chatId)->provider->user;
+	}
+
 	public function unlink(User $user, int $telegramId): bool
 	{
 		try {
-			$telegram = Telegram::byTelegramId($telegramId)->first();
+			$telegram = $this->telegram->getByChatId($telegramId);
 
 			return $user
 				->socialAccounts()
@@ -130,7 +135,7 @@ class TelegramService
 	protected function tryLoginUsingTelegam(array $data)
 	{
 		try {
-			$telegram = Telegram::where("telegram_id", $data["id"])->firstOrFail();
+			$telegram = $this->telegram->getByChatId($data["id"]);
 
 			if ($telegram) {
 				$user = $telegram->provider->user;

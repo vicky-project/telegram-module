@@ -30,4 +30,9 @@ class TelegramRepository
 			]
 		);
 	}
+
+	public function getByChatId(int $chatId)
+	{
+		return $this->model->byTelegramId($chatId)->first();
+	}
 }

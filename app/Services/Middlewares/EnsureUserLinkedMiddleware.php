@@ -2,20 +2,20 @@
 namespace Modules\Telegram\Services\Middlewares;
 
 use Modules\Telegram\Interfaces\TelegramMiddlewareInterface;
-use Modules\Telegram\Services\LinkService;
+use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Support\TelegramApi;
 use Illuminate\Support\Facades\Log;
 
 class EnsureUserLinkedMiddleware implements TelegramMiddlewareInterface
 {
-	protected LinkService $linkService;
+	protected TelegramService $service;
 	protected TelegramApi $telegramApi;
 
 	public function __construct(
-		LinkService $linkService,
+		TelegramService $service,
 		TelegramApi $telegramApi
 	) {
-		$this->linkService = $linkService;
+		$this->service = $service;
 		$this->telegramApi = $telegramApi;
 	}
 
@@ -38,7 +38,7 @@ class EnsureUserLinkedMiddleware implements TelegramMiddlewareInterface
 			"command" => $command,
 		]);
 
-		$user = $this->linkService->getUserByChatId($chatId);
+		$user = $this->service->getUserByChatId($chatId);
 
 		if (!$user) {
 			Log::warning("User not linked for command", [
