@@ -77,8 +77,8 @@ class TelegramService
 			return false;
 		}
 
-		$telegramConnect = Telegram::where("authlog_id", $authFound->id)->first();
-		dd($telegramConnect);
+		$socialAccount = $this->service->getByAutlogId($authFound->id);
+		dd($socialAccount);
 		return true;
 	}
 
