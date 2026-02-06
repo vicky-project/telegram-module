@@ -28,6 +28,13 @@ class Telegram extends Model implements SocialAccountInterface
 		"additional_data" => "array",
 	];
 
+	public static function booted()
+	{
+		static::deleting(function ($telegram) {
+			$telegram->provider()->delete();
+		});
+	}
+
 	public function provider(): MorphOne
 	{
 		return $this->morphOne(SocialAccount::class, "providerable");
