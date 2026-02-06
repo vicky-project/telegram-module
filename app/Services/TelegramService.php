@@ -87,7 +87,7 @@ class TelegramService
 		// Social Account not have provider
 		if (
 			!$socialAccount->filter(fn($account) => $account->provider === "telegram")
-				->providerable
+				->first()->providerable
 		) {
 			return false;
 		}
