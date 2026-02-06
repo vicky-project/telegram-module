@@ -8,15 +8,11 @@ use Modules\Telegram\Services\Handlers\CommandDispatcher;
 class HelpCommand implements TelegramCommandInterface
 {
 	protected TelegramApi $telegramApi;
-	protected CommandDispatcher $dispatcher;
 	protected string $appName;
 
-	public function __construct(
-		TelegramApi $telegramApi,
-		CommandDispatcher $dispatcher
-	) {
+	public function __construct(TelegramApi $telegramApi)
+	{
 		$this->telegramApi = $telegramApi;
-		$this->dispatcher = $dispatcher;
 		$this->appName = config("app.name", "Financial");
 	}
 
@@ -36,7 +32,8 @@ class HelpCommand implements TelegramCommandInterface
 		?string $username = null,
 		array $params = []
 	): array {
-		$allCommands = $this->dispatcher->getCommands();
+		$dispatcher = app(CommandDispatcher::class);
+		$allCommands = $dispatcher->getCommands();
 
 		$message = "📚 *Bantuan {$this->appName} Bot*\n\n";
 		$message .= "*Command yang tersedia:*\n\n";
