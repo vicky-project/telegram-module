@@ -67,11 +67,17 @@ class CommandDispatcher
 	protected function createPipeline(TelegramCommandInterface $handler): callable
 	{
 		// Tambahkan handler sebagai akhir pipeline
-		$pipeline = function ($chatId, $command, $argument, $username) use (
-			$handler
-		) {
-			return $handler->handle($chatId, $argument, $username);
+		$handleCallable = function (
+			$chatId,
+			$command,
+			$argument,
+			$username,
+			$user = null
+		) use ($handler) {
+			return $handler->handle($chatId, $argument, $username, $user);
 		};
+
+		$pipeline = $handleCallable;
 
 		// Balik urutan middleware agar yang pertama didaftar dijalankan pertama
 		foreach (array_reverse($this->middlewares) as $middleware) {
@@ -84,7 +90,11 @@ class CommandDispatcher
 					$command,
 					$argument,
 					$username,
-					$pipeline
+					function ($chatId, $command, $argument, $username, $user = null) use (
+						$pipeline
+					) {
+						return $pipeline($chatId, $command, $argument, $username, $user);
+					}
 				);
 			};
 		}

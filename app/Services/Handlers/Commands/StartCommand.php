@@ -70,8 +70,8 @@ class StartCommand implements TelegramCommandInterface
 			"Untuk menghubungkan akun Anda:\n" .
 			"1. Login ke aplikasi web\n" .
 			"2. Buka Menu Settings → Telegram Integration\n" .
-			"3. Generate kode verifikasi\n" .
-			"4. Kirim ke bot ini: /link <kode>\n\n" .
+			"3. Klik pada tombol Telegram untuk menghubungkan\n" .
+			"4. Anda sudah terhubung dengan bot ini\n\n" .
 			"Gunakan /help untuk informasi lebih lanjut.";
 	}
 }
