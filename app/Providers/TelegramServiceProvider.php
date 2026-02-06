@@ -108,6 +108,7 @@ class TelegramServiceProvider extends ServiceProvider
 					dd(
 						$user
 							->socialAccounts()
+							->load("providerable")
 							->byProvider("telegram")
 							->first()
 					);
