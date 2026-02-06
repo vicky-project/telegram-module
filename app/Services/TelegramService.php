@@ -71,6 +71,7 @@ class TelegramService
 			->successful()
 			->recent()
 			->first();
+		dd($authFound);
 
 		// Not found historical device login
 		if (!$authFound) {
@@ -114,7 +115,7 @@ class TelegramService
 		try {
 			$telegram = $this->telegram->firstOrCreate($data);
 
-			$this->service->saveUserSocialAccountByProvider(
+			$socialAccount = $this->service->saveUserSocialAccountByProvider(
 				$user,
 				$telegram,
 				"telegram"
