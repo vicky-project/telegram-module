@@ -71,7 +71,6 @@ class TelegramService
 			->successful()
 			->recent()
 			->first();
-		dd($authFound);
 
 		// Not found historical device login
 		if (!$authFound) {
@@ -79,6 +78,7 @@ class TelegramService
 		}
 
 		$socialAccount = $this->service->getByAuthlogId($authFound->id);
+		dd($socialAccount);
 
 		// Social Account not exists
 		if (!$socialAccount || $socialAccount->isEmpty()) {
