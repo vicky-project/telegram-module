@@ -1,178 +1,253 @@
 <?php
 namespace Modules\Telegram\Services\Handlers;
 
+use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Interfaces\TelegramCommandInterface;
 use Modules\Telegram\Interfaces\TelegramMiddlewareInterface;
 use Modules\Telegram\Services\Support\TelegramApi;
-use Illuminate\Support\Facades\Log;
 
 class CommandDispatcher
 {
-	protected array $handlers = [];
-	protected array $middlewares = [];
-	protected TelegramApi $telegramApi;
+	/**
+	 * Registered commands
+	 *
+	 * @var array<string, CommandInterface>
+	 */
+	private array $commands = [];
 
-	public function __construct(TelegramApi $telegramApi)
-	{
-		$this->telegramApi = $telegramApi;
-	}
+	/**
+	 * Registered middleware
+	 *
+	 * @var array<string, MiddlewareInterface>
+	 */
+	private array $middleware = [];
 
-	// Register handler
-	public function registerHandler(TelegramCommandInterface $handler): void
-	{
-		$this->handlers[$handler->getCommandName()] = $handler;
-		Log::debug("Registered Telegram handler", [
-			"command" => $handler->getCommandName(),
-			"requires_linked_user" => $handler->requiresLinkedUser(),
+	/**
+	 * Middleware stack for each command
+	 *
+	 * @var array<string, array>
+	 */
+	private array $commandMiddleware = [];
+
+	/**
+	 * Register a command
+	 */
+	public function registerCommand(
+		TelegramCommandInterface $command,
+		array $middleware = []
+	): void {
+		$commandName = $command->getName();
+		$this->commands[$commandName] = $command;
+
+		if (!empty($middleware)) {
+			$this->commandMiddleware[$commandName] = $middleware;
+		}
+
+		Log::debug("Command registered", [
+			"command" => $commandName,
+			"middleware_count" => count($middleware),
 		]);
 	}
 
-	// Register middleware
+	/**
+	 * Register middleware
+	 */
 	public function registerMiddleware(
+		string $name,
 		TelegramMiddlewareInterface $middleware
 	): void {
-		$this->middlewares[] = $middleware;
-		Log::debug("Registered Telegram middleware", [
-			"middleware" => get_class($middleware),
-		]);
+		$this->middleware[$name] = $middleware;
+		Log::debug("Middleware registered", ["name" => $name]);
 	}
 
-	// Main command handling dengan middleware pipeline
+	/**
+	 * Handle incoming command
+	 */
 	public function handleCommand(
 		int $chatId,
 		string $text,
-		?string $username
+		?string $username = null
 	): array {
-		$parts = explode(" ", $text, 2);
-		$command = strtolower(trim($parts[0], "/"));
-		$argument = $parts[1] ?? null;
-
-		Log::info("Dispatching command", [
-			"chat_id" => $chatId,
-			"command" => $command,
-		]);
-
-		if (!isset($this->handlers[$command])) {
-			return $this->handleUnknownCommand($chatId);
-		}
-
-		$handler = $this->handlers[$command];
-
-		return $this->execute($handler, $chatId, $command, $argument, $username);
-	}
-
-	protected function execute(
-		TelegramCommandInterface $handler,
-		int $chatId,
-		string $command,
-		?string $argument,
-		?string $username
-	): array {
-		if (empty($this->middlewares)) {
-			return $this->executeHandler($handler, $chatId, $argument, $username);
-		}
-
-		// Handler akhir: panggil handler dengan 5 parameter
-		$pipeline = function (
-			$chatId,
-			$command,
-			$argument,
-			$username,
-			$user = null
-		) use ($handler) {
-			return $this->executeHandler(
-				$handler,
-				$chatId,
-				$argument,
-				$username,
-				$user
-			);
-		};
-
-		// Balik urutan middleware (yang pertama didaftar dijalankan pertama)
-		foreach (array_reverse($this->middlewares) as $middleware) {
-			$pipeline = function (
-				$chatId,
-				$command,
-				$argument,
-				$username,
-				$user = null
-			) use ($middleware, $pipeline) {
-				Log::debug("Running middleware.", [
-					"chat_id" => $chatId,
-					"command" => $command,
-				]);
-				return $middleware->handle(
-					$chatId,
-					$command,
-					$argument,
-					$username,
-					// Next callback - PENTING: harus menerima 5 parameter!
-					function (
-						$nextChatId,
-						$nextCommand,
-						$nextArgument,
-						$nextUsername,
-						$nextUser = null
-					) use ($pipeline) {
-						Log::debug("Check user: " . $nextUser ? $nextUser->name : null, [
-							"chat_id" => $nextChatId,
-							"command" => $nextCommand,
-							"username" => $nextUsername,
-							"user" => $nextUser,
-						]);
-						return $pipeline(
-							$nextChatId,
-							$nextCommand,
-							$nextArgument,
-							$nextUsername,
-							$nextUser
-						);
-					}
-				);
-			};
-		}
-
-		return $pipeline($chatId, $command, $argument, $username);
-	}
-
-	protected function executeHandler(
-		TelegramCommandInterface $handler,
-		int $chatId,
-		?string $argument,
-		?string $username,
-		$user = null
-	): array {
-		Log::debug("User is: " . $user);
 		try {
-			return $handler->handle($chatId, $argument, $username, $user);
+			$parsed = $this->parseCommand($text);
+			$commandName = $parsed["command"];
+			$params = $parsed["params"];
+
+			Log::info("Processing command", [
+				"command" => $commandName,
+				"chat_id" => $chatId,
+				"username" => $username,
+			]);
+
+			// Check if command exists
+			if (!isset($this->commands[$commandName])) {
+				return $this->handleUnknownCommand($chatId, $commandName);
+			}
+
+			$command = $this->commands[$commandName];
+
+			// Prepare context
+			$context = [
+				"chat_id" => $chatId,
+				"text" => $text,
+				"username" => $username,
+				"params" => $params,
+				"command" => $commandName,
+				"timestamp" => now(),
+			];
+
+			// Get middleware for this command
+			$middlewareStack = $this->getMiddlewareStack($commandName);
+
+			// Create middleware pipeline
+			$pipeline = $this->createPipeline($middlewareStack, function (
+				$context
+			) use ($command) {
+				return $command->handle(
+					$context["chat_id"],
+					$context["text"],
+					$context["username"],
+					$context["params"]
+				);
+			});
+
+			// Execute pipeline
+			$result = $pipeline($context);
+
+			Log::info("Command executed successfully", [
+				"command" => $commandName,
+				"chat_id" => $chatId,
+			]);
+
+			return $result;
 		} catch (\Exception $e) {
-			return $handler->handle($chatId, $argument, $username);
-		}
-	}
+			Log::error("Failed to handle command", [
+				"chat_id" => $chatId,
+				"command" => $text,
+				"error" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
+			]);
 
-	private function handleUnknownCommand(int $chatId): array
-	{
-		$message =
-			"❌ Command tidak dikenali.\n" .
-			"Gunakan /help untuk melihat daftar command yang tersedia.";
-		$this->telegramApi->sendMessage($chatId, $message);
-
-		return ["status" => "unknown_command"];
-	}
-
-	// Method untuk mendapatkan daftar command (untuk /help)
-	public function getAvailableCommands(): array
-	{
-		$commands = [];
-
-		foreach ($this->handlers as $command => $handler) {
-			$commands[$command] = [
-				"description" => $handler->getDescription(),
-				"requires_linked" => $handler->requiresLinkedUser(),
+			return [
+				"status" => "error",
+				"message" => "Terjadi kesalahan saat memproses perintah.",
+				"chat_id" => $chatId,
 			];
 		}
+	}
 
-		return $commands;
+	/**
+	 * Create middleware pipeline
+	 */
+	private function createPipeline(
+		array $middleware,
+		callable $handler
+	): callable {
+		$pipeline = array_reduce(
+			array_reverse($middleware),
+			function ($next, $middlewareName) {
+				return function ($context) use ($middlewareName, $next) {
+					if (!isset($this->middleware[$middlewareName])) {
+						Log::warning("Middleware not found", ["name" => $middlewareName]);
+						return $next($context);
+					}
+
+					$middleware = $this->middleware[$middlewareName];
+					return $middleware->handle($context, $next);
+				};
+			},
+			$handler
+		);
+
+		return $pipeline;
+	}
+
+	/**
+	 * Get middleware stack for command
+	 */
+	private function getMiddlewareStack(string $commandName): array
+	{
+		$stack = [];
+
+		// Add global middleware (optional, if you want to add later)
+		// $stack = array_merge($stack, $this->globalMiddleware);
+
+		// Add command-specific middleware
+		if (isset($this->commandMiddleware[$commandName])) {
+			$stack = array_merge($stack, $this->commandMiddleware[$commandName]);
+		}
+
+		return $stack;
+	}
+
+	/**
+	 * Parse command and parameters
+	 */
+	private function parseCommand(string $text): array
+	{
+		$parts = explode(" ", $text, 2);
+		$command = strtolower(trim($parts[0], "/"));
+		$params = [];
+
+		if (isset($parts[1])) {
+			// Parse parameters
+			$paramString = trim($parts[1]);
+			if (!empty($paramString)) {
+				// Simple parsing - can be extended as needed
+				$params = explode(" ", $paramString);
+			}
+		}
+
+		return [
+			"command" => $command,
+			"params" => $params,
+			"raw" => $text,
+		];
+	}
+
+	/**
+	 * Handle unknown command
+	 */
+	private function handleUnknownCommand(int $chatId, string $commandName): array
+	{
+		Log::warning("Unknown command received", [
+			"chat_id" => $chatId,
+			"command" => $commandName,
+		]);
+
+		$availableCommands = array_keys($this->commands);
+		$response = "Perintah `{$commandName}` tidak dikenali.\n\n";
+		$response .= "Perintah yang tersedia:\n";
+
+		foreach ($availableCommands as $cmd) {
+			$command = $this->commands[$cmd];
+			$response .= "/{$cmd} - {$command->getDescription()}\n";
+		}
+
+		$telegramApi = app(TelegramApi::class);
+		$telegramApi->sendMessagesendMessage($chatId, $response);
+
+		return [
+			"status" => "unknown_command",
+			"chat_id" => $chatId,
+			"response" => $response,
+			"available_commands" => $availableCommands,
+		];
+	}
+
+	/**
+	 * Get all registered commands for help
+	 */
+	public function getCommands(): array
+	{
+		return $this->commands;
+	}
+
+	/**
+	 * Get middleware for a specific command
+	 */
+	public function getCommandMiddleware(string $commandName): array
+	{
+		return $this->commandMiddleware[$commandName] ?? [];
 	}
 }

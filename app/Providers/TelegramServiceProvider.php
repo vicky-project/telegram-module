@@ -14,10 +14,9 @@ use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
 use Modules\Telegram\Services\Handlers\MessageHandler;
 use Modules\Telegram\Services\Handlers\Commands\HelpCommand;
-use Modules\Telegram\Services\Handlers\Commands\ListCommandsCommand;
 use Modules\Telegram\Services\Handlers\Commands\StartCommand;
 use Modules\Telegram\Services\Handlers\Commands\UnlinkCommand;
-use Modules\Telegram\Services\Middlewares\EnsureUserLinkedMiddleware;
+use Modules\Telegram\Services\Middlewares\AuthMiddleware;
 use Modules\Telegram\Services\Support\TelegramApi;
 
 class TelegramServiceProvider extends ServiceProvider
@@ -40,14 +39,6 @@ class TelegramServiceProvider extends ServiceProvider
 		$this->registerViews();
 		$this->loadMigrationsFrom(module_path($this->name, "database/migrations"));
 
-		$this->app->booted(function () {
-			$dispatcher = $this->app->make(CommandDispatcher::class);
-
-			$this->registerMiddlewares($dispatcher);
-
-			$this->registerCommandHandlers($dispatcher);
-		});
-
 		if (
 			config($this->nameLower . ".hooks.enabled", false) &&
 			class_exists($class = config($this->nameLower . ".hooks.class"))
@@ -60,7 +51,11 @@ class TelegramServiceProvider extends ServiceProvider
 	protected function registerMiddlewares(CommandDispatcher $dispatcher): void
 	{
 		$dispatcher->registerMiddleware(
-			$this->app->make(EnsureUserLinkedMiddleware::class)
+			"auth",
+			new AuthMiddleware(
+				$this->app->make(TelegramService::class),
+				$this->app->make(TelegramApi::class)
+			)
 		);
 	}
 
@@ -68,10 +63,9 @@ class TelegramServiceProvider extends ServiceProvider
 	protected function registerCommandHandlers(
 		CommandDispatcher $dispatcher
 	): void {
-		$dispatcher->registerHandler($this->app->make(StartCommand::class));
-		$dispatcher->registerHandler($this->app->make(HelpCommand::class));
-		$dispatcher->registerHandler($this->app->make(UnlinkCommand::class));
-		$dispatcher->registerHandler($this->app->make(ListCommandsCommand::class));
+		$dispatcher->registerCommand(new StartCommand());
+		$dispatcher->registerCommand(new HelpCommand());
+		$dispatcher->registerCommand(new UnlinkCommand(), ["auth"]);
 	}
 
 	/**
@@ -83,7 +77,10 @@ class TelegramServiceProvider extends ServiceProvider
 		$this->app->register(RouteServiceProvider::class);
 
 		$this->app->singleton(CommandDispatcher::class, function ($app) {
-			return new CommandDispatcher($app->make(TelegramApi::class));
+			$dispatcher = new CommandDispatcher();
+			$this->registerCommandHandlers($dispatcher);
+			$this->registerMiddlewares($dispatcher);
+			return $dispatcher;
 		});
 
 		$this->app->bind(MessageHandler::class, function ($app) {

@@ -2,26 +2,25 @@
 namespace Modules\Telegram\Services\Handlers\Commands;
 
 use Modules\Telegram\Interfaces\TelegramCommandInterface;
-use Modules\Telegram\Services\LinkService;
+use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Support\TelegramApi;
 
 class UnlinkCommand implements TelegramCommandInterface
 {
 	protected TelegramApi $telegramApi;
-	protected LinkService $linkService;
+	protected TelegramService $telegramService;
 	protected string $appName;
-	protected $user;
 
 	public function __construct(
 		TelegramApi $telegramApi,
-		LinkService $linkService
+		TelegramService $telegramService
 	) {
 		$this->telegramApi = $telegramApi;
-		$this->linkService = $linkService;
+		$this->telegramService = $telegramService;
 		$this->appName = config("app.name", "Financial");
 	}
 
-	public function getCommandName(): string
+	public function getName(): string
 	{
 		return "unlink";
 	}
@@ -31,44 +30,51 @@ class UnlinkCommand implements TelegramCommandInterface
 		return "Memutuskan dari telegram.";
 	}
 
-	public function requiresLinkedUser(): bool
-	{
-		return true; // Tidak perlu user terhubung
-	}
-
-	public function setUser()
-	{
-	}
-
 	public function handle(
 		int $chatId,
-		?string $argument,
-		?string $username,
-		$user = null
+		string $text,
+		?string $username = null,
+		array $params = []
 	): array {
-		\Log::debug("Using user: " . $user->name);
+		try {
+			$user = $params["user"] ?? null;
 
-		if (!$user) {
-			$this->telegramApi->sendMessage($chatId, "❌ Akun tidak terhubung.");
+			if (!$user) {
+				$user = $this->telegramService->getUserByChatId($chatId);
+			}
+
+			\Log::debug("Using user: " . $user->name);
+			$this->telegramService->unlink($user, $chatId);
+
+			$message =
+				"✅ *Akun berhasil diputuskan.* {$this->appName}\n\n" .
+				"Anda bisa menghubungkan kembali melalui web app.\n" .
+				"Terima kasih telah menggunakan bot kami! 👋";
+
+			$this->telegramApi->sendMessage($chatId, $message, "Markdown");
+
+			return [
+				"status" => "unlink_success",
+				"user_id" => $user->id,
+			];
+		} catch (\RuntimeException $e) {
+			\Log::error("Failed to disconnecting to telegram.", [
+				"chat_id" => $chatId,
+				"message" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
+			]);
+
+			$message =
+				"*Error* {$this->appName}" .
+				"Terjadi kesalahan saat memutuskan koneksi ke bot telegram.\nSilakan coba lagi atau hubungi administrator.";
+
+			$this->telegramApi->sendMessage($chatId, $message, "Markdown");
 
 			return [
 				"status" => "unlink_failed",
-				"reason" => "not_linked",
+				"chat_id" => $chatId,
+				"message" => $e->getMessage(),
 			];
 		}
-
-		$user->unlinkTelegramAccount();
-
-		$message =
-			"✅ *Akun berhasil diputuskan.*\n\n" .
-			"Anda bisa menghubungkan kembali melalui web app.\n" .
-			"Terima kasih telah menggunakan bot kami! 👋";
-
-		$this->telegramApi->sendMessage($chatId, $message, "Markdown");
-
-		return [
-			"status" => "unlink_success",
-			"user_id" => $user->id,
-		];
 	}
 }

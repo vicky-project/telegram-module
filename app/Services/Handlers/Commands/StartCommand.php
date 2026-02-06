@@ -2,25 +2,20 @@
 namespace Modules\Telegram\Services\Handlers\Commands;
 
 use Modules\Telegram\Interfaces\TelegramCommandInterface;
-use Modules\Telegram\Services\LinkService;
 use Modules\Telegram\Services\Support\TelegramApi;
 
 class StartCommand implements TelegramCommandInterface
 {
 	protected TelegramApi $telegramApi;
-	protected LinkService $linkService;
 	protected string $appName;
 
-	public function __construct(
-		TelegramApi $telegramApi,
-		LinkService $linkService
-	) {
+	public function __construct(TelegramApi $telegramApi)
+	{
 		$this->telegramApi = $telegramApi;
-		$this->linkService = $linkService;
 		$this->appName = config("app.name", "Financial");
 	}
 
-	public function getCommandName(): string
+	public function getName(): string
 	{
 		return "start";
 	}
@@ -30,18 +25,14 @@ class StartCommand implements TelegramCommandInterface
 		return "Memulai bot dan melihat instruksi linking";
 	}
 
-	public function requiresLinkedUser(): bool
-	{
-		return false; // Tidak perlu user terhubung
-	}
-
 	public function handle(
 		int $chatId,
-		?string $argument,
-		?string $username,
-		$user = null
+		string $text,
+		?string $username = null,
+		array $params = []
 	): array {
-		// Logika handleStart seperti sebelumnya
+		$user = $params["user"] ?? null;
+
 		$message = $user
 			? $this->getWelcomeMessageForLinkedUser($user)
 			: $this->getWelcomeMessageForNewUser();

@@ -3,12 +3,23 @@ namespace Modules\Telegram\Interfaces;
 
 interface TelegramCommandInterface
 {
-	public function getCommandName(): string;
-	public function getDescription(): string; // Untuk /help
-	public function requiresLinkedUser(): bool; // Tentukan apakah perlu user terhubung
+	/**
+	 * Handle the command
+	 */
 	public function handle(
 		int $chatId,
-		?string $argument,
-		?string $username
+		string $text,
+		?string $username = null,
+		array $params = []
 	): array;
+
+	/**
+	 * Get command name
+	 */
+	public function getName(): string;
+
+	/**
+	 * Get command description for help
+	 */
+	public function getDescription(): string;
 }

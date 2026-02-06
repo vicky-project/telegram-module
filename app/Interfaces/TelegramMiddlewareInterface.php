@@ -3,11 +3,12 @@ namespace Modules\Telegram\Interfaces;
 
 interface TelegramMiddlewareInterface
 {
-	public function handle(
-		int $chatId,
-		string $command,
-		?string $argument,
-		?string $username,
-		callable $next
-	): array;
+	/**
+	 * Handle the middleware
+	 *
+	 * @param array $context Command context
+	 * @param callable $next Next middleware or command handler
+	 * @return mixed
+	 */
+	public function handle(array $context, callable $next);
 }
