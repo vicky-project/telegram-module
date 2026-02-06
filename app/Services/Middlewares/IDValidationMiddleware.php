@@ -28,15 +28,28 @@ class IDValidationMiddleware implements TelegramMiddlewareInterface
 			"chat_id" => $chatId,
 		]);
 
-		if (!$userId || !$chatId) {
-			return [
-				"status" => "error",
-				"message" => "Missing Telegram identifiers",
-				"block_handler" => true,
-			];
+		if (!$userId) {
+			if (!$chatId) {
+				\Log::error("Missing Telegram identifiers", [
+					"user_id" => $userId,
+					"chat_id" => $chatId,
+				]);
+
+				return [
+					"status" => "error",
+					"message" => "Missing Telegram identifiers",
+					"block_handler" => true,
+				];
+			}
+			$userId = $chatId;
 		}
 
 		if (!$this->identifier->validateIds($userId, $chatId)) {
+			\Log::error("Invalid Telegram identifiers", [
+				"user_id" => $userId,
+				"chat_id" => $chatId,
+			]);
+
 			return [
 				"status" => "error",
 				"message" => "Invalid Telegram identifiers",
@@ -49,6 +62,8 @@ class IDValidationMiddleware implements TelegramMiddlewareInterface
 			if (!isset($context["callback_id"])) {
 				$this->telegram->sendMessage($chatId, "Only support for private chat");
 			}
+			
+			\Log::error('Only support for private chat only',['chat_id'=>$chatId]);
 
 			return [
 				"status" => "error",
