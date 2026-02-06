@@ -77,8 +77,21 @@ class TelegramService
 			return false;
 		}
 
-		$socialAccount = $this->service->getByAutlogId($authFound->id);
-		dd($socialAccount);
+		$socialAccount = $this->service->getByAuthlogId($authFound->id);
+
+		// Social Account not exists
+		if (!$socialAccount || $socialAccount->isEmpty()) {
+			return false;
+		}
+
+		// Social Account not have provider
+		if (
+			!$socialAccount->filter(fn($account) => $account->provider === "telegram")
+				->providerable
+		) {
+			return false;
+		}
+
 		return true;
 	}
 
