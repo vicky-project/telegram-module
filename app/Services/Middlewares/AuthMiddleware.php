@@ -36,13 +36,16 @@ class AuthMiddleware implements TelegramMiddlewareInterface
 				"username" => $username,
 			]);
 
-			$message =
-				"❌ Anda belum terhubung.\n" .
-				"Gunakan /start untuk instruksi linking.";
+			if (!isset($context["callback_id"])) {
+				$message =
+					"❌ Anda belum terhubung.\n" .
+					"Gunakan /start untuk instruksi linking.";
 
-			$this->telegram->sendMessage($chatId, $message);
+				$this->telegram->sendMessage($chatId, $message);
+			}
 
 			return [
+				"answer" => isset($context["callback_id"]) ? "UnAuthorized user" : null,
 				"status" => "unauthorized",
 				"message" =>
 					"Anda perlu mendaftar terlebih dahulu. Gunakan /register untuk mendaftar.",

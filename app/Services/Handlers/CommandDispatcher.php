@@ -22,6 +22,9 @@ class CommandDispatcher
 	 */
 	private array $middleware = [];
 
+	// Global middleware
+	private array $globalMiddlewares = ["ids"];
+
 	/**
 	 * Middleware stack for each command
 	 *
@@ -170,7 +173,7 @@ class CommandDispatcher
 		$stack = [];
 
 		// Add global middleware (optional, if you want to add later)
-		// $stack = array_merge($stack, $this->globalMiddleware);
+		$stack = array_merge($stack, $this->globalMiddlewares);
 
 		// Add command-specific middleware
 		if (isset($this->commandMiddleware[$commandName])) {
