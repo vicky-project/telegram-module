@@ -225,7 +225,7 @@ class CommandDispatcher
 		}
 
 		$telegramApi = app(TelegramApi::class);
-		$telegramApi->sendMessagesendMessage($chatId, $response);
+		$telegramApi->Message($chatId, $response);
 
 		return [
 			"status" => "unknown_command",
