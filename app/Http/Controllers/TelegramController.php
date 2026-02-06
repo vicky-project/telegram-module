@@ -25,7 +25,10 @@ class TelegramController extends Controller
 				"telegram_id" => "required|exists:telegram,telegram_id",
 			]);
 
-			$success = $this->service->unlink($request->user, $request->telegram_id);
+			$success = $this->service->unlink(
+				$request->user(),
+				$request->telegram_id
+			);
 
 			if ($success) {
 				return response()->json([
