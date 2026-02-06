@@ -1,5 +1,5 @@
 <?php
-namespace Modules\Telegram\Middleware;
+namespace Modules\Telegram\Services\Middleware;
 
 use Modules\Telegram\Interfaces\TelegramMiddlewareInterface;
 use Illuminate\Support\Facades\Log;
