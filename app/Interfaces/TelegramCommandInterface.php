@@ -9,7 +9,6 @@ interface TelegramCommandInterface
 	public function handle(
 		int $chatId,
 		?string $argument,
-		?string $username,
-		$user = null
+		?string $username
 	): array;
 }

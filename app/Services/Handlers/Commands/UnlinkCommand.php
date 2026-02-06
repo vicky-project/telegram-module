@@ -10,6 +10,7 @@ class UnlinkCommand implements TelegramCommandInterface
 	protected TelegramApi $telegramApi;
 	protected LinkService $linkService;
 	protected string $appName;
+	protected $user;
 
 	public function __construct(
 		TelegramApi $telegramApi,
@@ -33,6 +34,10 @@ class UnlinkCommand implements TelegramCommandInterface
 	public function requiresLinkedUser(): bool
 	{
 		return true; // Tidak perlu user terhubung
+	}
+
+	public function setUser()
+	{
 	}
 
 	public function handle(

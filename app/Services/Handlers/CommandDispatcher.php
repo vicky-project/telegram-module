@@ -58,10 +58,25 @@ class CommandDispatcher
 
 		$handler = $this->handlers[$command];
 
-		// Buat pipeline dengan middleware
-		$pipeline = $this->createPipeline($handler);
+		foreach (array_reverse($this->middlewares) as $middleware) {
+			return $middleware->handle(
+				$chatId,
+				$command,
+				$argument,
+				$username,
+				function ($chatId, $command, $argument, $username, $user) use (
+					$handler
+				) {
+					\Log::debug("User found: " . $user->name, [
+						"user" => $user,
+						"chat_id" => $chatId,
+						"command" => $command,
+					]);
 
-		return $pipeline($chatId, $command, $argument, $username);
+					return $handler->handle($chatId, $argument, $username, $user);
+				}
+			);
+		}
 	}
 
 	protected function createPipeline(TelegramCommandInterface $handler): callable
