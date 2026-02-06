@@ -63,9 +63,22 @@ class TelegramServiceProvider extends ServiceProvider
 	protected function registerCommandHandlers(
 		CommandDispatcher $dispatcher
 	): void {
-		$dispatcher->registerCommand(new StartCommand());
-		$dispatcher->registerCommand(new HelpCommand());
-		$dispatcher->registerCommand(new UnlinkCommand(), ["auth"]);
+		$dispatcher->registerCommand(
+			new StartCommand($this->app->make(TelegramApi::class))
+		);
+		$dispatcher->registerCommand(
+			new HelpCommand(
+				$this->app->make(TelegramApi::class),
+				$this->app->make(CommandDispatcher::class)
+			)
+		);
+		$dispatcher->registerCommand(
+			new UnlinkCommand(
+				$this->app->make(TelegramApi::class),
+				$this->app->make(TelegramService::class)
+			),
+			["auth"]
+		);
 	}
 
 	/**
