@@ -2,55 +2,159 @@
 
 namespace Modules\Telegram\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Modules\Telegram\Models\Telegram;
+use Modules\Telegram\Services\TelegramService;
 
 class TelegramController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        return view('telegram::index');
-    }
+	protected $service;
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('telegram::create');
-    }
+	public function __construct(TelegramService $service)
+	{
+		$this->service = $service;
+	}
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
+	public function unlink(Request $request)
+	{
+		try {
+			$request->validate([
+				"telegram_id" => "required|exists:telegram,telegram_id",
+			]);
 
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
-    {
-        return view('telegram::show');
-    }
+			$success = $this->service->unlink(
+				$request->user(),
+				$request->telegram_id
+			);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
-    {
-        return view('telegram::edit');
-    }
+			if ($success) {
+				return response()->json([
+					"success" => true,
+					"message" => "Succes diconnecting from telegram",
+				]);
+			}
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
+			return response()->json(
+				[
+					"success" => false,
+					"message" => "Failed to disconnecting from telegram",
+				],
+				400
+			);
+		} catch (\Exception $e) {
+			\Log::error("Failed to unlink telegram", [
+				"message" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
+			]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+			return response()->json(
+				["success" => false, "message" => $e->getMessage()],
+				500
+			);
+		}
+	}
+
+	/**
+	 * Display a listing of the resource.
+	 */
+	public function redirectAuth(Request $request)
+	{
+		try {
+			$auth_data = $this->checkTelegramAuthorization(
+				$request->only([
+					"id",
+					"first_name",
+					"last_name",
+					"username",
+					"auth_date",
+					"hash",
+				])
+			);
+
+			$user = $request->user();
+
+			$telegram = $this->service->processTelegram($auth_data, $user);
+
+			if ($telegram) {
+				return response()->json([
+					"success" => true,
+					"message" => "Telegram connected",
+					"data" => $telegram,
+				]);
+			} else {
+				return response()->json([
+					"success" => false,
+					"message" => "Failed connecting application to telegram",
+				]);
+			}
+		} catch (\Exception $e) {
+			\Log::error("Failed to login using telegram", [
+				"message" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
+			]);
+
+			return response()->json([
+				"success" => false,
+				"message" => $e->getMessage(),
+			]);
+		}
+	}
+
+	public function redirectLogin(Request $request)
+	{
+		try {
+			$auth_data = $this->checkTelegramAuthorization(
+				$request->only([
+					"id",
+					"first_name",
+					"last_name",
+					"username",
+					"auth_date",
+					"hash",
+				])
+			);
+
+			$user = $this->service->processTelegram($auth_data);
+
+			if (!$user) {
+				return back()->withErrors(
+					"User not found or telegram account not connect to user"
+				);
+			}
+
+			return redirect()
+				->route(config("telegram.widgets.route_after_auth", "home"))
+				->with("success", "Welcome Back: " . $user->name);
+		} catch (\Exception $e) {
+			return back()->withErrors($e->getMessage());
+		}
+	}
+
+	private function checkTelegramAuthorization($auth_data)
+	{
+		\Log::info("Get data from telegram.", ["data" => $auth_data]);
+
+		$bot_token = config("telegram.bot.token");
+		$check_hash = $auth_data["hash"];
+		unset($auth_data["hash"]);
+		$data_check_arr = [];
+		foreach ($auth_data as $key => $value) {
+			$data_check_arr[] = $key . "=" . $value;
+		}
+		sort($data_check_arr);
+		$data_check_string = implode("\n", $data_check_arr);
+		$secret_key = hash("sha256", $bot_token, true);
+		$hash = hash_hmac("sha256", $data_check_string, $secret_key);
+
+		if (strcmp($hash, $check_hash) !== 0) {
+			throw new \Exception("Data is NOT from Telegram");
+		}
+		if (time() - $auth_data["auth_date"] > 86400) {
+			throw new \Exception("Data is outdated");
+		}
+		return $auth_data;
+	}
 }

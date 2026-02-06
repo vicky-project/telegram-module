@@ -3,6 +3,21 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Telegram\Http\Controllers\TelegramController;
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('telegrams', TelegramController::class)->names('telegram');
-});
+Route::prefix("telegram")
+	->name("telegram.")
+	->group(function () {
+		Route::middleware(["auth"])->group(function () {
+			Route::get("redirect-auth", [
+				TelegramController::class,
+				"redirectAuth",
+			])->name("redirect-auth");
+		});
+		Route::post("unlink", [TelegramController::class, "unlink"])->name(
+			"unlink"
+		);
+
+		Route::get("redirect-login", [
+			TelegramController::class,
+			"redirectLogin",
+		])->name("redirect-login");
+	});

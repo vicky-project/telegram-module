@@ -2,7 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Telegram\Http\Controllers\TelegramController;
+use Modules\Telegram\Http\Controllers\TelegramWebhookController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('telegrams', TelegramController::class)->names('telegram');
+Route::prefix("telegram")->group(function () {
+	Route::middleware(["auth:web"])
+		->withoutMiddleware(["auth:sanctum"])
+		->group(function () {});
+
+	Route::post("webhook", [TelegramWebhookController::class, "handleWebhook"])
+		->withoutMiddleware(["auth:sanctum", "auth"])
+		->name("telegram.webhook");
 });
