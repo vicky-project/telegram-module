@@ -105,9 +105,18 @@ class TelegramServiceProvider extends ServiceProvider
 				if (Auth::check()) {
 					$user = Auth::user();
 					$hasSocialAccount = $user->socialAccounts->isNotEmpty();
+					dd(
+						$user
+							->socialAccounts()
+							->byProvider("telegram")
+							->first()
+					);
 					return view("telegram::partials.telegram_info", [
 						"telegram" => $hasSocialAccount
-							? $user->socialAccounts()->byProvider("telegram")
+							? $user
+								->socialAccounts()
+								->byProvider("telegram")
+								->first()
 							: [],
 					])->render();
 				}
