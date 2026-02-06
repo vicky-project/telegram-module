@@ -66,22 +66,37 @@ class CommandDispatcher
 
 	protected function createPipeline(TelegramCommandInterface $handler): callable
 	{
-		// Tambahkan handler sebagai akhir pipeline
-		$handleCallable = function (
+		Log::debug("Creating pipeline for handler", [
+			"handler" => get_class($handler),
+			"middleware_count" => count($this->middlewares),
+		]);
+
+		// Handler akhir: panggil handler dengan 5 parameter
+		$handlerCallable = function (
 			$chatId,
 			$command,
 			$argument,
 			$username,
 			$user = null
 		) use ($handler) {
+			Log::debug("🎯 FINAL HANDLER CALLABLE INVOKED", [
+				"chat_id" => $chatId,
+				"command" => $command,
+				"user_provided" => !is_null($user),
+				"user_id" => $user ? $user->id : null,
+				"handler_class" => get_class($handler),
+			]);
+
 			return $handler->handle($chatId, $argument, $username, $user);
 		};
 
-		$pipeline = $handleCallable;
+		// Bangun pipeline dari dalam ke luar
+		$pipeline = $handlerCallable;
 
-		// Balik urutan middleware agar yang pertama didaftar dijalankan pertama
-		foreach (array_reverse($this->middlewares) as $middleware) {
+		// Balik urutan middleware (yang pertama didaftar dijalankan pertama)
+		foreach (array_reverse($this->middlewares) as $index => $middleware) {
 			$currentPipeline = $pipeline;
+			$middlewareClass = get_class($middleware);
 
 			$pipeline = function (
 				$chatId,
@@ -89,29 +104,40 @@ class CommandDispatcher
 				$argument,
 				$username,
 				$user = null
-			) use ($middleware, $currentPipeline) {
-				Log::debug("Middleware layer invoked.", [
+			) use ($middleware, $currentPipeline, $middlewareClass, $index) {
+				Log::debug("🔄 MIDDLEWARE #{$index} INVOKED: {$middlewareClass}", [
 					"chat_id" => $chatId,
 					"command" => $command,
 					"user_incoming" => !is_null($user),
+					"user_id" => $user ? $user->id : null,
 				]);
+
 				return $middleware->handle(
 					$chatId,
 					$command,
 					$argument,
 					$username,
+					// Next callback - PENTING: harus menerima 5 parameter!
 					function (
 						$nextChatId,
 						$nextCommand,
 						$nextArgument,
 						$nextUsername,
 						$nextUser = null
-					) use ($currentPipeline) {
-						Log::debug("Middleware calling next in pipeline", [
+					) use ($currentPipeline, $middlewareClass) {
+						Log::debug("➡️  MIDDLEWARE {$middlewareClass} CALLING NEXT", [
 							"user_passed" => !is_null($nextUser),
 							"user_id" => $nextUser ? $nextUser->id : null,
+							"next_params" => [
+								"chatId",
+								"command",
+								"argument",
+								"username",
+								"user",
+							],
 						]);
 
+						// Panggil pipeline berikutnya dengan 5 parameter
 						return $currentPipeline(
 							$nextChatId,
 							$nextCommand,
@@ -123,6 +149,14 @@ class CommandDispatcher
 				);
 			};
 		}
+
+		Log::debug("Pipeline created successfully", [
+			"handler" => get_class($handler),
+			"middleware_stack" => array_map(
+				fn($mw) => get_class($mw),
+				$this->middlewares
+			),
+		]);
 
 		return $pipeline;
 	}
