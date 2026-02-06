@@ -69,8 +69,10 @@ class MessageHandler
 	 */
 	private function handleTextMessage(int $chatId, string $text): array
 	{
+		$appName = config("app.name");
+
 		$response =
-			"Halo! Saya adalah bot untuk manajemen keuangan.\n" .
+			"Halo! Saya adalah bot untuk aplikasi {$appName}.\n\n" .
 			"Gunakan /help untuk melihat command yang tersedia.";
 
 		$this->telegramApi->sendMessage($chatId, $response);
