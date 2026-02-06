@@ -70,9 +70,9 @@ class HelpCommand implements TelegramCommandInterface
 			$message .= "\n🔗 *Linking Account:*\n";
 			$message .= "1. Login ke aplikasi web\n";
 			$message .= "2. Buka Settings → Telegram Integration\n";
-			$message .= "3. Generate kode verifikasi\n";
-			$message .= "4. Kirim: /link <kode>\n\n";
-			$message .= "Setelah terhubung, lebih banyak command akan tersedia.";
+			$message .= "3. Klik hubungkan Telegram\n";
+			$message .=
+				"Setelah terhubung, anda bisa menggunakan fitur dari bot ini.";
 		}
 
 		$this->telegramApi->sendMessage($chatId, $message, "Markdown");

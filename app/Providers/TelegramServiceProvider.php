@@ -14,7 +14,6 @@ use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
 use Modules\Telegram\Services\Handlers\MessageHandler;
 use Modules\Telegram\Services\Handlers\Commands\HelpCommand;
-use Modules\Telegram\Services\Handlers\Commands\LinkCommand;
 use Modules\Telegram\Services\Handlers\Commands\ListCommandsCommand;
 use Modules\Telegram\Services\Handlers\Commands\StartCommand;
 use Modules\Telegram\Services\Handlers\Commands\UnlinkCommand;
@@ -71,7 +70,6 @@ class TelegramServiceProvider extends ServiceProvider
 	): void {
 		$dispatcher->registerHandler($this->app->make(StartCommand::class));
 		$dispatcher->registerHandler($this->app->make(HelpCommand::class));
-		$dispatcher->registerHandler($this->app->make(LinkCommand::class));
 		$dispatcher->registerHandler($this->app->make(UnlinkCommand::class));
 		$dispatcher->registerHandler($this->app->make(ListCommandsCommand::class));
 	}
