@@ -89,16 +89,6 @@ class CommandDispatcher
 
 			$command = $this->commands[$commandName];
 
-			// Prepare context
-			$context = [
-				"chat_id" => $chatId,
-				"text" => $text,
-				"username" => $username,
-				"params" => $params,
-				"command" => $commandName,
-				"timestamp" => now(),
-			];
-
 			// Get middleware for this command
 			$middlewareStack = $this->getMiddlewareStack($commandName);
 
@@ -113,6 +103,16 @@ class CommandDispatcher
 					$context["params"]
 				);
 			});
+
+			// Prepare context
+			$context = [
+				"chat_id" => $chatId,
+				"text" => $text,
+				"username" => $username,
+				"params" => $params,
+				"command" => $commandName,
+				"timestamp" => now(),
+			];
 
 			// Execute pipeline
 			$result = $pipeline($context);

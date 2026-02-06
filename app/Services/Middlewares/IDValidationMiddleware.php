@@ -23,6 +23,8 @@ class IDValidationMiddleware implements TelegramMiddlewareInterface
 		$userId = $context["user_id"] ?? null;
 		$chatId = $context["chat_id"] ?? null;
 
+		\Log::debug("Using identifier", ["user_id" => $userId, "chat_id" => $cba]);
+
 		if (!$userId || !$chatId) {
 			return [
 				"status" => "error",
