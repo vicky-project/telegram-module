@@ -115,7 +115,7 @@ class CommandDispatcher
 						$nextUsername,
 						$nextUser = null
 					) use ($pipeline) {
-						Log::debug("Check user: ", [
+						Log::debug("Check user: " . $nextUser ? $nextUser->name : null, [
 							"chat_id" => $nextChatId,
 							"command" => $nextCommand,
 							"username" => $nextUsername,
