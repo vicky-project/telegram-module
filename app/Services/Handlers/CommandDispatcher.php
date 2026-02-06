@@ -81,19 +81,34 @@ class CommandDispatcher
 
 		// Balik urutan middleware agar yang pertama didaftar dijalankan pertama
 		foreach (array_reverse($this->middlewares) as $middleware) {
-			$pipeline = function ($chatId, $command, $argument, $username) use (
-				$middleware,
-				$pipeline
-			) {
+			$currentPipeline = $pipeline;
+
+			$pipeline = function (
+				$chatId,
+				$command,
+				$argument,
+				$username,
+				$user = null
+			) use ($middleware, $currentPipeline) {
 				return $middleware->handle(
 					$chatId,
 					$command,
 					$argument,
 					$username,
-					function ($chatId, $command, $argument, $username, $user = null) use (
-						$pipeline
-					) {
-						return $pipeline($chatId, $command, $argument, $username, $user);
+					function (
+						$nextChatId,
+						$nextCommand,
+						$nextArgument,
+						$nextUsername,
+						$nextUser = null
+					) use ($currentPipeline) {
+						return $currentPipeline(
+							$nextChatId,
+							$nextCommand,
+							$nextArgument,
+							$nextUsername,
+							$nextUser
+						);
 					}
 				);
 			};
