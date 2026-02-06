@@ -70,7 +70,8 @@ class TelegramService
 			->fromDevice($deviceId)
 			->successful()
 			->recent()
-			->latest("login_at");
+			->latest("login_at")
+			->get();
 		dd($authFound);
 
 		// Not found historical device login
