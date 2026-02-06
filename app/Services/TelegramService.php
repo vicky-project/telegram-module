@@ -72,11 +72,12 @@ class TelegramService
 			->recent()
 			->first();
 
+		// Not found historical device login
 		if (!$authFound) {
 			return false;
 		}
 
-		$telegramConnect = Telegram::where("authlog_id", $authFound->id);
+		$telegramConnect = Telegram::where("authlog_id", $authFound->id)->first();
 		dd($telegramConnect);
 		return true;
 	}
