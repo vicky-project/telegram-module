@@ -22,7 +22,7 @@ class TelegramController extends Controller
 	{
 		try {
 			$request->validate([
-				"telegam_id" => "required|exists:telegram,telegram_id",
+				"telegram_id" => "required|exists:telegram,telegram_id",
 			]);
 
 			$success = $this->service->unlink($request->user, $request->telegram_id);

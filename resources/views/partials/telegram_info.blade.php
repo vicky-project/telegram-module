@@ -1,4 +1,4 @@
-<h1 class="card-title mb-4 pb-2 border-bottom border-success">Telegram</h1>
+<h3 class="card-title mb-4 pb-2 border-bottom border-success">Telegram</h3>
 <div id="telegram-info" class="row align-items-center">
   <div class="col-md-8">
     <div class="d-flex align-items-center mb-2">
