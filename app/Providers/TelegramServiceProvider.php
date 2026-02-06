@@ -19,7 +19,7 @@ use Modules\Telegram\Services\Handlers\Commands\StartCommand;
 use Modules\Telegram\Services\Handlers\Commands\UnlinkCommand;
 use Modules\Telegram\Services\Middlewares\AuthMiddleware;
 use Modules\Telegram\Services\Middlewares\CallbackThrottleMiddleware;
-use Modules\Telegram\Services\Middlewares\IdValidationMiddleware;
+use Modules\Telegram\Services\Middlewares\IDValidationMiddleware;
 use Modules\Telegram\Services\Support\TelegramApi;
 use Modules\Telegram\Services\Support\TelegramIdentifier;
 
@@ -63,7 +63,7 @@ class TelegramServiceProvider extends ServiceProvider
 		);
 		$dispatcher->registerMiddleware(
 			"ids",
-			new IdValidationMiddleware(
+			new IDValidationMiddleware(
 				$this->app->make(TelegramIdentifier::class),
 				$this->app->make(TelegramApi::class)
 			)
@@ -96,7 +96,7 @@ class TelegramServiceProvider extends ServiceProvider
 	): void {
 		$callback->registerMiddleware(
 			"ids",
-			new IdValidationMiddleware(
+			new IDValidationMiddleware(
 				$this->app->make(TelegramIdentifier::class),
 				$this->app->make(TelegramApi::class)
 			)

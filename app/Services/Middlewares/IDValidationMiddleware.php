@@ -5,7 +5,7 @@ use Modules\Telegram\Interfaces\TelegramMiddlewareInterface;
 use Modules\Telegram\Services\Support\TelegramIdentifier;
 use Modules\Telegram\Services\Support\TelegramApi;
 
-class IdValidationMiddleware implements TelegramMiddlewareInterface
+class IDValidationMiddleware implements TelegramMiddlewareInterface
 {
 	protected TelegramIdentifier $identifier;
 	protected TelegramApi $telegram;
