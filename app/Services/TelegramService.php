@@ -97,7 +97,7 @@ class TelegramService
 
 	public function getUserByChatId(int $chatId)
 	{
-		return option($this->telegram->getByChatId($chatId))->provider->user;
+		return optional($this->telegram->getByChatId($chatId))->provider->user;
 	}
 
 	public function unlink(User $user, int $telegramId): bool
