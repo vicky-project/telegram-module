@@ -60,6 +60,12 @@ class EnsureUserLinkedMiddleware implements TelegramMiddlewareInterface
 			];
 		}
 
+		Log::debug("User found: " . $user->name, [
+			"chat_id" => $chatId,
+			"command" => $command,
+			"user" => $user,
+		]);
+
 		// Kirim user object ke handler berikutnya
 		return $next($chatId, $command, $argument, $username, $user);
 	}
