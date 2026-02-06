@@ -83,6 +83,9 @@ class TelegramService
 		if (!$socialAccount || $socialAccount->isEmpty()) {
 			return false;
 		}
+		
+		$telegram = $socialAccount->where('provider', 'telegram');
+		dd($socialAccount);
 
 		// Social Account not have provider
 		if (!$socialAccount->where("provider", "telegram")->first()->providerable) {
