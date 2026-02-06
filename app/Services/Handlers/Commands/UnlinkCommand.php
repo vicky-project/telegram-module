@@ -47,7 +47,6 @@ class UnlinkCommand implements TelegramCommandInterface
 		$user = null
 	): array {
 		\Log::debug("Using user: " . $user->name);
-		$user = $this->linkService->getUserByChatId($chatId);
 
 		if (!$user) {
 			$this->telegramApi->sendMessage($chatId, "❌ Akun tidak terhubung.");
