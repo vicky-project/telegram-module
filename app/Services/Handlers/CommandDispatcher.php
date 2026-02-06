@@ -98,6 +98,10 @@ class CommandDispatcher
 				$username,
 				$user = null
 			) use ($middleware, $pipeline) {
+				Log::debug("Running middleware.", [
+					"chat_id" => $chatId,
+					"command" => $command,
+				]);
 				return $middleware->handle(
 					$chatId,
 					$command,
@@ -111,7 +115,12 @@ class CommandDispatcher
 						$nextUsername,
 						$nextUser = null
 					) use ($pipeline) {
-						// Panggil pipeline berikutnya dengan 5 parameter
+						Log::debug("Check user: ", [
+							"chat_id" => $nextChatId,
+							"command" => $nextCommand,
+							"username" => $nextUsername,
+							"user" => $nextUser,
+						]);
 						return $pipeline(
 							$nextChatId,
 							$nextCommand,
@@ -134,6 +143,7 @@ class CommandDispatcher
 		?string $username,
 		$user = null
 	): array {
+		Log::debug("User is: " . $user);
 		try {
 			return $handler->handle($chatId, $argument, $username, $user);
 		} catch (\Exception $e) {
