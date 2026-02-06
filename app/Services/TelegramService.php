@@ -88,7 +88,7 @@ class TelegramService
 
 			return $user
 				->socialAccounts()
-				->provider()
+				->providerable()
 				->delete($telegram);
 		} catch (\Exception $e) {
 			throw $e;
