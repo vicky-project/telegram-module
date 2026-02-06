@@ -6,7 +6,7 @@ use Modules\Telegram\Interfaces\TelegramMiddlewareInterface;
 use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Support\TelegramApi;
 
-class AuthMiddleware implements MiddlewareInterface
+class AuthMiddleware implements TelegramMiddlewareInterface
 {
 	protected TelegramService $service;
 	protected TelegramApi $telegram;
