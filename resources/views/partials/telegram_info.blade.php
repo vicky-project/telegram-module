@@ -230,7 +230,7 @@
       elems.connectedIcon.className = getIconConnected(true) + ' me-1';
       elems.connectedStatus.textContent = 'Connected';
       elems.btnDisconnectContainer.innerHTML = `
-        <button type="button" id="btn-disconnect" class="btn btn-sm btn-outline-danger" onclick="disconnect(${telegram.telegram_id});">Disconnect</button>
+        <button type="button" id="btn-disconnect" class="btn btn-sm btn-outline-danger" onclick="disconnect('${telegram.telegram_id}');">Disconnect</button>
       `;
     }
   });
