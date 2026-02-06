@@ -202,9 +202,9 @@
   }
   
   document.addEventListener('DOMContentLoaded', function() {
-    const toastExists = typeof window.showToast === 'function';
-    const disableBtnExists = typeof window.disableButton === 'function';
-    const enableBtnExists = typeof window.enableButton === 'function';
+    toastExists = typeof window.showToast === 'function';
+    disableBtnExists = typeof window.disableButton === 'function';
+    enableBtnExists = typeof window.enableButton === 'function';
     
     const elems = {
       container: document.getElementById('telegram-info'),
