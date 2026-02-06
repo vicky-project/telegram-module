@@ -7,14 +7,14 @@ use Modules\Telegram\Services\Support\TelegramApi;
 
 class IDValidationMiddleware implements TelegramMiddlewareInterface
 {
-	protected TelegramIdentifier $identifier;
+	protected TelegramIdentifier $identifiers;
 	protected TelegramApi $telegram;
 
 	public function __construct(
-		TelegramIdentifier $identifier,
+		TelegramIdentifier $identifiers,
 		TelegramApi $telegram
 	) {
-		$this->identifier = $identifier;
+		$this->identifiers = $identifiers;
 		$this->telegram = $telegram;
 	}
 
@@ -44,7 +44,7 @@ class IDValidationMiddleware implements TelegramMiddlewareInterface
 			$userId = $chatId;
 		}
 
-		if (!$this->identifier->validateIds($userId, $chatId)) {
+		if (!$this->identifiers->validateIds($userId, $chatId)) {
 			\Log::error("Invalid Telegram identifiers", [
 				"user_id" => $userId,
 				"chat_id" => $chatId,
@@ -62,8 +62,8 @@ class IDValidationMiddleware implements TelegramMiddlewareInterface
 			if (!isset($context["callback_id"])) {
 				$this->telegram->sendMessage($chatId, "Only support for private chat");
 			}
-			
-			\Log::error('Only support for private chat only',['chat_id'=>$chatId]);
+
+			\Log::error("Only support for private chat only", ["chat_id" => $chatId]);
 
 			return [
 				"status" => "error",
