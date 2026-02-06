@@ -46,7 +46,7 @@ class UnlinkCommand implements TelegramCommandInterface
 		?string $username,
 		$user = null
 	): array {
-		Log::debug("Using user: " . $user->name);
+		\Log::debug("Using user: " . $user->name);
 		$user = $this->linkService->getUserByChatId($chatId);
 
 		if (!$user) {
