@@ -12,6 +12,9 @@ Route::prefix("telegram")
 				"redirectAuth",
 			])->name("redirect-auth");
 		});
+		Route::post("unlink", [TelegramController::class, "unlink"])->name(
+			"unlink"
+		);
 
 		Route::get("redirect-login", [
 			TelegramController::class,

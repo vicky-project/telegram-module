@@ -16,7 +16,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-4 text-md-end mt-3 mt-md-0" id="switch-connect-container">
+  <div class="col-md-4 text-md-end mt-3 mt-md-0" id="btn-disconnect-container">
   </div>
 </div>
 <div class="d-none" id="telegram-btn-connect">
@@ -121,7 +121,7 @@
     }
   }
   
-  async function disconnect() {
+  async function disconnect(id) {
     if (!confirm('Apakah Anda yakin ingin memutuskan koneksi Telegram?')) {
       return;
     }
@@ -146,7 +146,8 @@
           'Content-Type': 'application/json',
           'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
           'Accept': 'application/json'
-        }
+        },
+        body: { telegram_id: id}
       });
       
       const data = await response.json();
@@ -210,7 +211,7 @@
       connectedIcon: document.getElementById('telegram-connected-icon'),
       connectedStatus: document.getElementById('telegram-connected-status'),
       telegramBtnLink: document.getElementById('telegram-btn-connect'),
-      switchConnectContainer: document.getElementById('switch-connect-container'),
+      btnDisconnectContainer: document.getElementById('btn-disconnect-container'),
     };
     
     const telegram = @json($telegram);
@@ -227,8 +228,8 @@
       elems.chatId.textContent = `Chat ID: ${telegram.telegram_id}`;
       elems.connectedIcon.className = getIconConnected(true) + ' me-1';
       elems.connectedStatus.textContent = 'Connected';
-      elems.switchConnectContainer.innerHTML = `
-        <button type="button" id="btn-disconnect" class="btn btn-sm btn-outline-danger" onclick="disconnect();">Disconnect</button>
+      elems.btnDisconnectContainer.innerHTML = `
+        <button type="button" id="btn-disconnect" class="btn btn-sm btn-outline-danger" onclick="disconnect(${telegram.telegram_id});">Disconnect</button>
       `;
     }
   });

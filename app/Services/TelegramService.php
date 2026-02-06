@@ -81,6 +81,20 @@ class TelegramService
 		return false;
 	}
 
+	public function unlink(User $user, int $telegramId): bool
+	{
+		try {
+			$telegram = Telegram::byTelegramId($telegramId)->first();
+
+			return $user
+				->socialAccounts()
+				->provider()
+				->delete($telegram);
+		} catch (\Exception $e) {
+			throw $e;
+		}
+	}
+
 	protected function saveAndConnectToSocialAccount(User $user, array $data)
 	{
 		try {

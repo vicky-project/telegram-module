@@ -18,8 +18,40 @@ class TelegramController extends Controller
 		$this->service = $service;
 	}
 
-	public function index(Request $request)
+	public function unlink(Request $request)
 	{
+		try {
+			$request->validate([
+				"telegam_id" => "required|exists:telegram,telegram_id",
+			]);
+
+			$success = $this->service->unlink($request->user, $request->telegram_id);
+
+			if ($success) {
+				return response()->json([
+					"success" => true,
+					"message" => "Succes diconnecting from telegram",
+				]);
+			}
+
+			return response()->json(
+				[
+					"success" => false,
+					"message" => "Failed to disconnecting from telegram",
+				],
+				400
+			);
+		} catch (\Exception $e) {
+			\Log::error("Failed to unlink telegram", [
+				"message" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
+			]);
+
+			return response()->json(
+				["success" => false, "message" => $e->getMessage()],
+				500
+			);
+		}
 	}
 
 	/**
