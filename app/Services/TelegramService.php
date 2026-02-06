@@ -100,7 +100,7 @@ class TelegramService
 		return optional($this->telegram->getByChatId($chatId), function (
 			Telegram $telegram
 		) {
-			return $telegram->provider->user;
+			return $telegram->provider?->user;
 		});
 	}
 
