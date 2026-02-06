@@ -67,6 +67,7 @@ class TelegramService
 				$exists = \Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog::query()
 					->fromDevice($deviceId)
 					->successful()
+					->recent()
 					->first()
 			) {
 				dd($deviceId, $exists);
