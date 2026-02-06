@@ -55,31 +55,30 @@ class TelegramService
 	{
 		// Need package rappasoft/laravel-authentication-log
 		if (
-			class_exists(
+			!class_exists(
 				\Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint::class
 			)
 		) {
-			$deviceId = \Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint::generate(
-				$this->request
-			);
-
-			if (
-				$exists = \Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog::query()
-					->fromDevice($deviceId)
-					->successful()
-					->recent()
-					->first()
-			) {
-				dd($deviceId, $exists);
-				return true;
-			} else {
-				dd($deviceId, $exists);
-				return false;
-			}
+			return false;
 		}
 
-		// Otherwise we don't know this device
-		return false;
+		$deviceId = \Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint::generate(
+			$this->request
+		);
+
+		$authFound = \Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog::query()
+			->fromDevice($deviceId)
+			->successful()
+			->recent()
+			->first();
+
+		if (!$authFound) {
+			return false;
+		}
+
+		$telegramConnect = Telegram::where("authlog_id", $authFound->id);
+		dd($telegramConnect);
+		return true;
 	}
 
 	public function unlink(User $user, int $telegramId): bool
