@@ -78,7 +78,7 @@ class TelegramService
 		}
 
 		$socialAccount = $this->service->getByAuthlogId($authFound->id);
-		dd($socialAccount);
+		dd($socialAccount, $authFound);
 
 		// Social Account not exists
 		if (!$socialAccount || $socialAccount->isEmpty()) {
