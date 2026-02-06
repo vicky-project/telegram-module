@@ -72,7 +72,6 @@ class TelegramService
 			->recent()
 			->latest("login_at")
 			->first();
-		dd($authFound);
 
 		// Not found historical device login
 		if (!$authFound) {
