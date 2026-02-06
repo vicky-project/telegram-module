@@ -64,15 +64,17 @@ class TelegramService
 			);
 
 			if (
-				\Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog::query()
+				$exists = \Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog::query()
 					->fromDevice($deviceId)
 					->successful()
 					->active()
 					->recent()
 					->first()
 			) {
+				dd($exists);
 				return true;
 			} else {
+				dd($exists);
 				return false;
 			}
 		}
