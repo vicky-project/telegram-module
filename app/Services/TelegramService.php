@@ -71,10 +71,10 @@ class TelegramService
 					->recent()
 					->first()
 			) {
-				dd($exists);
+				dd($deviceId,$exists);
 				return true;
 			} else {
-				dd($exists);
+				dd($deviceId,$exists);
 				return false;
 			}
 		}
