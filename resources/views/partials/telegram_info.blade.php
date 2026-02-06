@@ -147,7 +147,7 @@
           'X-CSRF-TOKEN': csrfToken || '{{ csrf_token() }}',
           'Accept': 'application/json'
         },
-        body: { telegram_id: id}
+        body: JSON.stringify({ telegram_id: id})
       });
       
       const data = await response.json();
