@@ -90,6 +90,11 @@ class CommandDispatcher
 				$username,
 				$user = null
 			) use ($middleware, $currentPipeline) {
+				Log::debug("Middleware layer invoked.", [
+					"chat_id" => $chatId,
+					"command" => $command,
+					"user_incoming" => !is_null($user),
+				]);
 				return $middleware->handle(
 					$chatId,
 					$command,
@@ -102,6 +107,11 @@ class CommandDispatcher
 						$nextUsername,
 						$nextUser = null
 					) use ($currentPipeline) {
+						Log::debug("Middleware calling next in pipeline", [
+							"user_passed" => !is_null($nextUser),
+							"user_id" => $nextUser ? $nextUser->id : null,
+						]);
+
 						return $currentPipeline(
 							$nextChatId,
 							$nextCommand,
