@@ -93,6 +93,13 @@ class TelegramServiceProvider extends ServiceProvider
 		CallbackHandler $callback
 	): void {
 		$callback->registerMiddleware(
+			"auth",
+			new AuthMiddleware(
+				$this->app->make(TelegramService::class),
+				$this->app->make(TelegramApi::class)
+			)
+		);
+		$callback->registerMiddleware(
 			"ids",
 			new IDValidationMiddleware(
 				$this->app->make(TelegramIdentifier::class),
