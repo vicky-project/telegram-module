@@ -146,7 +146,10 @@ class CallbackHandler
 			$result = $pipeline($context);
 
 			// Acknowledge callback query (to remove loading state)
-			$this->answerCallbackQuery($callbackId, $result["answer"] ?? null);
+			$this->answerCallbackQuery(
+				$callbackId,
+				$result["answer"] ?? "no message answer"
+			);
 
 			Log::info("Callback handled successfully", [
 				"callback_id" => $callbackId,
@@ -307,10 +310,8 @@ class CallbackHandler
 	/**
 	 * Answer callback query to remove loading state
 	 */
-	private function answerCallbackQuery(
-		string $callbackId,
-		?string $text = null
-	): void {
+	private function answerCallbackQuery(string $callbackId, string $text): void
+	{
 		try {
 			$this->telegramApi->answerCallbackQuery(
 				$callbackId,
