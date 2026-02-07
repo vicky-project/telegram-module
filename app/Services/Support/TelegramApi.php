@@ -83,15 +83,19 @@ class TelegramApi
 		int $chatId,
 		int $messageId,
 		string $text,
-		?array $replyMarkup = null
+		?array $replyMarkup = null,
+		?string $parseMode = null
 	): bool {
 		try {
 			$params = [
 				"chat_id" => $chatId,
 				"message_id" => $messageId,
 				"text" => $text,
-				"parse_mode" => "Markdown",
 			];
+
+			if ($parseMode) {
+				$params["parse_mode"] = $parseMode;
+			}
 
 			if ($replyMarkup) {
 				// bisa berupa keyboard atau force reply

@@ -147,16 +147,10 @@ class CallbackHandler
 			$result = $pipeline($context);
 
 			// Acknowledge callback query (to remove loading state)
-			if (
-				isset($result["block_handler"]) &&
-				$result["block_handler"] === true
-			) {
-				$this->answerCallbackQuery(
-					$callbackId,
-					$result["answer"] ?? ($result["message"] ?? "no message answer"),
-					true
-				);
-			}
+			$this->answerCallbackQuery(
+				$callbackId,
+				$result["answer"] ?? ($result["message"] ?? "Ok")
+			);
 
 			Log::info("Callback handled successfully", [
 				"callback_id" => $callbackId,
