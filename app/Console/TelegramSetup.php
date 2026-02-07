@@ -48,10 +48,6 @@ class TelegramSetup extends Command
 				$this->option("url") ??
 				url(config("telegram.bot.webhook_url", "/api/telegram/webhook"));
 
-			$url = str($url)->replaceLast(
-				"/",
-				"/" . config("telegram.bot.token") . "/"
-			);
 			$this->info("Setting webhook to: {$url}");
 
 			$secret = config("telegram.bot.webhook_secret");

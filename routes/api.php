@@ -9,10 +9,7 @@ Route::prefix("telegram")->group(function () {
 		->withoutMiddleware(["auth:sanctum"])
 		->group(function () {});
 
-	Route::post(config("telegram.bot.token") . "/webhook", [
-		TelegramWebhookController::class,
-		"handleWebhook",
-	])
+	Route::post("webhook", [TelegramWebhookController::class, "handleWebhook"])
 		->withoutMiddleware(["auth:sanctum", "auth"])
 		->name("telegram.webhook");
 });
