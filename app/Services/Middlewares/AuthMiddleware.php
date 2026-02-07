@@ -50,6 +50,7 @@ class AuthMiddleware implements TelegramMiddlewareInterface
 				"message" =>
 					"Anda perlu mendaftar terlebih dahulu. Gunakan /register untuk mendaftar.",
 				"chat_id" => $chatId,
+				"block_handler" => true,
 			];
 		}
 

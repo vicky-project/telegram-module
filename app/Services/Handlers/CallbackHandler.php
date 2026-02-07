@@ -147,10 +147,16 @@ class CallbackHandler
 			$result = $pipeline($context);
 
 			// Acknowledge callback query (to remove loading state)
-			$this->answerCallbackQuery(
-				$callbackId,
-				$result["answer"] ?? "no message answer"
-			);
+			if (
+				isset($result["block_handler"]) &&
+				$result["block_handler"] === true
+			) {
+				$this->answerCallbackQuery(
+					$callbackId,
+					$result["answer"] ?? ($result["message"] ?? "no message answer"),
+					true
+				);
+			}
 
 			Log::info("Callback handled successfully", [
 				"callback_id" => $callbackId,
@@ -197,29 +203,9 @@ class CallbackHandler
 	 */
 	private function parseCallbackData(string $callbackData): array
 	{
-		$parse = app(GlobalCallbackParser::class);
+		$parser = app(GlobalCallbackParser::class);
 
-		return $parse->parse($callbackData);
-		// Format: action:param1:param2:param3
-		// Example: user:profile:edit:123
-		$parts = explode(":", $callbackData);
-
-		if (empty($parts)) {
-			return [
-				"action" => $callbackData,
-				"params" => [],
-				"full" => $callbackData,
-			];
-		}
-
-		$action = array_shift($parts);
-
-		return [
-			"action" => $action,
-			"params" => $parts,
-			"full" => $callbackData,
-			"param_count" => count($parts),
-		];
+		return $parser->parse($callbackData);
 	}
 
 	/**

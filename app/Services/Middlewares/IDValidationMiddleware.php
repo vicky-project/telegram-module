@@ -38,6 +38,7 @@ class IDValidationMiddleware implements TelegramMiddlewareInterface
 				return [
 					"status" => "error",
 					"message" => "Missing Telegram identifiers",
+					"answer" => "Missing telegram identifiers",
 					"block_handler" => true,
 				];
 			}
@@ -53,6 +54,7 @@ class IDValidationMiddleware implements TelegramMiddlewareInterface
 			return [
 				"status" => "error",
 				"message" => "Invalid Telegram identifiers",
+				"answer" => "Invalid Telegram identifiers",
 				"block_handler" => true,
 			];
 		}
@@ -68,6 +70,7 @@ class IDValidationMiddleware implements TelegramMiddlewareInterface
 			return [
 				"status" => "error",
 				"message" => "Only support for private chat",
+				"answer" => "Only support for private chat",
 				"block_handler" => true,
 			];
 		}
