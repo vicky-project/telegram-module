@@ -9,8 +9,8 @@ use Modules\Telegram\Services\Support\TelegramApi;
 abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 {
 	protected const MAX_CALLBACK_TEXT_LENGTH = 200;
-
 	protected const MAX_ALERT_TEXT_LENGTH = 200;
+	protected const MAX_EDIT_MESSAGE_LENGTH = 4096;
 
 	protected TelegramApi $telegramApi;
 
@@ -133,35 +133,14 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 					// Answer callback query with fallback message
 					$text = $options["fallback_message"];
 					$showAlert = false;
-
-					Log::info("Callback query text too long, sent as message instead", [
-						"callback_id" => $callbackId,
-						"message_chat_id" => $options["message_chat_id"],
-						"text_length" => mb_strlen($text),
-					]);
 				} else {
 					// Use fallback message
 					$text = $options["fallback_message"];
-					Log::warning("Callback query text too long, using fallback", [
-						"callback_id" => $callbackId,
-						"original_length" => mb_strlen($text),
-						"fallback" => $text,
-					]);
 				}
 			}
 
 			// Answer the callback query
-			$this->telegramApi->answerCallbackQuery(
-				$callbackId,
-				$text,
-				$showAlert ? true : false
-			);
-
-			Log::debug("Callback query answered safely", [
-				"callback_id" => $callbackId,
-				"text_length" => mb_strlen($text),
-				"show_alert" => $showAlert,
-			]);
+			$this->telegramApi->answerCallbackQuery($callbackId, $text, $showAlert);
 
 			return true;
 		} catch (\Exception $e) {
@@ -171,6 +150,77 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 				"trace" => $e->getTraceAsString(),
 			]);
 
+			return false;
+		}
+	}
+
+	/**
+	 * Edit message with safety checks
+	 */
+	protected function editMessage(
+		int $chatId,
+		int $messageId,
+		string $text,
+		?array $replyMarkup = null,
+		array $options = []
+	): bool {
+		try {
+			$options = array_merge(
+				[
+					"parse_mode" => "Markdown",
+					"disable_web_page_preview" => true,
+					"auto_truncate" => true,
+				],
+				$options
+			);
+
+			// Check message length
+			if (mb_strlen($text) > self::MAX_EDIT_MESSAGE_LENGTH) {
+				if ($options["auto_truncate"]) {
+					$text = $this->truncateText($text, self::MAX_EDIT_MESSAGE_LENGTH);
+					Log::warning("Edit message text truncated", [
+						"chat_id" => $chatId,
+						"message_id" => $messageId,
+						"max_length" => self::MAX_EDIT_MESSAGE_LENGTH,
+					]);
+				} else {
+					throw new \Exception(
+						"Message text exceeds maximum length of " .
+							self::MAX_EDIT_MESSAGE_LENGTH .
+							" characters"
+					);
+				}
+			}
+
+			return $this->telegramApi->editMessageText(
+				$chatId,
+				$messageId,
+				$text,
+				$replyMarkup
+			);
+		} catch (\Exception $e) {
+			Log::error("Failed to edit message", [
+				"chat_id" => $chatId,
+				"message_id" => $messageId,
+				"error" => $e->getMessage(),
+			]);
+			return false;
+		}
+	}
+
+	/**
+	 * Delete message
+	 */
+	protected function deleteMessage(int $chatId, int $messageId): bool
+	{
+		try {
+			return $this->telegramApi->deleteMessage($chatId, $messageId);
+		} catch (\Exception $e) {
+			Log::error("Failed to delete message", [
+				"chat_id" => $chatId,
+				"message_id" => $messageId,
+				"error" => $e->getMessage(),
+			]);
 			return false;
 		}
 	}
@@ -253,7 +303,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 		try {
 			$callbackId = $context["callback_id"] ?? null;
 			$chatId = $context["chat_id"] ?? null;
-			$userId = $context["user_id"] ?? null;
+			$messageId = $context["message_id"] ?? null;
 
 			if (!$callbackId) {
 				Log::error("Missing callback ID in context", ["context" => $context]);
@@ -277,7 +327,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 			$result = $handler($data, $context);
 
 			// Handle answer from result
-			$this->handleCallbackAnswer($callbackId, $chatId, $result);
+			$this->handleCallbackResult($callbackId, $chatId, $messageId, $result);
 
 			return $result;
 		} catch (\Exception $e) {
@@ -289,11 +339,13 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 			]);
 
 			// Answer with error
-			$this->answerCallbackQuery(
-				$context["callback_id"],
-				$this->getErrorAnswer($e->getMessage()),
-				true
-			);
+			if (isset($context["callback_id"])) {
+				$this->answerCallbackQuery(
+					$context["callback_id"],
+					$this->getErrorAnswer($e->getMessage()),
+					true
+				);
+			}
 
 			return [
 				"status" => "error",
@@ -306,37 +358,104 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 	/**
 	 * Handle callback answer based on result
 	 */
-	private function handleCallbackAnswer(
+	private function handleCallbackResult(
 		string $callbackId,
 		?int $chatId,
+		?int $messageId,
 		array $result
 	): void {
-		// Check if we should send an answer
+		$this->handleCallbackAnswer($callbackId, $result);
+
+		$this->handleMessageOperations($chatId, $messageId, $result);
+	}
+
+	/**
+	 * Handle callback answer based on result
+	 */
+	private function handleCallbackAnswer(string $callbackId, array $result): void
+	{
 		if (isset($result["answer"])) {
 			$answer = $result["answer"];
 			$showAlert = $result["show_alert"] ?? false;
-			$sendAsMessage = $result["send_as_message"] ?? false;
 
-			if ($sendAsMessage && $chatId) {
-				// Send as regular message
-				$this->answerCallbackQuery($callbackId, "", false);
-				$this->telegramApi->sendMessage(
-					$chatId,
-					$answer,
-					"Markdown",
-					$result["message_options"] ?? []
-				);
-			} else {
-				// Send as callback answer
-				$this->answerCallbackQuery($callbackId, $answer, $showAlert, [
-					"send_as_message" => false,
-					"message_chat_id" => $chatId,
-					"message_options" => $result["message_options"] ?? [],
-				]);
-			}
+			$this->answerCallbackQuery($callbackId, $answer, $showAlert, [
+				"send_as_message" => $result["send_as_message"] ?? false,
+				"message_chat_id" => $result["message_chat_id"] ?? null,
+				"message_options" => $result["message_options"] ?? [],
+			]);
 		} else {
-			// No answer needed, just acknowledge
+			// Acknowledge callback without showing anything
 			$this->answerCallbackQuery($callbackId, "", false);
 		}
+	}
+
+	/**
+	 * Handle message operations (edit, delete, send new)
+	 */
+	private function handleMessageOperations(
+		?int $chatId,
+		?int $messageId,
+		array $result
+	): void {
+		if (!$chatId) {
+			return; // Can't perform message operations without chat_id
+		}
+
+		// Edit existing message
+		if (isset($result["edit_message"]) && $messageId) {
+			$editData = $result["edit_message"];
+			$text = $editData["text"] ?? "";
+			$replyMarkup = $editData["reply_markup"] ?? null;
+			$parseMode = $editData["parse_mode"] ?? "Markdown";
+
+			$this->editMessage($chatId, $messageId, $text, $replyMarkup, [
+				"parse_mode" => $parseMode,
+			]);
+		}
+
+		// Delete existing message
+		if (isset($result["delete_message"]) && $messageId) {
+			$this->deleteMessage($chatId, $messageId);
+		}
+
+		// Send new message
+		if (isset($result["send_message"])) {
+			$sendData = $result["send_message"];
+			$text = $sendData["text"] ?? "";
+			$replyMarkup = $sendData["reply_markup"] ?? null;
+			$parseMode = $sendData["parse_mode"] ?? "Markdown";
+
+			$this->telegramApi->sendMessage($chatId, $text, $parseMode, $replyMarkup);
+		}
+	}
+
+	/**
+	 * Create edit message data structure
+	 */
+	protected function createEditMessageData(
+		string $text,
+		?array $replyMarkup = null,
+		string $parseMode = "Markdown"
+	): array {
+		return [
+			"text" => $text,
+			"reply_markup" => $replyMarkup,
+			"parse_mode" => $parseMode,
+		];
+	}
+
+	/**
+	 * Create send message data structure
+	 */
+	protected function createSendMessageData(
+		string $text,
+		?array $replyMarkup = null,
+		string $parseMode = "Markdown"
+	): array {
+		return [
+			"text" => $text,
+			"reply_markup" => $replyMarkup,
+			"parse_mode" => $parseMode,
+		];
 	}
 }
