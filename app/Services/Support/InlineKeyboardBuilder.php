@@ -1,15 +1,27 @@
 <?php
 namespace Modules\Telegram\Services\Support;
 
-use Modules\Telegram\Services\Handlers\CallbackHandler;
-
 class InlineKeyboardBuilder
 {
-	protected CallbackHandler $callbackHandler;
+	protected $scope = "global";
 
-	public function __construct(CallbackHandler $callbackHandler)
+	protected $module;
+
+	protected $entity;
+
+	public function setScope(string $scope = "global")
 	{
-		$this->callbackHandler = $callbackHandler;
+		$this->scope = $scope;
+	}
+
+	public function setModule(string $module)
+	{
+		$this->module = $module;
+	}
+
+	public function setEntity(string $entity)
+	{
+		$this->entity = $entity;
 	}
 
 	/**
@@ -28,8 +40,12 @@ class InlineKeyboardBuilder
 			$prevParams = array_merge($extraParams, ["page" => $currentPage - 1]);
 			$keyboard[] = [
 				"text" => "⬅️ Sebelumnya",
-				"callback_data" => $this->callbackHandler->createCallbackData(
+				"callback_data" => GlobalCallbackBuilder::build(
+					"nav",
+					$this->module ?? null,
+					$this->entity ?? null,
 					$action,
+					$extraParams["id"] ?? null,
 					$prevParams
 				),
 			];
@@ -46,8 +62,12 @@ class InlineKeyboardBuilder
 			$nextParams = array_merge($extraParams, ["page" => $currentPage + 1]);
 			$keyboard[] = [
 				"text" => "Berikutnya ➡️",
-				"callback_data" => $this->callbackHandler->createCallbackData(
+				"callback_data" => GlobalCallbackBuilder::build(
+					"nav",
+					$this->module ?? null,
+					$this->entity ?? null,
 					$action,
+					$extraParams["id"] ?? null,
 					$nextParams
 				),
 			];
@@ -65,21 +85,30 @@ class InlineKeyboardBuilder
 		string $confirmText = "✅ Ya",
 		string $cancelText = "❌ Batal"
 	): array {
+		$confirmButton = GlobalCallbackBuilder::build(
+			$this->scope,
+			$this->module ?? null,
+			$this->entity ?? null,
+			$action . "_confirm",
+			$itemId
+		);
+		$cancelButton = GlobalCallbackBuilder::build(
+			$this->scope,
+			$this->module ?? null,
+			$this->entity ?? null,
+			$action . "_confirm",
+			$itemId
+		);
+
 		return [
 			[
 				[
 					"text" => $confirmText,
-					"callback_data" => $this->callbackHandler->createCallbackData(
-						$action . ":confirm",
-						[$itemId]
-					),
+					"callback_data" => $confirmButton,
 				],
 				[
 					"text" => $cancelText,
-					"callback_data" => $this->callbackHandler->createCallbackData(
-						$action . ":cancel",
-						[$itemId]
-					),
+					"callback_data" => $cancelButton,
 				],
 			],
 		];
@@ -110,9 +139,13 @@ class InlineKeyboardBuilder
 		foreach ($items as $index => $item) {
 			$row[] = [
 				"text" => $item["text"],
-				"callback_data" => $this->callbackHandler->createCallbackData($action, [
-					$item["value"],
-				]),
+				"callback_data" => GlobalCallbackBuilder::build(
+					$this->scope,
+					$this->module ?? null,
+					$this->entity ?? null,
+					$action,
+					$item["value"]
+				),
 			];
 
 			if (count($row) >= $columns) {
@@ -126,10 +159,5 @@ class InlineKeyboardBuilder
 		}
 
 		return $keyboard;
-	}
-
-	public function getCallbackHandler()
-	{
-		return $this->callbackHandler;
 	}
 }

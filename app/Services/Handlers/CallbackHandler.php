@@ -5,6 +5,7 @@ use Telegram\Bot\Objects\CallbackQuery;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Interfaces\TelegramCallbackHandlerInterface;
 use Modules\Telegram\Interfaces\TelegramMiddlewareInterface;
+use Modules\Telegram\Services\Handlers\Callbacks\GlobalCallbackParser;
 use Modules\Telegram\Services\Support\TelegramApi;
 
 class CallbackHandler
@@ -196,6 +197,9 @@ class CallbackHandler
 	 */
 	private function parseCallbackData(string $callbackData): array
 	{
+		$parse = app(GlobalCallbackParser::class);
+
+		return $parse->parse($callbackData);
 		// Format: action:param1:param2:param3
 		// Example: user:profile:edit:123
 		$parts = explode(":", $callbackData);
