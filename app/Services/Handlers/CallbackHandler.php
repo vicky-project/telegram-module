@@ -5,6 +5,7 @@ use Telegram\Bot\Objects\CallbackQuery;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Interfaces\TelegramCallbackHandlerInterface;
 use Modules\Telegram\Interfaces\TelegramMiddlewareInterface;
+use Modules\Telegram\Services\Handlers\Callbacks\GlobalCallbackParser;
 use Modules\Telegram\Services\Support\TelegramApi;
 
 class CallbackHandler
@@ -146,7 +147,10 @@ class CallbackHandler
 			$result = $pipeline($context);
 
 			// Acknowledge callback query (to remove loading state)
-			$this->answerCallbackQuery($callbackId, $result["answer"] ?? null);
+			$this->answerCallbackQuery(
+				$callbackId,
+				$result["answer"] ?? "no message answer"
+			);
 
 			Log::info("Callback handled successfully", [
 				"callback_id" => $callbackId,
@@ -193,6 +197,9 @@ class CallbackHandler
 	 */
 	private function parseCallbackData(string $callbackData): array
 	{
+		$parse = app(GlobalCallbackParser::class);
+
+		return $parse->parse($callbackData);
 		// Format: action:param1:param2:param3
 		// Example: user:profile:edit:123
 		$parts = explode(":", $callbackData);
@@ -307,10 +314,8 @@ class CallbackHandler
 	/**
 	 * Answer callback query to remove loading state
 	 */
-	private function answerCallbackQuery(
-		string $callbackId,
-		?string $text = null
-	): void {
+	private function answerCallbackQuery(string $callbackId, string $text): void
+	{
 		try {
 			$this->telegramApi->answerCallbackQuery(
 				$callbackId,

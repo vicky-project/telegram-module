@@ -60,6 +60,7 @@ class TelegramApi
 			];
 
 			if ($replyMarkup) {
+				// bisa berupa keyboard atau force reply
 				$params["reply_markup"] = json_encode($replyMarkup);
 			}
 			if ($this->telegram) {
@@ -93,6 +94,7 @@ class TelegramApi
 			];
 
 			if ($replyMarkup) {
+				// bisa berupa keyboard atau force reply
 				$params["reply_markup"] = json_encode($replyMarkup);
 			}
 

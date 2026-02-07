@@ -49,7 +49,7 @@ class StartCommand implements TelegramCommandInterface
 	{
 		return "👋 Halo {$user->name}!\n" .
 			"Akun Anda sudah terhubung.\n\n" .
-			"Gunakan /help untuk informasi lebih lanjut.";
+			"Gunakan /help untuk perintah lainnya.";
 	}
 
 	/**
@@ -61,8 +61,7 @@ class StartCommand implements TelegramCommandInterface
 			"Untuk menghubungkan akun Anda:\n" .
 			"1. Login ke aplikasi web\n" .
 			"2. Buka Menu Settings → Telegram Integration\n" .
-			"3. Klik pada tombol Telegram untuk menghubungkan\n" .
-			"4. Anda sudah terhubung dengan bot ini\n\n" .
-			"Gunakan /help untuk informasi lebih lanjut.";
+			"3. Klik pada tombol Telegram untuk menghubungkan\n\n" .
+			"Gunakan /help untuk perintah lainnya.";
 	}
 }

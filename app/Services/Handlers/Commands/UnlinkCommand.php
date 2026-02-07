@@ -27,7 +27,7 @@ class UnlinkCommand implements TelegramCommandInterface
 
 	public function getDescription(): string
 	{
-		return "Memutuskan dari telegram.";
+		return "Memutuskan akun dari telegram.";
 	}
 
 	public function handle(

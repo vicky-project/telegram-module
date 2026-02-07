@@ -75,19 +75,17 @@ class TelegramServiceProvider extends ServiceProvider
 		CommandDispatcher $dispatcher
 	): void {
 		$dispatcher->registerCommand(
-			new StartCommand($this->app->make(TelegramApi::class)),
-			["ids"]
+			new StartCommand($this->app->make(TelegramApi::class))
 		);
 		$dispatcher->registerCommand(
-			new HelpCommand($this->app->make(TelegramApi::class)),
-			["ids"]
+			new HelpCommand($this->app->make(TelegramApi::class))
 		);
 		$dispatcher->registerCommand(
 			new UnlinkCommand(
 				$this->app->make(TelegramApi::class),
 				$this->app->make(TelegramService::class)
 			),
-			["auth", "ids"]
+			["auth"]
 		);
 	}
 
