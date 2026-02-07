@@ -90,7 +90,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 		string $text,
 		bool $showAlert = false,
 		array $options = []
-	): array {
+	): bool {
 		try {
 			// Default options
 			$options = array_merge(
@@ -163,12 +163,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 				"show_alert" => $showAlert,
 			]);
 
-			return [
-				"status" => "callback_handled",
-				"callback_id" => $callbackId,
-				"text_length" => mb_strlen($text),
-				"show_alert" => $showAlert,
-			];
+			return true;
 		} catch (\Exception $e) {
 			Log::error("Failed to answer callback query safely", [
 				"callback_id" => $callbackId,
@@ -176,7 +171,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 				"trace" => $e->getTraceAsString(),
 			]);
 
-			throw $e;
+			return false;
 		}
 	}
 
@@ -199,5 +194,149 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 		}
 
 		return $truncated . "...";
+	}
+
+	/**
+	 * Validate callback data structure
+	 */
+	protected function validateCallbackData(array $data): bool
+	{
+		$required = ["entity", "action"];
+
+		foreach ($required as $field) {
+			if (empty($data[$field])) {
+				Log::warning("Missing required callback data field", [
+					"field" => $field,
+					"data" => $data,
+				]);
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get default answer for unknown callback
+	 */
+	protected function getUnknownCallbackAnswer(): string
+	{
+		return "Aksi tidak dikenali atau telah kadaluarsa.";
+	}
+
+	/**
+	 * Get error answer for failed operations
+	 */
+	protected function getErrorAnswer(string $error = ""): string
+	{
+		$base = "Terjadi kesalahan saat memproses permintaan.";
+
+		if (!empty($error)) {
+			// Shorten error message if too long
+			if (mb_strlen($error) > 50) {
+				$error = mb_substr($error, 0, 47) . "...";
+			}
+			return $base . "\n" . $error;
+		}
+
+		return $base;
+	}
+
+	/**
+	 * Handle callback with automatic answer
+	 */
+	protected function handleCallbackWithAutoAnswer(
+		array $context,
+		array $data,
+		callable $handler
+	): array {
+		try {
+			$callbackId = $context["callback_id"] ?? null;
+			$chatId = $context["chat_id"] ?? null;
+			$userId = $context["user_id"] ?? null;
+
+			if (!$callbackId) {
+				Log::error("Missing callback ID in context", ["context" => $context]);
+				return ["status" => "error", "message" => "Missing callback ID"];
+			}
+
+			// Validate callback data
+			if (!$this->validateCallbackData($data)) {
+				$this->answerCallbackQuery(
+					$callbackId,
+					$this->getUnknownCallbackAnswer(),
+					false
+				);
+				return [
+					"status" => "invalid_data",
+					"message" => "Invalid callback data",
+				];
+			}
+
+			// Execute the handler
+			$result = $handler($data, $context);
+
+			// Handle answer from result
+			$this->handleCallbackAnswer($callbackId, $chatId, $result);
+
+			return $result;
+		} catch (\Exception $e) {
+			Log::error("Callback handling failed", [
+				"error" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
+				"data" => $data,
+				"context" => $context,
+			]);
+
+			// Answer with error
+			$this->answerCallbackQuerySafe(
+				$context["callback_id"],
+				$this->getErrorAnswer($e->getMessage()),
+				true
+			);
+
+			return [
+				"status" => "error",
+				"message" => $e->getMessage(),
+				"error" => $e->getMessage(),
+			];
+		}
+	}
+
+	/**
+	 * Handle callback answer based on result
+	 */
+	private function handleCallbackAnswer(
+		string $callbackId,
+		?int $chatId,
+		array $result
+	): void {
+		// Check if we should send an answer
+		if (isset($result["answer"])) {
+			$answer = $result["answer"];
+			$showAlert = $result["show_alert"] ?? false;
+			$sendAsMessage = $result["send_as_message"] ?? false;
+
+			if ($sendAsMessage && $chatId) {
+				// Send as regular message
+				$this->answerCallbackQuery($callbackId, "", false);
+				$this->telegramApi->sendMessage(
+					$chatId,
+					$answer,
+					"Markdown",
+					$result["message_options"] ?? []
+				);
+			} else {
+				// Send as callback answer
+				$this->answerCallbackQuery($callbackId, $answer, $showAlert, [
+					"send_as_message" => false,
+					"message_chat_id" => $chatId,
+					"message_options" => $result["message_options"] ?? [],
+				]);
+			}
+		} else {
+			// No answer needed, just acknowledge
+			$this->answerCallbackQuery($callbackId, "", false);
+		}
 	}
 }
