@@ -289,7 +289,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 			]);
 
 			// Answer with error
-			$this->answerCallbackQuerySafe(
+			$this->answerCallbackQuery(
 				$context["callback_id"],
 				$this->getErrorAnswer($e->getMessage()),
 				true
