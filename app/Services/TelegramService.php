@@ -4,9 +4,12 @@ namespace Modules\Telegram\Services;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Modules\Telegram\Models\Telegram;
 use Modules\Telegram\Repositories\TelegramRepository;
 use Modules\UserManagement\Services\SocialAccountService;
+use Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint;
+use Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog;
 
 class TelegramService
 {
@@ -53,46 +56,60 @@ class TelegramService
 
 	public function checkDeviceKnown(): bool
 	{
-		// Need package rappasoft/laravel-authentication-log
-		if (
-			!class_exists(
-				\Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint::class
-			)
-		) {
+		try {
+			// Need package rappasoft/laravel-authentication-log
+			if (!class_exists(DeviceFingerprint::class)) {
+				\Log::warning(
+					"Package rappasoft/laravel-authentication-log not found."
+				);
+				return false;
+			}
+
+			$deviceId = DeviceFingerprint::generate($this->request);
+
+			$cacheKey = "device_user_mapping_" . md5($deviceId);
+
+			$userId = Cache::remember($cacheKey, now()->addHours(), function () use (
+				$deviceId
+			) {
+				$autLog = AuthenticationLog::query()
+					->fromDevice($deviceId)
+					->successful()
+					->recent()
+					->whereNotNull("authenticatable_id")
+					->latest("login_at")
+					->first();
+
+				return $autLog ? $autLog->authenticatable_id : null;
+			});
+
+			// Not found historical device login
+			if (!$userId) {
+				return false;
+			}
+
+			$socialAccounts = $this->service->getByUserId($userId);
+
+			// Social Account not exists
+			if (!$socialAccounts || $socialAccounts->isEmpty()) {
+				return false;
+			}
+
+			$telegram = $socialAccount->where("provider", "telegram")->first();
+
+			// Social Account not have provider
+			if (!$telegram || !$telegram->providerable) {
+				return false;
+			}
+
+			return true;
+		} catch (\Exception $e) {
+			\Log::error("Error checking device known: " . $e->getMessage(), [
+				"message" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
+			]);
 			return false;
 		}
-
-		$deviceId = \Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint::generate(
-			$this->request
-		);
-
-		$authFound = \Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog::query()
-			->fromDevice($deviceId)
-			->successful()
-			->recent()
-			->latest("login_at")
-			->first();
-
-		// Not found historical device login
-		if (!$authFound) {
-			return false;
-		}
-
-		$socialAccount = $this->service->getByAuthlogId($authFound->id);
-
-		// Social Account not exists
-		if (!$socialAccount || $socialAccount->isEmpty()) {
-			return false;
-		}
-
-		$telegram = $socialAccount->where("provider", "telegram")->first();
-
-		// Social Account not have provider
-		if (!$telegram->providerable) {
-			return false;
-		}
-
-		return true;
 	}
 
 	public function getUserByChatId(int $chatId)
