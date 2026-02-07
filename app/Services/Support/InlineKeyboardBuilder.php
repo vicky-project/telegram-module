@@ -87,6 +87,17 @@ class InlineKeyboardBuilder
 
 	/**
 	 * Build grid keyboard from items
+	 * format:
+	 * [
+	 *   [
+	 *       'text' => 'Ini adalah text',
+	 *       'value' => Ini adalah value
+	 *   ],
+	 *   [
+	 *       'text' => 'Ini adalah text 2',
+	 *       'value' => 'Ini adalah value 2'
+	 *   ]
+	 * ]
 	 */
 	public function grid(
 		array $items,
@@ -115,5 +126,10 @@ class InlineKeyboardBuilder
 		}
 
 		return $keyboard;
+	}
+
+	public function getCallbackHandler()
+	{
+		return $this->callbackHandler;
 	}
 }
