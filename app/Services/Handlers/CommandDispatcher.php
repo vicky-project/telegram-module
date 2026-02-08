@@ -46,7 +46,7 @@ class CommandDispatcher
 			$this->commandMiddleware[$commandName] = $middleware;
 		}
 
-		Log::debug("Command registered", [
+		Log::info("Command registered", [
 			"command" => $commandName,
 			"middleware_count" => count($middleware),
 		]);
@@ -60,7 +60,7 @@ class CommandDispatcher
 		TelegramMiddlewareInterface $middleware
 	): void {
 		$this->middleware[$name] = $middleware;
-		Log::debug("Middleware registered", ["name" => $name]);
+		Log::info("Middleware registered", ["name" => $name]);
 	}
 
 	/**
