@@ -271,7 +271,7 @@ class CallbackHandler
 		$dataParts = explode(":", $parsedData["full"]);
 		Log::info("Trying match hierarchical pattern.", [
 			"pattern_parts" => $patternParts,
-			"data_parts" => $dataPart,
+			"data_parts" => $dataParts,
 		]);
 
 		if (count($patternParts) !== count($parsedData)) {
