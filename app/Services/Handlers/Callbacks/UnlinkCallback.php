@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Support\TelegramApi;
 
-class UnlinkCommand extends BaseCallbackHandler
+class UnlinkCallback extends BaseCallbackHandler
 {
 	protected $telegramService;
 
