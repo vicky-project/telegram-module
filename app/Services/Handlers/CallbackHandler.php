@@ -260,7 +260,7 @@ class CallbackHandler
 		// Convert pattern to regex
 		$pattern = str_replace("\*", ".*", preg_quote($pattern, "/"));
 		$pattern = preg_replace("/\\\{(\w+)\\\}/", "[^:]+", $pattern);
-		return '/^{$pattern}$/';
+		return "/^{$pattern}$/";
 	}
 
 	private function matchesHierarchicalPattern(
