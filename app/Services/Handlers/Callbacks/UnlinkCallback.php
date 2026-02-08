@@ -175,7 +175,10 @@ class UnlinkCallback extends BaseCallbackHandler
 				"Akun Anda tetap terhubung dengan bot.\n" .
 				"Anda dapat terus menggunakan semua fitur.";
 
-			return ["deleted_message" => true, "send_message" => $message];
+			return [
+				"deleted_message" => true,
+				"send_message" => ["text" => $message],
+			];
 		} catch (\RuntimeException $e) {
 			Log::error("Failed to delete message.", [
 				"chat_id" => $chatId,
