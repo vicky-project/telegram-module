@@ -56,6 +56,7 @@ class UnlinkCallback extends BaseCallbackHandler
 		$action = $data["action"];
 		$id = $data["id"] ?? null;
 		$chatId = $context["chat_id"] ?? null;
+		$messageId = $context["message_id"] ?? null;
 		$params = $data["params"] ?? [];
 		$user = $context["user"] ?? null;
 
@@ -83,17 +84,20 @@ class UnlinkCallback extends BaseCallbackHandler
 			];
 		}
 
-		return $this->processUnlinkCallback($action, $chatId);
+		return $this->processUnlinkCallback($action, $chatId, $messageId);
 	}
 
-	private function processUnlinkCallback(string $action, int $chatId): array
-	{
+	private function processUnlinkCallback(
+		string $action,
+		int $chatId,
+		int $messageId
+	): array {
 		switch ($action) {
 			case "unlink_confirm":
-				return $this->processUnlinkConfirmation($chatId);
+				return $this->processUnlinkConfirm($chatId);
 
 			case "unlink_cancel":
-				return $this->processUnlinkCancel();
+				return $this->processUnlinkCancel($chatId, $messageId);
 
 			default:
 				return [
@@ -104,7 +108,7 @@ class UnlinkCallback extends BaseCallbackHandler
 		}
 	}
 
-	private function processUnlinkConfirmation(int $chatId): array
+	private function processUnlinkConfirm(int $chatId): array
 	{
 		try {
 			$user = $this->telegramService->getUserByChatId($chatId);
@@ -148,5 +152,11 @@ class UnlinkCallback extends BaseCallbackHandler
 
 	private function processUnlinkCancel(): array
 	{
+		$message =
+			"❌ *Pemutusan Akun Dibatalkan*\n\n" .
+			"Akun Anda tetap terhubung dengan bot.\n" .
+			"Anda dapat terus menggunakan semua fitur.";
+
+		return ["deleted_message" => true, "send_message" => $message];
 	}
 }

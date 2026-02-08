@@ -92,13 +92,13 @@ class UnlinkCommand implements TelegramCommandInterface
 			"Apakah Anda yakin ingin melanjutkan?";
 
 		$keyboard = app(InlineKeyboardBuilder::class);
-		$keyboard->setScope("system");
-		$keyboard->setModule("telegram");
-		$keyboard->setEntity("telegram");
-		
 
 		$this->telegramApi->sendMessage($chatId, $message, "MarkdownV2", [
-			"inline_keyboard" => $keyboard->confirmation("unlink", $chatId),
+			"inline_keyboard" => $keyboard
+				->setScope("system")
+				->setModule("telegram")
+				->setEntity("telegram")
+				->confirmation("unlink", $chatId),
 		]);
 
 		return [
