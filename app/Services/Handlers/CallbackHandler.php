@@ -55,7 +55,7 @@ class CallbackHandler
 			$this->handlerMiddleware[$pattern] = $middleware;
 		}
 
-		Log::debug("Callback handler registered", [
+		Log::info("Callback handler registered", [
 			"pattern" => $pattern,
 			"name" => $handler->getName(),
 			"middleware_count" => count($middleware),
@@ -70,7 +70,7 @@ class CallbackHandler
 		TelegramMiddlewareInterface $middleware
 	): void {
 		$this->middleware[$name] = $middleware;
-		Log::debug("Callback middleware registered", ["name" => $name]);
+		Log::info("Callback middleware registered", ["name" => $name]);
 	}
 
 	/**
@@ -217,6 +217,8 @@ class CallbackHandler
 
 		// Then, try pattern matching
 		foreach ($this->handlers as $pattern => $handler) {
+			Log::info("Try match pattern callback..", ["pattern" => $pattern]);
+
 			if ($this->patternMatches($pattern, $callbackData, $parsedData)) {
 				return $handler;
 			}
@@ -240,6 +242,12 @@ class CallbackHandler
 
 		// Check for pattern match
 		$regex = $this->patternToRegex($pattern);
+		Log::info("Result convert pattern to regex: " . $regex, [
+			"pattern" => $pattern,
+			"callback_data" => $callbackData,
+			"regex" => $regex,
+		]);
+
 		if (preg_match($regex, $callbackData)) {
 			return true;
 		}
@@ -261,6 +269,10 @@ class CallbackHandler
 	): bool {
 		$patternParts = explode(":", $pattern);
 		$dataParts = explode(":", $parsedData["full"]);
+		Log::info("Trying match hierarchical pattern.", [
+			"pattern_parts" => $patternParts,
+			"data_parts" => $dataPart,
+		]);
 
 		if (count($patternParts) !== count($parsedData)) {
 			return false;
