@@ -8,12 +8,15 @@ use Modules\Telegram\Services\Support\TelegramApi;
 class UnlinkCallback extends BaseCallbackHandler
 {
 	protected $telegramService;
+	protected $appName;
 
 	public function __construct(
 		TelegramApi $telegramApi,
 		TelegramService $telegramService
 	) {
 		$this->telegramService = $telegramService;
+		$this->appName = config("app.name", "Financial");
+
 		parent::__construct($telegramApi);
 	}
 
@@ -35,10 +38,6 @@ class UnlinkCallback extends BaseCallbackHandler
 	public function handle(array $data, array $context): array
 	{
 		try {
-			Log::info("HandleCallbackWithAutoAnswer", [
-				"data" => $data,
-				"context" => $context,
-			]);
 			return $this->handleCallbackWithAutoAnswer(
 				$context,
 				$data,
