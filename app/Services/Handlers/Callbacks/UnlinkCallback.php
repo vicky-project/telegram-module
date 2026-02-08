@@ -35,6 +35,10 @@ class UnlinkCallback extends BaseCallbackHandler
 	public function handle(array $data, array $context): array
 	{
 		try {
+			Log::info("HandleCallbackWithAutoAnswer", [
+				"data" => $data,
+				"context" => $context,
+			]);
 			return $this->handleCallbackWithAutoAnswer(
 				$context,
 				$data,
