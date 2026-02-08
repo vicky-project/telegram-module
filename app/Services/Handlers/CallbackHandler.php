@@ -244,7 +244,7 @@ class CallbackHandler
 			return true;
 		}
 
-		return $this->matchesHierarchicalPattern($parsedData);
+		return $this->matchesHierarchicalPattern($pattern, $parsedData);
 	}
 
 	private function patternToRegex(string $pattern): string
