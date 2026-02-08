@@ -12,16 +12,19 @@ class InlineKeyboardBuilder
 	public function setScope(string $scope = "global")
 	{
 		$this->scope = $scope;
+		return $this;
 	}
 
 	public function setModule(string $module)
 	{
 		$this->module = $module;
+		return $this;
 	}
 
 	public function setEntity(string $entity)
 	{
 		$this->entity = $entity;
+		return $this;
 	}
 
 	/**

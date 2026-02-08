@@ -92,6 +92,11 @@ class UnlinkCallback extends BaseCallbackHandler
 		int $chatId,
 		int $messageId
 	): array {
+		Log::debug("Doing action: " . $action, [
+			"action" => $action,
+			"chat_id" => $chatId,
+			"message_id" => $chatId,
+		]);
 		switch ($action) {
 			case "unlink_confirm":
 				return $this->processUnlinkConfirm($chatId);
