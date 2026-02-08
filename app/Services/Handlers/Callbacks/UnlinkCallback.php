@@ -167,13 +167,28 @@ class UnlinkCallback extends BaseCallbackHandler
 		}
 	}
 
-	private function processUnlinkCancel(): array
+	private function processUnlinkCancel(int $chatId, int $messageId): array
 	{
-		$message =
-			"❌ *Pemutusan Akun Dibatalkan*\n\n" .
-			"Akun Anda tetap terhubung dengan bot.\n" .
-			"Anda dapat terus menggunakan semua fitur.";
+		try {
+			$message =
+				"❌ *Pemutusan Akun Dibatalkan*\n\n" .
+				"Akun Anda tetap terhubung dengan bot.\n" .
+				"Anda dapat terus menggunakan semua fitur.";
 
-		return ["deleted_message" => true, "send_message" => $message];
+			return ["deleted_message" => true, "send_message" => $message];
+		} catch (\RuntimeException $e) {
+			Log::error("Failed to delete message.", [
+				"chat_id" => $chatId,
+				"message_id" => $messageId,
+				"message" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
+			]);
+
+			return [
+				"status" => "failed_delete_message",
+				"answer" => "Gagal hapus pesan. Proses unlink dibatalkan.",
+				"show_alert" => false,
+			];
+		}
 	}
 }
