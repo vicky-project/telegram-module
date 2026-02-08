@@ -235,16 +235,54 @@ class CallbackHandler
 			return true;
 		}
 
-		// Convert pattern to regex
-		$regex = str_replace("\*", ".*", preg_quote($pattern, "/"));
-		$regex = str_replace("\?", ".", $regex);
-
 		// Check for pattern match
-		if (strpos($pattern, "*") !== false || strpos($pattern, "?") !== false) {
-			return (bool) preg_match("/^{$regex}$/", $callbackData);
+		$regex = $this->patternToRegex($pattern);
+		if (preg_match($regex, $callbackData)) {
+			return true;
 		}
 
-		return false;
+		return $this->matchesHierarchicalPattern($pattern, $parsedData);
+	}
+
+	private function patternToRegex(string $pattern): string
+	{
+		// Convert pattern to regex
+		$pattern = str_replace("\*", ".*", preg_quote($pattern, "/"));
+		$pattern = preg_replace("/\\\{(\w+)\\\}/", "[^:]+", $pattern);
+		return '/^{$pattern}$/';
+	}
+
+	private function matchesHierarchicalPattern(
+		string $pattern,
+		array $parsedData
+	): bool {
+		$patternParts = explode(":", $pattern);
+		$dataParts = explode(":", $parsedData["full"]);
+
+		if (count($patternParts) !== count($parsedData)) {
+			return false;
+		}
+
+		foreach ($patternParts as $index => $patternPart) {
+			$dataPart = $dataParts[$index];
+
+			if ($patternPart === "*") {
+				continue;
+			}
+
+			if (
+				strpos($patternPart, "{") === 0 &&
+				strpos($patternPart, "}") === strlen($patternPart) - 1
+			) {
+				continue;
+			}
+
+			if ($patternPart !== $dataParts) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
