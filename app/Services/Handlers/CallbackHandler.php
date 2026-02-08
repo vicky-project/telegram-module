@@ -217,7 +217,7 @@ class CallbackHandler
 
 		// Then, try pattern matching
 		foreach ($this->handlers as $pattern => $handler) {
-			if ($this->patternMatches($pattern, $callbackData)) {
+			if ($this->patternMatches($pattern, $callbackData, $parsedData)) {
 				return $handler;
 			}
 		}
@@ -228,8 +228,11 @@ class CallbackHandler
 	/**
 	 * Check if callback data matches a pattern
 	 */
-	private function patternMatches(string $pattern, string $callbackData): bool
-	{
+	private function patternMatches(
+		string $pattern,
+		string $callbackData,
+		array $parsedData
+	): bool {
 		// Check for exact match if no wildcards
 		if ($pattern === $callbackData) {
 			return true;
@@ -241,7 +244,7 @@ class CallbackHandler
 			return true;
 		}
 
-		return $this->matchesHierarchicalPattern($pattern, $callbackData);
+		return $this->matchesHierarchicalPattern($parsedData);
 	}
 
 	private function patternToRegex(string $pattern): string
