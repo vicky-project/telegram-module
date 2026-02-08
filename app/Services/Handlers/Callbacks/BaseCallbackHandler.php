@@ -421,7 +421,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 		// Send new message
 		if (isset($result["send_message"])) {
 			$sendData = $result["send_message"];
-			$text = $sendData["text"] ?? "";
+			$text = $sendData["text"] ?? "No text";
 			$replyMarkup = $sendData["reply_markup"] ?? null;
 			$parseMode = $sendData["parse_mode"] ?? "MarkdownV2";
 
