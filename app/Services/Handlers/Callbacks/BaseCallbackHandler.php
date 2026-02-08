@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Interfaces\TelegramCallbackHandlerInterface;
 use Modules\Telegram\Services\Support\GlobalCallbackBuilder;
 use Modules\Telegram\Services\Support\TelegramApi;
+use Modules\Telegram\Services\Support\TelegramMarkdownHelper;
 
 abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 {
@@ -167,9 +168,10 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 		try {
 			$options = array_merge(
 				[
-					"parse_mode" => "MarkdownV2",
+					"parse_mode" => "Markdown",
 					"disable_web_page_preview" => true,
 					"auto_truncate" => true,
+					"auto_escape" => true,
 				],
 				$options
 			);
@@ -192,11 +194,16 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 				}
 			}
 
+			if ($options["auto_escape"]) {
+				$text = TelegramMarkdownHelper::safeText($text, $options["parse_mode"]);
+			}
+
 			return $this->telegramApi->editMessageText(
 				$chatId,
 				$messageId,
 				$text,
-				$replyMarkup
+				$replyMarkup,
+				$options["parse_mode"]
 			);
 		} catch (\Exception $e) {
 			Log::error("Failed to edit message", [
@@ -400,13 +407,26 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 		if (!$chatId) {
 			return; // Can't perform message operations without chat_id
 		}
+		$validParseModes = ["Markdown", "MarkdownV2", "HTML", null];
 
 		// Edit existing message
 		if (isset($result["edit_message"]) && $messageId) {
 			$editData = $result["edit_message"];
 			$text = $editData["text"] ?? "";
 			$replyMarkup = $editData["reply_markup"] ?? null;
-			$parseMode = $editData["parse_mode"] ?? "MarkdownV2";
+			$parseMode = $editData["parse_mode"] ?? "Markdown";
+
+			if (!in_array($parseMode, $validParseModes)) {
+				Log::warning("Invalid parse_mode specified, using Markdown", [
+					"parse_mode" => $parseMode,
+					"valid_modes" => $validParseModes,
+				]);
+				$parseMode = "Markdown";
+			}
+
+			if ($parseMode === "MarkdownV2") {
+				$text = TelegramMarkdownHelper::safeText($text, $parseMode);
+			}
 
 			$this->editMessage($chatId, $messageId, $text, $replyMarkup, [
 				"parse_mode" => $parseMode,
@@ -423,7 +443,11 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 			$sendData = $result["send_message"];
 			$text = $sendData["text"] ?? "No text";
 			$replyMarkup = $sendData["reply_markup"] ?? null;
-			$parseMode = $sendData["parse_mode"] ?? "MarkdownV2";
+			$parseMode = $sendData["parse_mode"] ?? "Markdown";
+
+			if (!in_array($parseMode, $validParseModes)) {
+				$parseMode = "Markdown";
+			}
 
 			$this->telegramApi->sendMessage($chatId, $text, $parseMode, $replyMarkup);
 		}
@@ -435,12 +459,18 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 	protected function createEditMessageData(
 		string $text,
 		?array $replyMarkup = null,
-		string $parseMode = "MarkdownV2"
+		string $parseMode = "Markdown",
+		bool $autoEscape = true
 	): array {
+		if ($autoEscape) {
+			$text = TelegramMarkdownHelper::safeText($text, $parseMode);
+		}
+
 		return [
 			"text" => $text,
 			"reply_markup" => $replyMarkup,
 			"parse_mode" => $parseMode,
+			"auto_escape" => $autoEscape,
 		];
 	}
 
@@ -450,12 +480,18 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 	protected function createSendMessageData(
 		string $text,
 		?array $replyMarkup = null,
-		string $parseMode = "MarkdownV2"
+		string $parseMode = "Markdown",
+		bool $autoEscape = true
 	): array {
+		if ($autoEscape) {
+			$text = TelegramMarkdownHelper::safeText($text, $parseMode);
+		}
+
 		return [
 			"text" => $text,
 			"reply_markup" => $replyMarkup,
 			"parse_mode" => $parseMode,
+			"auto_escape" => $autoEscape,
 		];
 	}
 }
