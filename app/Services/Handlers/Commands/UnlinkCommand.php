@@ -3,6 +3,7 @@ namespace Modules\Telegram\Services\Handlers\Commands;
 
 use Modules\Telegram\Interfaces\TelegramCommandInterface;
 use Modules\Telegram\Services\TelegramService;
+use Modules\Telegram\Services\Support\InlineKeyboardBuilder;
 use Modules\Telegram\Services\Support\TelegramApi;
 
 class UnlinkCommand implements TelegramCommandInterface
@@ -43,20 +44,18 @@ class UnlinkCommand implements TelegramCommandInterface
 				$user = $this->telegramService->getUserByChatId($chatId);
 			}
 
-			\Log::debug("Using user: " . $user->name);
-			$this->telegramService->unlink($user, $chatId);
+			if (!$user) {
+				$message =
+					"❌ *Akun Tidak Ditemukan*\n\n" .
+					"Anda belum menghubungkan akun dengan Telegram.\n" .
+					"Gunakan /start untuk memulai.";
 
-			$message =
-				"✅ *Akun berhasil diputuskan.* {$this->appName}\n\n" .
-				"Anda bisa menghubungkan kembali melalui web app.\n" .
-				"Terima kasih telah menggunakan bot kami! 👋";
+				$this->telegramApi->sendMessage($chatId, $message, "MarkdownV2");
 
-			$this->telegramApi->sendMessage($chatId, $message, "Markdown");
+				return ["status" => "not_linked", "chat_id" => $chatId];
+			}
 
-			return [
-				"status" => "unlink_success",
-				"user_id" => $user->id,
-			];
+			return $this->sendConfirmationMessage($chatId, $user);
 		} catch (\RuntimeException $e) {
 			\Log::error("Failed to disconnecting to telegram.", [
 				"chat_id" => $chatId,
@@ -76,5 +75,36 @@ class UnlinkCommand implements TelegramCommandInterface
 				"message" => $e->getMessage(),
 			];
 		}
+	}
+
+	private function sendConfirmationMessage(int $chatId, $user)
+	{
+		$username = $user->username ?? ($user->name ?? ($user->email ?? "User"));
+
+		$message =
+			"⚠️ *Konfirmasi Pemutusan Akun*\n\n" .
+			"Anda akan memutuskan akun:\n" .
+			"👤 *{$username}* dari bot {$this->appName}\n\n" .
+			"Setelah diputuskan, Anda tidak akan:\n" .
+			"• Menerima notifikasi melalui Telegram\n" .
+			"• Dapat menggunakan bot untuk transaksi\n" .
+			"• Dapat mengakses data keuangan via bot\n\n" .
+			"Apakah Anda yakin ingin melanjutkan?";
+
+		$keyboard = app(InlineKeyboardBuilder::class);
+		$keyboard->setScope("system");
+		$keyboard->setModule("telegram");
+		$keyboard->setEntity("telegram");
+		$keyboard->confirmation("unlink", $chatId);
+
+		$this->telegramApi->sendMessage($chatId, $message, "MarkdownV2", [
+			"inline_keyboard" => $keyboard,
+		]);
+
+		return [
+			"status" => "unlink_success",
+			"user_id" => $user->id,
+			"chat_id" => $chatId,
+		];
 	}
 }
