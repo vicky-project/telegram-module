@@ -102,14 +102,12 @@ class InlineKeyboardBuilder
 
 		return [
 			[
-				[
-					"text" => $confirmText,
-					"callback_data" => $confirmButton,
-				],
-				[
-					"text" => $cancelText,
-					"callback_data" => $cancelButton,
-				],
+				"text" => $confirmText,
+				"callback_data" => $confirmButton,
+			],
+			[
+				"text" => $cancelText,
+				"callback_data" => $cancelButton,
 			],
 		];
 	}
