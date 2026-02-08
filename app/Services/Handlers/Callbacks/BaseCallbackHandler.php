@@ -126,7 +126,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 					$this->telegramApi->sendMessage(
 						$options["message_chat_id"],
 						$text,
-						"Markdown",
+						"MarkdownV2",
 						$options["message_options"]
 					);
 
@@ -167,7 +167,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 		try {
 			$options = array_merge(
 				[
-					"parse_mode" => "Markdown",
+					"parse_mode" => "MarkdownV2",
 					"disable_web_page_preview" => true,
 					"auto_truncate" => true,
 				],
@@ -406,7 +406,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 			$editData = $result["edit_message"];
 			$text = $editData["text"] ?? "";
 			$replyMarkup = $editData["reply_markup"] ?? null;
-			$parseMode = $editData["parse_mode"] ?? "Markdown";
+			$parseMode = $editData["parse_mode"] ?? "MarkdownV2";
 
 			$this->editMessage($chatId, $messageId, $text, $replyMarkup, [
 				"parse_mode" => $parseMode,
@@ -423,7 +423,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 			$sendData = $result["send_message"];
 			$text = $sendData["text"] ?? "";
 			$replyMarkup = $sendData["reply_markup"] ?? null;
-			$parseMode = $sendData["parse_mode"] ?? "Markdown";
+			$parseMode = $sendData["parse_mode"] ?? "MarkdownV2";
 
 			$this->telegramApi->sendMessage($chatId, $text, $parseMode, $replyMarkup);
 		}
@@ -435,7 +435,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 	protected function createEditMessageData(
 		string $text,
 		?array $replyMarkup = null,
-		string $parseMode = "Markdown"
+		string $parseMode = "MarkdownV2"
 	): array {
 		return [
 			"text" => $text,
@@ -450,7 +450,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 	protected function createSendMessageData(
 		string $text,
 		?array $replyMarkup = null,
-		string $parseMode = "Markdown"
+		string $parseMode = "MarkdownV2"
 	): array {
 		return [
 			"text" => $text,

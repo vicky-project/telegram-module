@@ -96,7 +96,7 @@ class InlineKeyboardBuilder
 			$this->scope,
 			$this->module ?? null,
 			$this->entity ?? null,
-			$action . "_confirm",
+			$action . "_cancel",
 			$itemId
 		);
 
