@@ -14,6 +14,7 @@ use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Handlers\CallbackHandler;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
 use Modules\Telegram\Services\Handlers\MessageHandler;
+use Modules\Telegram\Services\Handlers\Callbacks\UnlinkCallback;
 use Modules\Telegram\Services\Handlers\Commands\HelpCommand;
 use Modules\Telegram\Services\Handlers\Commands\StartCommand;
 use Modules\Telegram\Services\Handlers\Commands\UnlinkCommand;
@@ -115,6 +116,13 @@ class TelegramServiceProvider extends ServiceProvider
 	protected function registerCallbackHandlers(CallbackHandler $callback): void
 	{
 		// Add callback handler
+		$callback->registerHandler(
+			new UnlinkCallback(
+				$this->app->make(TelegramApi::class),
+				$this->app->make(TelegramService::class)
+			),
+			["auth"]
+		);
 	}
 
 	/**

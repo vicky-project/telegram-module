@@ -102,7 +102,7 @@ class UnlinkCommand implements TelegramCommandInterface
 		]);
 
 		return [
-			"status" => "unlink_success",
+			"status" => "unlink_confirm",
 			"user_id" => $user->id,
 			"chat_id" => $chatId,
 		];
