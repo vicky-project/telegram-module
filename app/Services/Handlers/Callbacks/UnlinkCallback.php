@@ -59,6 +59,14 @@ class UnlinkCallback extends BaseCallbackHandler
 		$messageId = $context["message_id"] ?? null;
 		$params = $data["params"] ?? [];
 		$user = $context["user"] ?? null;
+		Log::info("Processing callback...", [
+			"action" => $action,
+			"chat_id" => $chatId,
+			"message_id" => $messageId,
+			"id" => $id,
+			"entity" => $entity,
+			"user" => $user,
+		]);
 
 		if (!$user) {
 			return [
@@ -76,7 +84,7 @@ class UnlinkCallback extends BaseCallbackHandler
 			];
 		}
 
-		if (!$entity !== "telegram") {
+		if ($entity !== "telegram") {
 			return [
 				"status" => "unknown_entity",
 				"answer" => "Akses tidak dikenali",
