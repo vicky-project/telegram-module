@@ -76,10 +76,6 @@ trait MessageOperations
 				$parseMode = "Markdown";
 			}
 
-			if ($parseMode === "MarkdownV2") {
-				$text = $this->escapeText($text, $parseMode);
-			}
-
 			$this->editMessage($chatId, $messageId, $text, $replyMarkup, [
 				"parse_mode" => $parseMode,
 			]);
@@ -162,7 +158,7 @@ trait MessageOperations
 
 			// Auto-escape text if needed
 			if ($options["auto_escape"]) {
-				$text = TelegramMarkdownHelper::safeText($text, $options["parse_mode"]);
+				$text = $this->escapeText($text, $options["parse_mode"]);
 			}
 
 			return $this->telegramApi->editMessageText(

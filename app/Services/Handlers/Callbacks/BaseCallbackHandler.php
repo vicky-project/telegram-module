@@ -100,6 +100,7 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 			$options = array_merge(
 				[
 					"auto_truncate" => true,
+					"auto_escape" => true,
 					"fallback_message" => "OK",
 					"send_as_message" => false,
 					"message_chat_id" => null,
@@ -127,12 +128,12 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 					]);
 				} elseif ($options["send_as_message"] && $options["message_chat_id"]) {
 					$parseMode = $options["parse_mode"] ?? "Markdown";
-					$text = $this->safeText($text, $parseMode);
 
 					// Send as regular message instead
-					$this->telegramApi->sendMessage(
+					$this->sendMessage(
 						$options["message_chat_id"],
 						$text,
+						null,
 						$parseMode,
 						$options["message_options"]
 					);
