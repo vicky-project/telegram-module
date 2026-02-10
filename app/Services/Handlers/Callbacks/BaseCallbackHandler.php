@@ -5,13 +5,11 @@ use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Interfaces\TelegramCallbackHandlerInterface;
 use Modules\Telegram\Services\Support\GlobalCallbackBuilder;
 use Modules\Telegram\Services\Support\TelegramApi;
-use Modules\Telegram\Services\Support\TelegramMarkdownHelper;
+use Modules\Telegram\Traits\MessageOperations;
 
 abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 {
-	protected const MAX_CALLBACK_TEXT_LENGTH = 200;
-	protected const MAX_ALERT_TEXT_LENGTH = 200;
-	protected const MAX_EDIT_MESSAGE_LENGTH = 4096;
+	use MessageOperations;
 
 	protected TelegramApi $telegramApi;
 
@@ -24,6 +22,11 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 	 * Get module name (harus diimplementasikan oleh child class)
 	 */
 	abstract public function getModuleName(): string;
+
+	/**
+	 * Get handler name for logging and debugging
+	 */
+	abstract public function getName(): string;
 
 	/**
 	 * Get scope (default 'global')
@@ -123,11 +126,14 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 						"show_alert" => $showAlert,
 					]);
 				} elseif ($options["send_as_message"] && $options["message_chat_id"]) {
+					$parseMode = $options["parse_mode"] ?? "Markdown";
+					$text = $this->safeText($text, $parseMode);
+
 					// Send as regular message instead
 					$this->telegramApi->sendMessage(
 						$options["message_chat_id"],
 						$text,
-						"MarkdownV2",
+						$parseMode,
 						$options["message_options"]
 					);
 
@@ -153,104 +159,6 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 
 			return false;
 		}
-	}
-
-	/**
-	 * Edit message with safety checks
-	 */
-	protected function editMessage(
-		int $chatId,
-		int $messageId,
-		string $text,
-		?array $replyMarkup = null,
-		array $options = []
-	): bool {
-		try {
-			$options = array_merge(
-				[
-					"parse_mode" => "Markdown",
-					"disable_web_page_preview" => true,
-					"auto_truncate" => true,
-					"auto_escape" => true,
-				],
-				$options
-			);
-
-			// Check message length
-			if (mb_strlen($text) > self::MAX_EDIT_MESSAGE_LENGTH) {
-				if ($options["auto_truncate"]) {
-					$text = $this->truncateText($text, self::MAX_EDIT_MESSAGE_LENGTH);
-					Log::warning("Edit message text truncated", [
-						"chat_id" => $chatId,
-						"message_id" => $messageId,
-						"max_length" => self::MAX_EDIT_MESSAGE_LENGTH,
-					]);
-				} else {
-					throw new \Exception(
-						"Message text exceeds maximum length of " .
-							self::MAX_EDIT_MESSAGE_LENGTH .
-							" characters"
-					);
-				}
-			}
-
-			if ($options["auto_escape"]) {
-				$text = TelegramMarkdownHelper::safeText($text, $options["parse_mode"]);
-			}
-
-			return $this->telegramApi->editMessageText(
-				$chatId,
-				$messageId,
-				$text,
-				$replyMarkup,
-				$options["parse_mode"]
-			);
-		} catch (\Exception $e) {
-			Log::error("Failed to edit message", [
-				"chat_id" => $chatId,
-				"message_id" => $messageId,
-				"error" => $e->getMessage(),
-			]);
-			return false;
-		}
-	}
-
-	/**
-	 * Delete message
-	 */
-	protected function deleteMessage(int $chatId, int $messageId): bool
-	{
-		try {
-			return $this->telegramApi->deleteMessage($chatId, $messageId);
-		} catch (\Exception $e) {
-			Log::error("Failed to delete message", [
-				"chat_id" => $chatId,
-				"message_id" => $messageId,
-				"error" => $e->getMessage(),
-			]);
-			return false;
-		}
-	}
-
-	/**
-	 * Truncate text to specified length with ellipsis
-	 */
-	protected function truncateText(string $text, int $maxLength): string
-	{
-		if (mb_strlen($text) <= $maxLength) {
-			return $text;
-		}
-
-		// Subtract 3 for ellipsis
-		$truncated = mb_substr($text, 0, $maxLength - 3);
-
-		// Ensure we don't cut in the middle of a word (optional)
-		$lastSpace = mb_strrpos($truncated, " ");
-		if ($lastSpace !== false && $lastSpace > $maxLength - 10) {
-			$truncated = mb_substr($truncated, 0, $lastSpace);
-		}
-
-		return $truncated . "...";
 	}
 
 	/**
@@ -282,24 +190,6 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 	}
 
 	/**
-	 * Get error answer for failed operations
-	 */
-	protected function getErrorAnswer(string $error = ""): string
-	{
-		$base = "Terjadi kesalahan saat memproses permintaan.";
-
-		if (!empty($error)) {
-			// Shorten error message if too long
-			if (mb_strlen($error) > 50) {
-				$error = mb_substr($error, 0, 47) . "...";
-			}
-			return $base . "\n" . $error;
-		}
-
-		return $base;
-	}
-
-	/**
 	 * Handle callback with automatic answer
 	 */
 	protected function handleCallbackWithAutoAnswer(
@@ -314,7 +204,12 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 
 			if (!$callbackId) {
 				Log::error("Missing callback ID in context", ["context" => $context]);
-				return ["status" => "error", "message" => "Missing callback ID"];
+				return [
+					"status" => "error",
+					"message" => "Missing callback ID",
+					"answer" => "Missing callback",
+					"show_alert" => true,
+				];
 			}
 
 			// Validate callback data
@@ -326,7 +221,9 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 				);
 				return [
 					"status" => "invalid_data",
-					"message" => "Invalid callback data",
+					"message" => $this->getUnknownCallbackAnswer(),
+					"answer" => "Invalid callback",
+					"show_alert" => false,
 				];
 			}
 
@@ -451,47 +348,5 @@ abstract class BaseCallbackHandler implements TelegramCallbackHandlerInterface
 
 			$this->telegramApi->sendMessage($chatId, $text, $parseMode, $replyMarkup);
 		}
-	}
-
-	/**
-	 * Create edit message data structure
-	 */
-	protected function createEditMessageData(
-		string $text,
-		?array $replyMarkup = null,
-		string $parseMode = "Markdown",
-		bool $autoEscape = true
-	): array {
-		if ($autoEscape) {
-			$text = TelegramMarkdownHelper::safeText($text, $parseMode);
-		}
-
-		return [
-			"text" => $text,
-			"reply_markup" => $replyMarkup,
-			"parse_mode" => $parseMode,
-			"auto_escape" => $autoEscape,
-		];
-	}
-
-	/**
-	 * Create send message data structure
-	 */
-	protected function createSendMessageData(
-		string $text,
-		?array $replyMarkup = null,
-		string $parseMode = "Markdown",
-		bool $autoEscape = true
-	): array {
-		if ($autoEscape) {
-			$text = TelegramMarkdownHelper::safeText($text, $parseMode);
-		}
-
-		return [
-			"text" => $text,
-			"reply_markup" => $replyMarkup,
-			"parse_mode" => $parseMode,
-			"auto_escape" => $autoEscape,
-		];
 	}
 }
