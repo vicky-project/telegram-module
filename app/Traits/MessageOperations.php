@@ -208,7 +208,7 @@ trait MessageOperations
 		try {
 			// Auto-escape text if needed
 			if ($options["auto_escape"] ?? true) {
-				$text = TelegramMarkdownHelper::safeText($text, $parseMode);
+				$text = $this->escapeText($text, $parseMode);
 			}
 
 			return $this->telegramApi->sendMessage(
@@ -274,7 +274,7 @@ trait MessageOperations
 		bool $autoEscape = true
 	): array {
 		if ($autoEscape) {
-			$text = TelegramMarkdownHelper::safeText($text, $parseMode);
+			$text = $this->escapeText($text, $parseMode);
 		}
 
 		return [
@@ -295,7 +295,7 @@ trait MessageOperations
 		bool $autoEscape = true
 	): array {
 		if ($autoEscape) {
-			$text = TelegramMarkdownHelper::safeText($text, $parseMode);
+			$text = $this->escapeText($text, $parseMode);
 		}
 
 		return [
@@ -316,7 +316,7 @@ trait MessageOperations
 		bool $autoEscape = true
 	): array {
 		if ($autoEscape) {
-			$text = TelegramMarkdownHelper::safeText($text, $parseMode);
+			$text = $this->escapeText($text, $parseMode);
 		}
 
 		return [
