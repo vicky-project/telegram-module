@@ -2,6 +2,7 @@
 namespace Modules\Telegram\Services\Handlers\Commands;
 
 use Modules\Telegram\Interfaces\TelegramCommandInterface;
+use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Support\TelegramApi;
 
 class StartCommand implements TelegramCommandInterface
@@ -31,13 +32,16 @@ class StartCommand implements TelegramCommandInterface
 		?string $username = null,
 		array $params = []
 	): array {
-		$user = $params["user"] ?? null;
+		$service = app(TelegramService::class);
+		$user = $service->getUserByChatId($chatId);
 
 		$message = $user
 			? $this->getWelcomeMessageForLinkedUser($user)
 			: $this->getWelcomeMessageForNewUser();
 
-		$this->telegramApi->sendMessage($chatId, $message, "Markdown");
+		$this->telegramApi->sendMessage($chatId, $message, "Markdown", [
+			"login_url" => config("telegram.widgets.redirect_url_login"),
+		]);
 
 		return ["status" => "start", "user_linked" => (bool) $user];
 	}
@@ -61,7 +65,8 @@ class StartCommand implements TelegramCommandInterface
 			"Untuk menghubungkan akun Anda:\n" .
 			"1. Login ke aplikasi web\n" .
 			"2. Buka Menu Settings → Telegram Integration\n" .
-			"3. Klik pada tombol Telegram untuk menghubungkan\n\n" .
+			"3. Klik pada tombol Telegram untuk menghubungkan\n" .
+			"4. Atau klik link: https://vickyserver.my.id/server/settings\n\n" .
 			"Gunakan /help untuk perintah lainnya.";
 	}
 }

@@ -52,12 +52,15 @@ class TelegramApi
 		array $options = []
 	): bool {
 		try {
-			$params = [
-				"chat_id" => $chatId,
-				"text" => $text,
-				"parse_mode" => $parseMode,
-				"disable_web_page_preview" => $options["disable_preview"] ?? true,
-			];
+			$params = array_merge(
+				[
+					"chat_id" => $chatId,
+					"text" => $text,
+					"parse_mode" => $parseMode,
+					"disable_web_page_preview" => $options["disable_preview"] ?? true,
+				],
+				$options
+			);
 
 			if ($replyMarkup) {
 				// bisa berupa keyboard atau force reply

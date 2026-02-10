@@ -8,13 +8,13 @@ class TelegramMarkdownHelper
 	 */
 	private const MARKDOWNV2_ESCAPE_CHARS = [
 		"_",
-		"*",
+		//"*",
 		"[",
 		"]",
 		"(",
 		")",
-		"~",
-		"`",
+		//"~",
+		//"`",
 		">",
 		"#",
 		"+",
