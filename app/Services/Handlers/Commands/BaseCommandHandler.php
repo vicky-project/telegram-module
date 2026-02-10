@@ -1,5 +1,5 @@
 <?php
-namespace Modules\Telegram\Services\Handlers;
+namespace Modules\Telegram\Services\Handlers\Commands;
 
 use Modules\Telegram\Interfaces\TelegramCommandInterface;
 use Modules\Telegram\Services\Support\TelegramApi;
