@@ -76,6 +76,10 @@ trait MessageOperations
 				$parseMode = "Markdown";
 			}
 
+			if ($parseMode === "MarkdownV2") {
+				$text = $this->escapeText($text, $parseMode);
+			}
+
 			$this->editMessage($chatId, $messageId, $text, $replyMarkup, [
 				"parse_mode" => $parseMode,
 			]);
@@ -89,7 +93,7 @@ trait MessageOperations
 		// Send new message
 		if (isset($result["send_message"])) {
 			$sendData = $result["send_message"];
-			$text = $sendData["text"] ?? "";
+			$text = $sendData["text"] ?? "No Text";
 			$replyMarkup = $sendData["reply_markup"] ?? null;
 			$parseMode = $sendData["parse_mode"] ?? "Markdown";
 
