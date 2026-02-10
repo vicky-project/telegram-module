@@ -76,9 +76,14 @@ trait MessageOperations
 				$parseMode = "Markdown";
 			}
 
-			$this->editMessage($chatId, $messageId, $text, $replyMarkup, [
-				"parse_mode" => $parseMode,
-			]);
+			$editData = array_merge(
+				[
+					"parse_mode" => $parseMode,
+				],
+				$editData
+			);
+
+			$this->editMessage($chatId, $messageId, $text, $replyMarkup, $editData);
 		}
 
 		// Delete existing message
@@ -271,12 +276,9 @@ trait MessageOperations
 		string $text,
 		?array $replyMarkup = null,
 		string $parseMode = "Markdown",
-		bool $autoEscape = true
+		bool $autoEscape = true,
+		?array $options = []
 	): array {
-		if ($autoEscape) {
-			$text = $this->escapeText($text, $parseMode);
-		}
-
 		return [
 			"text" => $text,
 			"reply_markup" => $replyMarkup,
