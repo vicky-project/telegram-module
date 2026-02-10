@@ -217,12 +217,16 @@ class CallbackHandler
 
 		// Then, try pattern matching
 		foreach ($this->handlers as $pattern => $handler) {
-			Log::info("Try match pattern callback..", ["pattern" => $pattern]);
-
 			if ($this->patternMatches($pattern, $callbackData, $parsedData)) {
 				return $handler;
 			}
 		}
+
+		Log::warning("Handler not found.", [
+			"callback_data" => $callbackData,
+			"pattern_available" => array_keys($this->handlers),
+			"parsed_data" => $parsedData,
+		]);
 
 		return null;
 	}
@@ -242,11 +246,6 @@ class CallbackHandler
 
 		// Check for pattern match
 		$regex = $this->patternToRegex($pattern);
-		Log::info("Result convert pattern to regex: " . $regex, [
-			"pattern" => $pattern,
-			"callback_data" => $callbackData,
-			"regex" => $regex,
-		]);
 
 		if (preg_match($regex, $callbackData)) {
 			return true;
@@ -269,10 +268,6 @@ class CallbackHandler
 	): bool {
 		$patternParts = explode(":", $pattern);
 		$dataParts = explode(":", $parsedData["full"]);
-		Log::info("Trying match hierarchical pattern.", [
-			"pattern_parts" => $patternParts,
-			"data_parts" => $dataParts,
-		]);
 
 		if (count($patternParts) !== count($parsedData)) {
 			return false;
