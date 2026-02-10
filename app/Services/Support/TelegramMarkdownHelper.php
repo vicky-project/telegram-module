@@ -112,6 +112,10 @@ class TelegramMarkdownHelper
 	): string {
 		$parseMode = $parseMode ?? "Markdown";
 
+		if (self::needsEscaping($text, $parseMode)) {
+			return self::escapeMarkdownV2($text);
+		}
+
 		// If text contains code blocks, preserve them
 		if (str_contains($text, "```") || str_contains($text, "`")) {
 			return self::escapeCodeBlocks($text, $parseMode);

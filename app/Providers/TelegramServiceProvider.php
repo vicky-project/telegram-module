@@ -46,7 +46,7 @@ class TelegramServiceProvider extends ServiceProvider
 
 		if (
 			config($this->nameLower . ".hooks.enabled", false) &&
-			class_exists($class = config($this->nameLower . ".hooks.class"))
+			class_exists($class = config($this->nameLower . ".hooks.service"))
 		) {
 			$this->registerHooks($class);
 		}
@@ -159,7 +159,7 @@ class TelegramServiceProvider extends ServiceProvider
 	{
 		// Add telegram section in user profile settings
 		$hookService::add(
-			"social.accounts",
+			config($this->nameLower . ".hooks.name"),
 			function ($data) {
 				if (Auth::check()) {
 					$user = Auth::user();
