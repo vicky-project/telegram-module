@@ -10,6 +10,7 @@ return [
 		"webhook_url" => env("TELEGRAM_WEBHOOK_URL", "/api/telegram/webhook"),
 		"webhook_secret" => env("TELEGRAM_WEBHOOK_SECRET"),
 		"admin" => env("TELEGRAM_ADMINS", ""), // String of id with comma separated
+		"allowed_updates" => ["message", "callback_query", "edited_message"],
 	],
 
 	"widgets" => [

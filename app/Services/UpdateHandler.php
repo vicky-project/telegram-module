@@ -87,7 +87,7 @@ class UpdateHandler
 		$params = [
 			"url" => $url,
 			"max_connections" => 40,
-			"allowed_updates" => ["message", "callback_query", "edited_message"],
+			"allowed_updates" => config("telegram.bot.allowed_updates", ["message"]),
 		];
 
 		if ($secretToken) {
