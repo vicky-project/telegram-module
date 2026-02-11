@@ -32,6 +32,7 @@ class MessageHandler
 			"chat_id" => $chatId,
 			"username" => $username,
 			"text" => $text,
+			"reply" => $message->getReplyToMessage(),
 		]);
 
 		// Handle command

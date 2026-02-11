@@ -65,13 +65,14 @@ trait MessageOperations
 		if (isset($result["edit_message"]) && $messageId) {
 			$editData = $result["edit_message"];
 			$text = $editData["text"] ?? "";
-			$replyMarkup = null;
-			if (isset($editData["reply_markup"])) {
-				$replyMarkup = $editData["reply_markup"];
-				unset($editData["reply_markup"]);
-			}
-
+			$replyMarkup = $editData["reply_markup"] ?? null;
 			$parseMode = $editData["parse_mode"] ?? "Markdown";
+
+			if (!$this->isValidEditReplyMarkup($replyMarkup)) {
+				throw new \InvalidArgumentException(
+					"editMessageText only support for inline_keyboard"
+				);
+			}
 
 			if (!in_array($parseMode, $validParseModes)) {
 				Log::warning("Invalid parse_mode specified, using Markdown", [
@@ -181,6 +182,16 @@ trait MessageOperations
 			]);
 			return false;
 		}
+	}
+
+	protected function isValidEditReplyMarkup(?array $replyMarkup): bool
+	{
+		if ($replyMarkup === null) {
+			return true;
+		}
+
+		$keys = array_keys($replyMarkup);
+		return count($keys) === 1 && $keys[0] === "inline_keyboard";
 	}
 
 	/**

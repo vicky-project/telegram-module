@@ -90,6 +90,15 @@ class TelegramApi
 		?string $parseMode = null
 	): bool {
 		try {
+			if ($replyMarkup !== null) {
+				$keys = array_keys($replyMarkup);
+				if (count($keys) !== 1 || $keys[0] !== "inline_keyboard") {
+					throw new TelegramSDKException(
+						"Invalid reply_markup for edit message text. Only inline_keyboard is allowed"
+					);
+				}
+			}
+
 			$params = [
 				"chat_id" => $chatId,
 				"message_id" => $messageId,
@@ -105,7 +114,6 @@ class TelegramApi
 				$params["reply_markup"] = json_encode($replyMarkup);
 			}
 
-			Log::info("Preparing to edit message telegram", $params);
 			if ($this->telegram) {
 				$this->telegram->editMessageText($params);
 				return true;
