@@ -65,7 +65,12 @@ trait MessageOperations
 		if (isset($result["edit_message"]) && $messageId) {
 			$editData = $result["edit_message"];
 			$text = $editData["text"] ?? "";
-			$replyMarkup = $editData["reply_markup"] ?? null;
+			$replyMarkup = null;
+			if (isset($editData["reply_markup"])) {
+				$replyMarkup = $editData["reply_markup"];
+				unset($editData["reply_markup"]);
+			}
+
 			$parseMode = $editData["parse_mode"] ?? "Markdown";
 
 			if (!in_array($parseMode, $validParseModes)) {
@@ -76,12 +81,7 @@ trait MessageOperations
 				$parseMode = "Markdown";
 			}
 
-			$editData = array_merge(
-				[
-					"parse_mode" => $parseMode,
-				],
-				$editData
-			);
+			$editData["parse_mode"] = $parseMode;
 
 			$this->editMessage($chatId, $messageId, $text, $replyMarkup, $editData);
 		}
@@ -165,7 +165,7 @@ trait MessageOperations
 			if ($options["auto_escape"]) {
 				$text = $this->escapeText($text, $options["parse_mode"]);
 			}
-			Log::info("Preparing edit data using options: ", [
+			Log::info("Preparing edit message using data options: ", [
 				"reply_markup" => $replyMarkup,
 				"options" => $options,
 			]);
