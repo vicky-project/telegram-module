@@ -119,6 +119,7 @@ class InlineKeyboardBuilder
 
 	/**
 	 * Build grid keyboard from items
+	 * @item array of necessary key (text, value, and action)
 	 * format:
 	 * [
 	 *   [
@@ -136,7 +137,9 @@ class InlineKeyboardBuilder
 		$keyboard = [];
 		$row = [];
 
+		\Log::info("Populating keyboard...");
 		foreach ($items as $index => $item) {
+			\Log::info("Using item:", $item);
 			$row[] = [
 				"text" => $item["text"],
 				"callback_data" => GlobalCallbackBuilder::build(
