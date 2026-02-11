@@ -131,11 +131,8 @@ class InlineKeyboardBuilder
 	 *   ]
 	 * ]
 	 */
-	public function grid(
-		array $items,
-		int $columns = 2,
-		string $action = "select"
-	): array {
+	public function grid(array $items, int $columns = 2): array
+	{
 		$keyboard = [];
 		$row = [];
 
@@ -146,7 +143,7 @@ class InlineKeyboardBuilder
 					$this->scope,
 					$this->module ?? null,
 					$this->entity ?? null,
-					$action,
+					$item["action"],
 					$item["value"]
 				),
 			];
