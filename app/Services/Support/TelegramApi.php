@@ -105,6 +105,7 @@ class TelegramApi
 				$params["reply_markup"] = json_encode($replyMarkup);
 			}
 
+			Log::info("Preparing to edit message telegram", $params);
 			if ($this->telegram) {
 				$this->telegram->editMessageText($params);
 				return true;

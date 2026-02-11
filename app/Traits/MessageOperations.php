@@ -165,10 +165,6 @@ trait MessageOperations
 			if ($options["auto_escape"]) {
 				$text = $this->escapeText($text, $options["parse_mode"]);
 			}
-			Log::info("Preparing edit message using data options: ", [
-				"reply_markup" => $replyMarkup,
-				"options" => $options,
-			]);
 
 			return $this->telegramApi->editMessageText(
 				$chatId,
