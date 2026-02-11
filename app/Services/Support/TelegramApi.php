@@ -116,7 +116,7 @@ class TelegramApi
 				"chat_id" => $chatId,
 				"message_id" => $messageId,
 				"error" => $e->getMessage(),
-				"trace" => $getTraceAsString(),
+				"trace" => $e->getTraceAsString(),
 			]);
 			return false;
 		}
