@@ -5,7 +5,7 @@ use Modules\Telegram\Interfaces\TelegramReplyHandlerInterface;
 use Modules\Telegram\Services\Support\TelegramApi;
 use Modules\Telegram\Traits\MessageOperations;
 
-abstract class BaseReplyHandler implements ReplyHandlerInterface
+abstract class BaseReplyHandler implements TelegramReplyHandlerInterface
 {
 	use MessageOperations;
 
