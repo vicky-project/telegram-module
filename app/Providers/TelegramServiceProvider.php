@@ -176,6 +176,7 @@ class TelegramServiceProvider extends ServiceProvider
 		$this->app->bind(MessageHandler::class, function ($app) {
 			return new MessageHandler(
 				$this->app->make(CommandDispatcher::class),
+				$this->app->make(ReplyDispatcher::class),
 				$this->app->make(TelegramApi::class)
 			);
 		});
