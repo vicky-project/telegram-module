@@ -271,7 +271,8 @@ trait MessageOperations
 		string $text,
 		?array $replyMarkup = null,
 		string $parseMode = "Markdown",
-		array $options = []
+		array $options = [],
+		?bool $withResponse = false
 	): bool {
 		try {
 			// Auto-escape text if needed
@@ -284,7 +285,8 @@ trait MessageOperations
 				$text,
 				$parseMode,
 				$replyMarkup,
-				$options
+				$options,
+				$withResponse
 			);
 		} catch (\Exception $e) {
 			Log::error("Failed to send message", [
