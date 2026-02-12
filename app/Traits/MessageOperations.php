@@ -3,6 +3,7 @@ namespace Modules\Telegram\Traits;
 
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Services\Support\TelegramMarkdownHelper;
+use Modules\Telegram\Services\Support\CacheReplyStateManager;
 
 trait MessageOperations
 {
@@ -85,6 +86,31 @@ trait MessageOperations
 			$editData["parse_mode"] = $parseMode;
 
 			$this->editMessage($chatId, $messageId, $text, $replyMarkup, $editData);
+
+			if (
+				isset($replyMarkup["force_reply"]) &&
+				$replyMarkup["force_reply"] === true
+			) {
+				$handlerIdentifier = $result["reply_handler"]["identifier"] ?? null;
+				$context = $result["reply_handler"]["context"] ?? [];
+
+				if ($handlerIdentifier) {
+					// simpan state reply
+					CacheReplyStateManager::expectReply(
+						$chatId,
+						$messageId,
+						$handlerIdentifier,
+						$context
+					);
+				} else {
+					Log::warning(
+						"Force reply in edit message needs a key for reply_handler.identifier",
+						["result" => $result]
+					);
+
+					// Do something or skip
+				}
+			}
 		}
 
 		// Delete existing message
@@ -104,6 +130,26 @@ trait MessageOperations
 			}
 
 			$this->sendMessage($chatId, $text, $replyMarkup, $parseMode);
+
+			if (
+				isset($replyMarkup["force_reply"]) &&
+				$replyMarkup["force_reply"] === true
+			) {
+				$handlerIdentifier = $result["reply_handler"]["identifier"] ?? null;
+				$context = $result["reply_handler"]["context"] ?? [];
+
+				if ($handlerIdentifier) {
+					// simpan state reply
+					$this->expectReply($chatId, $handlerIdentifier, $context);
+				} else {
+					Log::warning(
+						"Force reply in edit message needs a key for reply_handler.identifier",
+						["result" => $result]
+					);
+
+					// Do something or skip
+				}
+			}
 		}
 
 		// Send message with inline keyboard
@@ -191,7 +237,13 @@ trait MessageOperations
 		}
 
 		$keys = array_keys($replyMarkup);
-		return count($keys) === 1 && $keys[0] === "inline_keyboard";
+		if (count($keys) === 1 && $keys[0] === "inline_keyboard") {
+			return true;
+		}
+		if (count($keys) === 1 && $keys[0] === "force_reply") {
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -380,5 +432,66 @@ trait MessageOperations
 			$parseMode,
 			$options
 		);
+	}
+
+	public function sendMessageWithResponse(
+		int $chatId,
+		string $text,
+		?string $parseMode = "Markdown",
+		?array $replyMarkup = null,
+		array $options = []
+	): ?array {
+		try {
+			$response = $this->sendMessage(
+				$chatId,
+				$text,
+				$replyMarkup,
+				$parseMode,
+				$options
+			);
+			return $response->getDecodedBody();
+		} catch (\Exception $e) {
+			Log::error("Failed to get raw body response", [
+				"message" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
+			]);
+			return null;
+		}
+	}
+
+	/**
+	 * Helper untuk mengirim pesan dan menyimpan state reply (opsional, bisa dipanggil dari command/callback)
+	 */
+	protected function expectReply(
+		int $chatId,
+		string $handlerIdentifier,
+		array $context = [],
+		string $text = "Silakan masukkan input:",
+		?array $replyMarkup = null
+	): array {
+		$replyMarkup = $replyMarkup ?? ["force_reply" => true];
+		$response = $this->sendMessageWithResponse(
+			$chatId,
+			$text,
+			"Markdown",
+			$replyMarkup
+		);
+		$messageId = $response["message_id"] ?? null;
+
+		if ($messageId) {
+			CacheReplyStateManager::expectReply(
+				$chatId,
+				$messageId,
+				$handlerIdentifier,
+				$context
+			);
+		}
+
+		return [
+			"status" => "awaiting_reply",
+			"chat_id" => $chatId,
+			"message_id" => $messageId,
+			"handler" => $handlerIdentifier,
+		];
 	}
 }

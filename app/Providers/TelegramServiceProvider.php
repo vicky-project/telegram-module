@@ -14,6 +14,7 @@ use Modules\Telegram\Services\TelegramService;
 use Modules\Telegram\Services\Handlers\CallbackHandler;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
 use Modules\Telegram\Services\Handlers\MessageHandler;
+use Modules\Telegram\Services\Handlers\ReplyDispatcher;
 use Modules\Telegram\Services\Handlers\Callbacks\UnlinkCallback;
 use Modules\Telegram\Services\Handlers\Commands\HelpCommand;
 use Modules\Telegram\Services\Handlers\Commands\StartCommand;
@@ -125,6 +126,24 @@ class TelegramServiceProvider extends ServiceProvider
 		);
 	}
 
+	protected function registerReplyHandlers(
+		ReplyDispatcher $replyDispatcher
+	): void {
+		// $replyDispatcher->registerHandler();
+	}
+
+	protected function registerReplyMiddlewares(
+		ReplyDispatcher $replyDispatcher
+	): void {
+		$replyDispatcher->registerMiddleware(
+			"auth",
+			new AuthMiddleware(
+				$this->app->make(TelegramService::class),
+				$this->app->make(TelegramApi::class)
+			)
+		);
+	}
+
 	/**
 	 * Register the service provider.
 	 */
@@ -145,6 +164,13 @@ class TelegramServiceProvider extends ServiceProvider
 			$this->registerCallbackHandlers($callback);
 			$this->registerCallbackMiddlewares($callback);
 			return $callback;
+		});
+
+		$this->app->singleton(ReplyDispatcher::class, function ($app) {
+			$replyDispatcher = new ReplyDispatcher();
+			$this->registerReplyHandlers($replyDispatcher);
+			$this->registerReplyMiddlewares($replyDispatcher);
+			return $replyDispatcher;
 		});
 
 		$this->app->bind(MessageHandler::class, function ($app) {

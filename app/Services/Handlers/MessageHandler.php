@@ -4,18 +4,22 @@ namespace Modules\Telegram\Services\Handlers;
 use Telegram\Bot\Objects\Message;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
+use Modules\Telegram\Services\Handlers\ReplyDispatcher;
 use Modules\Telegram\Services\Support\TelegramApi;
 
 class MessageHandler
 {
 	protected CommandDispatcher $commandDispatcher;
+	protected ReplyDispatcher $replyDispatcher;
 	protected TelegramApi $telegramApi;
 
 	public function __construct(
 		CommandDispatcher $commandDispatcher,
+		ReplyDispatcher $replyDispatcher,
 		TelegramApi $telegramApi
 	) {
 		$this->commandDispatcher = $commandDispatcher;
+		$this->replyDispatcher = $replyDispatcher;
 		$this->telegramApi = $telegramApi;
 	}
 
@@ -27,6 +31,7 @@ class MessageHandler
 		$chatId = $message->getChat()->getId();
 		$text = $message->getText() ?? "";
 		$username = $message->getChat()->getUsername();
+		$replyToMessage = $message->getReplyToMessage();
 
 		Log::info("Telegram message received", [
 			"chat_id" => $chatId,
@@ -38,6 +43,20 @@ class MessageHandler
 		// Handle command
 		if ($this->isCommand($text)) {
 			return $this->commandDispatcher->handleCommand($chatId, $text, $username);
+		}
+
+		if (
+			$replyToMessage &&
+			$replyToMessage()
+				->getFrom()
+				->isBot()
+		) {
+			// handle replyToMessage
+			return $this->replyDispatcher->handleReply(
+				$chatId,
+				$text,
+				$replyToMessage->getMessageId()
+			);
 		}
 
 		// Handle regular text message
