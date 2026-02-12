@@ -52,11 +52,15 @@ class ReplyDispatcher
 		int $chatId,
 		string $replyText,
 		int $replyToMessageId
-	): ?array {
+	): array {
 		$state = CacheReplyStateManager::getReplyState($chatId, $replyToMessageId);
 
 		if (!$state) {
-			return null;
+			return [
+				"status" => "unknown_state",
+				"answer" => "Tidak ada apa apa disni",
+				"message" => "Nothing else here",
+			];
 		}
 
 		$handlerIdentifier = $state["handler"];
@@ -102,9 +106,14 @@ class ReplyDispatcher
 			Log::error("Reply handler execution failed", [
 				"handler" => $handlerIdentifier,
 				"error" => $e->getMessage(),
+				"trace" => $e->getTraceAsString(),
 			]);
 			CacheReplyStateManager::forgetReply($chatId, $replyToMessageId);
-			throw $e;
+			return [
+				"status" => "handler_failed",
+				"answer" => "Reply handler execution failed",
+				"chat_id" => $chatId,
+			];
 		}
 	}
 
