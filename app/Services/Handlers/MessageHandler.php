@@ -37,7 +37,7 @@ class MessageHandler
 			"chat_id" => $chatId,
 			"username" => $username,
 			"text" => $text,
-			"reply" => $message->getReplyToMessage(),
+			"reply" => $replyToMessage,
 		]);
 
 		// Handle command
@@ -45,12 +45,7 @@ class MessageHandler
 			return $this->commandDispatcher->handleCommand($chatId, $text, $username);
 		}
 
-		if (
-			$replyToMessage &&
-			$replyToMessage()
-				->getFrom()
-				->isBot()
-		) {
+		if ($replyToMessage) {
 			// handle replyToMessage
 			return $this->replyDispatcher->handleReply(
 				$chatId,
