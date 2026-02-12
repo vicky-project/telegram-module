@@ -447,7 +447,8 @@ trait MessageOperations
 				$text,
 				$replyMarkup,
 				$parseMode,
-				$options
+				$options,
+				true
 			);
 			return $response->getDecodedBody();
 		} catch (\Exception $e) {
