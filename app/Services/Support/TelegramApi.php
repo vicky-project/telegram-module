@@ -49,8 +49,9 @@ class TelegramApi
 		string $text,
 		?string $parseMode = null,
 		?array $replyMarkup = null,
-		array $options = []
-	): bool {
+		array $options = [],
+		?bool $withResponse = false
+	): bool|object {
 		try {
 			$params = array_merge(
 				[
@@ -67,8 +68,9 @@ class TelegramApi
 				$params["reply_markup"] = json_encode($replyMarkup);
 			}
 			if ($this->telegram) {
-				$this->telegram->sendMessage($params);
-				return true;
+				$result = $this->telegram->sendMessage($params);
+
+				return $withResponse ? $result : true;
 			}
 
 			return false;
