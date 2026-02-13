@@ -2,6 +2,7 @@
 namespace Modules\Telegram\Services\Support;
 
 use Telegram\Bot\Api;
+use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Illuminate\Support\Facades\Log;
 
@@ -51,7 +52,7 @@ class TelegramApi
 		?array $replyMarkup = null,
 		array $options = [],
 		?bool $withResponse = false
-	): bool|object {
+	): bool|Message {
 		try {
 			$params = array_merge(
 				[
