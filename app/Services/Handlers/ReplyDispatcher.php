@@ -56,7 +56,10 @@ class ReplyDispatcher
 		$state = CacheReplyStateManager::getReplyState($chatId, $replyToMessageId);
 
 		if (!$state) {
-			Log::warning("Nothing state saved.");
+			Log::warning("Nothing state saved.", [
+				"chat_id" => $chatId,
+				"reply_to_message_id" => $replyToMessageId,
+			]);
 			return [
 				"status" => "unknown_state",
 				"answer" => "Tidak ada apa apa disni",
