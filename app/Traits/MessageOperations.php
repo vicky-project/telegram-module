@@ -1,6 +1,7 @@
 <?php
 namespace Modules\Telegram\Traits;
 
+use Telegram\Bot\Objects\Message;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Services\Support\TelegramMarkdownHelper;
 use Modules\Telegram\Services\Support\CacheReplyStateManager;
@@ -273,7 +274,7 @@ trait MessageOperations
 		string $parseMode = "Markdown",
 		array $options = [],
 		?bool $withResponse = false
-	): bool {
+	): bool|Message {
 		try {
 			// Auto-escape text if needed
 			if ($options["auto_escape"] ?? true) {
