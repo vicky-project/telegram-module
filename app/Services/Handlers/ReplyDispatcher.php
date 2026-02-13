@@ -60,6 +60,7 @@ class ReplyDispatcher
 				"status" => "unknown_state",
 				"answer" => "Tidak ada apa apa disni",
 				"message" => "Nothing else here",
+				"show_alert" => true,
 			];
 		}
 
@@ -72,6 +73,7 @@ class ReplyDispatcher
 				"status" => "unknown_handler",
 				"chat_id" => $chatId,
 				"answer" => "Reply not found.",
+				"show_alert" => true,
 			];
 		}
 
@@ -93,6 +95,10 @@ class ReplyDispatcher
 			// Cek apakah middleware memblokir handler
 			if ($this->isBlocked($result)) {
 				// Hapus state karena request diblokir
+				Log::warning("Message wes blocked", [
+					"status" => $result["status"],
+					"answer" => $result["answer"],
+				]);
 				CacheReplyStateManager::forgetReply($chatId, $replyToMessageId);
 			}
 
@@ -113,6 +119,7 @@ class ReplyDispatcher
 				"status" => "handler_failed",
 				"answer" => "Reply handler execution failed",
 				"chat_id" => $chatId,
+				"show_alert" => true,
 			];
 		}
 	}
