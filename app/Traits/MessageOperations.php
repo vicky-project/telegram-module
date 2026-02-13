@@ -130,8 +130,6 @@ trait MessageOperations
 				$parseMode = "Markdown";
 			}
 
-			$this->sendMessage($chatId, $text, $replyMarkup, $parseMode);
-
 			if (
 				isset($replyMarkup["force_reply"]) &&
 				$replyMarkup["force_reply"] === true
@@ -141,7 +139,7 @@ trait MessageOperations
 
 				if ($handlerIdentifier) {
 					// simpan state reply
-					$this->expectReply($chatId, $handlerIdentifier, $context);
+					$this->expectReply($chatId, $handlerIdentifier, $context, $text);
 				} else {
 					Log::warning(
 						"Force reply in edit message needs a key for reply_handler.identifier",
@@ -150,6 +148,8 @@ trait MessageOperations
 
 					// Do something or skip
 				}
+			} else {
+				$this->sendMessage($chatId, $text, $replyMarkup, $parseMode);
 			}
 		}
 
@@ -238,13 +238,7 @@ trait MessageOperations
 		}
 
 		$keys = array_keys($replyMarkup);
-		if (count($keys) === 1 && $keys[0] === "inline_keyboard") {
-			return true;
-		}
-		if (count($keys) === 1 && $keys[0] === "force_reply") {
-			return true;
-		}
-		return false;
+		return count($keys) === 1 && $keys[0] === "inline_keyboard";
 	}
 
 	/**
@@ -471,16 +465,19 @@ trait MessageOperations
 		string $handlerIdentifier,
 		array $context = [],
 		string $text = "Silakan masukkan input:",
+		?int $messageId = null,
 		?array $replyMarkup = null
 	): array {
 		$replyMarkup = $replyMarkup ?? ["force_reply" => true];
-		$response = $this->sendMessageWithResponse(
-			$chatId,
-			$text,
-			"Markdown",
-			$replyMarkup
-		);
-		$messageId = $response["message_id"] ?? null;
+		if (!$messageId) {
+			$response = $this->sendMessageWithResponse(
+				$chatId,
+				$text,
+				"Markdown",
+				$replyMarkup
+			);
+			$messageId = $response["message_id"] ?? null;
+		}
 
 		if ($messageId) {
 			CacheReplyStateManager::expectReply(
