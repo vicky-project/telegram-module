@@ -488,6 +488,12 @@ trait MessageOperations
 			);
 		}
 
+		Log::info("Saving state", [
+			"chat_id" => $chatId,
+			"message_id" => $messageId,
+			"handling_identifier" => $handlerIdentifier,
+		]);
+
 		return [
 			"status" => "awaiting_reply",
 			"chat_id" => $chatId,
