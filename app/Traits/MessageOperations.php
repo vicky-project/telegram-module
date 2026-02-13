@@ -439,7 +439,7 @@ trait MessageOperations
 		array $options = []
 	): ?array {
 		try {
-			$response = $this->sendMessage(
+			return $this->sendMessage(
 				$chatId,
 				$text,
 				$replyMarkup,
@@ -447,7 +447,6 @@ trait MessageOperations
 				$options,
 				true
 			);
-			return $response->getDecodedBody();
 		} catch (\Exception $e) {
 			Log::error("Failed to get raw body response", [
 				"message" => $e->getMessage(),
@@ -476,7 +475,7 @@ trait MessageOperations
 				"Markdown",
 				$replyMarkup
 			);
-			$messageId = $response["message_id"] ?? null;
+			$messageId = $response->getMessageId() ?? null;
 			Log::info("Getting message_id with: " . $messageId, [
 				"response" => $response,
 			]);
