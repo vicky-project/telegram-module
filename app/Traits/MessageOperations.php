@@ -477,7 +477,9 @@ trait MessageOperations
 				$replyMarkup
 			);
 			$messageId = $response["message_id"] ?? null;
-			Log::info("Getting message_id with: " . $messageId);
+			Log::info("Getting message_id with: " . $messageId, [
+				"response" => $response,
+			]);
 		}
 
 		if ($messageId) {
