@@ -108,7 +108,7 @@ class ReplyDispatcher
 
 			// Hapus state jika tidak ada flag keep_reply_state
 			if (!($result["keep_reply_state"] ?? false)) {
-				CacheReplyStateManage::forgetReply($chatId, $replyToMessageId);
+				CacheReplyStateManager::forgetReply($chatId, $replyToMessageId);
 			}
 
 			return $result;
