@@ -437,7 +437,7 @@ trait MessageOperations
 		?string $parseMode = "Markdown",
 		?array $replyMarkup = null,
 		array $options = []
-	): ?array {
+	): ?Message {
 		try {
 			return $this->sendMessage(
 				$chatId,
