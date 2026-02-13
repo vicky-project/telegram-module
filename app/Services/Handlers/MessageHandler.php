@@ -42,11 +42,13 @@ class MessageHandler
 
 		// Handle command
 		if ($this->isCommand($text)) {
+			Log::info("Handling command");
 			return $this->commandDispatcher->handleCommand($chatId, $text, $username);
 		}
 
 		if ($replyToMessage) {
 			// handle replyToMessage
+			Log::info("Handling to reply message");
 			return $this->replyDispatcher->handleReply(
 				$chatId,
 				$text,
