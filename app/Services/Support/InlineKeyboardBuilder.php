@@ -147,7 +147,7 @@ class InlineKeyboardBuilder
 					$this->module ?? null,
 					$this->entity ?? null,
 					$item["callback_data"]["action"],
-					$item["callback_data"]["value"]
+					$item["callback_data"]["value"] ?? null
 				);
 			}
 
