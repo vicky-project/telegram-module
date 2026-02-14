@@ -152,7 +152,7 @@ class InlineKeyboardBuilder
 			}
 
 			if (isset($item["url"])) {
-				$data["url"] = $item['$url'];
+				$data["url"] = $item["url"];
 			}
 
 			if (isset($item["login_url"])) {
