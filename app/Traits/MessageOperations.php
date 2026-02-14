@@ -106,7 +106,7 @@ trait MessageOperations
 				} else {
 					Log::warning(
 						"Force reply in edit message needs a key for reply_handler.identifier",
-						["result" => $result]
+						["reply_handler" => $result["reply_handler"]]
 					);
 
 					// Do something or skip
@@ -143,7 +143,7 @@ trait MessageOperations
 				} else {
 					Log::warning(
 						"Force reply in edit message needs a key for reply_handler.identifier",
-						["result" => $result]
+						["reply_handler" => $result["reply_handler"]]
 					);
 
 					// Do something or skip
@@ -168,6 +168,16 @@ trait MessageOperations
 
 			$this->sendMessage($chatId, $text, $replyMarkup, $parseMode);
 		}
+	}
+
+	protected function isValidEditReplyMarkup(?array $replyMarkup): bool
+	{
+		if ($replyMarkup === null) {
+			return true;
+		}
+
+		$keys = array_keys($replyMarkup);
+		return count($keys) === 1 && $keys[0] === "inline_keyboard";
 	}
 
 	/**
@@ -231,16 +241,6 @@ trait MessageOperations
 		}
 	}
 
-	protected function isValidEditReplyMarkup(?array $replyMarkup): bool
-	{
-		if ($replyMarkup === null) {
-			return true;
-		}
-
-		$keys = array_keys($replyMarkup);
-		return count($keys) === 1 && $keys[0] === "inline_keyboard";
-	}
-
 	/**
 	 * Delete message
 	 */
@@ -291,6 +291,18 @@ trait MessageOperations
 			]);
 			return false;
 		}
+	}
+
+	protected function answerCallbackQuery(
+		int $callbackQueryId,
+		string $text,
+		?bool $showAlert = null
+	): bool {
+		return $this->telegramApi->answerCallbackQuery(
+			$callbackQueryId,
+			$text,
+			$showAlert ?? strlen($text) > 100
+		);
 	}
 
 	/**
@@ -476,9 +488,7 @@ trait MessageOperations
 				$replyMarkup
 			);
 			$messageId = $response->getMessageId() ?? null;
-			Log::info("Getting message_id with: " . $messageId, [
-				"response" => $response,
-			]);
+			Log::info("Getting message_id with: " . $messageId);
 		}
 
 		if ($messageId) {
