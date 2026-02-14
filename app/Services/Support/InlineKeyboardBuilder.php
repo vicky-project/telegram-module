@@ -139,17 +139,27 @@ class InlineKeyboardBuilder
 
 		\Log::info("Populating keyboard...");
 		foreach ($items as $index => $item) {
-			\Log::info("Using item:", $item);
-			$row[] = [
-				"text" => $item["text"],
-				"callback_data" => GlobalCallbackBuilder::build(
+			$data = ["text" => $item["text"]];
+
+			if (isset($item["callback_data"])) {
+				$data["callback_data"] = GlobalCallbackBuilder::build(
 					$this->scope,
 					$this->module ?? null,
 					$this->entity ?? null,
-					$item["action"],
-					$item["value"]
-				),
-			];
+					$item["callback_data"]["action"],
+					$item["callback_data"]["value"]
+				);
+			}
+
+			if (isset($item["url"])) {
+				$data["url"] = $item['$url'];
+			}
+
+			if (isset($item["login_url"])) {
+				$data["login_url"] = $item["login_url"];
+			}
+
+			$row[] = $data;
 
 			if (count($row) >= $columns) {
 				$keyboard[] = $row;
