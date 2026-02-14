@@ -84,7 +84,7 @@ class InlineKeyboardBuilder
 	 */
 	public function confirmation(
 		string $action,
-		string $itemId,
+		?string $itemId = null,
 		string $confirmText = "✅ Ya",
 		string $cancelText = "❌ Batal"
 	): array {

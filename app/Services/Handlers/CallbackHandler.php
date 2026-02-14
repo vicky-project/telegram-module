@@ -342,7 +342,7 @@ class CallbackHandler
 	/**
 	 * Answer callback query to remove loading state
 	 */
-	private function answerCallbackQuery(string $callbackId, string $text): void
+	private function answerCallbackQuery(int $callbackId, string $text): void
 	{
 		try {
 			$this->telegramApi->answerCallbackQuery(
