@@ -175,7 +175,7 @@ class UnlinkCallback extends BaseCallbackHandler
 				"Anda dapat terus menggunakan semua fitur.";
 
 			return [
-				"edit_message" => ["text" => $this->createEditMessageData($message)],
+				"edit_message" => $this->createEditMessageData($message),
 			];
 		} catch (\RuntimeException $e) {
 			Log::error("Failed to delete message.", [
