@@ -1,5 +1,5 @@
 <?php
-namespace Modules\Telegam\Http\Middleware;
+namespace Modules\Telegram\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
