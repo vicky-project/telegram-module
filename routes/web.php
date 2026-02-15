@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\Telegram\Http\Controllers\TelegramController;
+use Modules\Telegram\Http\Controllers\TelegramMiniAppController;
 
 Route::prefix("telegram")
 	->name("telegram.")
@@ -20,4 +21,8 @@ Route::prefix("telegram")
 			TelegramController::class,
 			"redirectLogin",
 		])->name("redirect-login");
+
+		Route::get("mini-app", [TelegramMiniAppController::class, "index"])->name(
+			"mini-app"
+		);
 	});
