@@ -25,12 +25,40 @@
             </div>
         </div>
     </div>
+    
+    <!-- Toast container -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Notifikasi</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body"></div>
+  </div>
+</div>
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Telegram Web App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
     <script>
+      function showToast(message, type = 'success') {
+        const toastEl = document.getElementById('liveToast');
+        const toastBody = toastEl.querySelector('.toast-body');
+        toastBody.textContent = message;
+
+        // Reset kelas warna
+        toastEl.classList.remove('bg-success', 'bg-danger', 'text-white');
+        if (type === 'success') {
+          toastEl.classList.add('bg-success', 'text-white');
+        } else {
+          toastEl.classList.add('bg-danger', 'text-white');
+        }
+
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+      }
+        
         (function() {
             // Inisialisasi Telegram WebApp
             const tg = window.Telegram.WebApp;
