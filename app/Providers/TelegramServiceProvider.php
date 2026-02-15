@@ -51,6 +51,11 @@ class TelegramServiceProvider extends ServiceProvider
 		) {
 			$this->registerHooks($class);
 		}
+
+		$this->app["router"]->aliasMiddleware(
+			"telegram",
+			\Modules\Telegram\Http\Middleware\TelegramApp::class
+		);
 	}
 
 	// Register middleware
