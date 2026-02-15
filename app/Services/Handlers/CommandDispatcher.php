@@ -120,7 +120,6 @@ class CommandDispatcher
 			Log::info("Command executed successfully", [
 				"command" => $commandName,
 				"chat_id" => $chatId,
-				"result" => $result,
 			]);
 
 			return $result;

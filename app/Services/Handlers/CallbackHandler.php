@@ -100,7 +100,6 @@ class CallbackHandler
 				"message_id" => $messageId,
 				"user_id" => $userId,
 				"username" => $username,
-				"callback_data" => $callbackData,
 			]);
 
 			// Parse callback data
