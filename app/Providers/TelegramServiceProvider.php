@@ -191,7 +191,7 @@ class TelegramServiceProvider extends ServiceProvider
 	{
 		// Add telegram section in user profile settings
 		$hookService::add(
-			config($this->nameLower . ".hooks.name"),
+			"social-accounts",
 			function ($data) {
 				if (Auth::check()) {
 					$user = Auth::user();
@@ -211,6 +211,24 @@ class TelegramServiceProvider extends ServiceProvider
 			},
 			10
 		);
+
+		$hookService::add("main-footer", function ($data) {
+			$telegramService = $this->app->make(TelegramService::class);
+			// For Auth user
+			if (Auth::check()) {
+				$user = Auth::user();
+				return view("telegram::partials.telegram_profile", [
+					"user" => $user,
+				])->render();
+			}
+
+			// For guest
+			if ($telegramService->checkDeviceKnown()) {
+				return view("telegram::auth.button")->render();
+			}
+
+			return view("telegram::auth.login-button")->render();
+		});
 
 		// Add telegram button login in auth form
 		$hookService::add(

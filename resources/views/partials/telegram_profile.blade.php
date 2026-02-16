@@ -1,0 +1,1 @@
+<img src="{{ $user->profile?->image()}}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="{{ $user->name}}">
