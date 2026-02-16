@@ -218,17 +218,10 @@ class TelegramServiceProvider extends ServiceProvider
 			// For Auth user
 			if (request()->user()) {
 				$user = request()->user();
-				return view("telegram::partials.telegram_profile", [
+				return view("telegram::partials.main-footer", [
 					"user" => $user,
 				])->render();
 			}
-
-			// For guest
-			if ($telegramService->checkDeviceKnown()) {
-				return view("telegram::auth.button")->render();
-			}
-
-			return view("telegram::auth.login-button")->render();
 		});
 
 		// Add telegram button login in auth form
