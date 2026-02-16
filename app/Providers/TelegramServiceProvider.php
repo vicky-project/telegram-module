@@ -213,10 +213,11 @@ class TelegramServiceProvider extends ServiceProvider
 		);
 
 		$hookService::add("main-footer", function ($data) {
+			return view()->render("telegram::partials.main-footer");
 			$telegramService = $this->app->make(TelegramService::class);
 			// For Auth user
-			if (Auth::check()) {
-				$user = Auth::user();
+			if (request()->user()) {
+				$user = request()->user();
 				return view("telegram::partials.telegram_profile", [
 					"user" => $user,
 				])->render();
