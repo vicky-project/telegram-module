@@ -213,15 +213,7 @@ class TelegramServiceProvider extends ServiceProvider
 		);
 
 		$hookService::add("main-footer", function ($data) {
-			return view()->render("telegram::partials.main-footer");
-			$telegramService = $this->app->make(TelegramService::class);
-			// For Auth user
-			if (request()->user()) {
-				$user = request()->user();
-				return view("telegram::partials.main-footer", [
-					"user" => $user,
-				])->render();
-			}
+			return view("telegram::partials.main-footer")->view();
 		});
 
 		// Add telegram button login in auth form
