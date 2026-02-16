@@ -42,7 +42,6 @@ return [
 	// Inject telegram connect button and detail to User Management Module profile via hook core's.
 	"hooks" => [
 		"enabled" => true,
-		"name" => "social.accounts",
 		"service" => \Modules\Core\Services\HookService::class,
 		"icon-provider" => "fontawesome", // fontawesome, bootstrap-icon
 	],

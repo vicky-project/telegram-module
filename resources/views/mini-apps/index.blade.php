@@ -99,9 +99,11 @@
                 })
                 .then(response => response.json())
                 .then(result => {
+                console.log(result)
                     tg.showAlert('Data terkirim!');
                 })
                 .catch(error => {
+                console.log(error)
                     tg.showAlert('Gagal mengirim data.');
                 });
             });

@@ -1,0 +1,1 @@
+<a href="{{ route('login') }}" class="btn btn-block" style="background-color: var(--tg-theme-button-text-color); color: var(--tg-theme-button-color);">Login</a>
