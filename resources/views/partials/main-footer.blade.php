@@ -4,7 +4,7 @@
 
 @guest()
 @php
-$tgService = app(\Modules\Telegram\Services\TelegramService;:class);
+$tgService = app(\Modules\Telegram\Services\TelegramService::class);
 @endphp
 
 @if($tgService->checkDeviceKnown())
