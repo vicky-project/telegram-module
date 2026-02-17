@@ -25,7 +25,6 @@ return [
 			"TELEGRAM_AUTH_REDIRECT_URL",
 			url("/telegram/redirect-auth")
 		),
-		"route_after_auth" => "cores.dashboard", // Route name for after login with telegram
 
 		// for form login
 		"redirect_url_login" => env(
