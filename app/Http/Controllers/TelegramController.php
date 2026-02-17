@@ -126,7 +126,7 @@ class TelegramController extends Controller
 			}
 
 			return redirect()
-				->route(config("telegram.widgets.route_after_auth", "home"))
+				->intended()
 				->with("success", "Welcome Back: " . $user->name);
 		} catch (\Exception $e) {
 			return back()->withErrors($e->getMessage());
