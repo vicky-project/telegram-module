@@ -213,7 +213,7 @@ class TelegramServiceProvider extends ServiceProvider
 		);
 
 		$hookService::add("main-footer", function ($data) {
-			return view("telegram::partials.main-footer")->view();
+			return view("telegram::partials.main-footer")->render();
 		});
 
 		// Add telegram button login in auth form
