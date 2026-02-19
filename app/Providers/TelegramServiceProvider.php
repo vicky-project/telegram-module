@@ -62,6 +62,7 @@ class TelegramServiceProvider extends ServiceProvider
 			return new \Modules\Telegram\Auth\TelegramGuard(
 				Auth::createUserProvider($config["provider"]),
 				$app["request"],
+				$app->make("session"),
 				$app->make(TelegramService::class)
 			);
 		});
