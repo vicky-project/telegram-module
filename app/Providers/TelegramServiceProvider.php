@@ -56,6 +56,19 @@ class TelegramServiceProvider extends ServiceProvider
 			"telegram",
 			\Modules\Telegram\Http\Middleware\TelegramApp::class
 		);
+
+		Auth::extend("telegram", function ($app, $name, array $config) {
+			$provider = Auth::createUserProvider($config["provider"]);
+			return new \Modules\Telegram\Auth\TelegramGuard(
+				$provider,
+				$app["request"]
+			);
+		});
+
+		$this->app["config"]->set("auth.guards.telegram", [
+			"driver" => "telegram",
+			"provider" => "users",
+		]);
 	}
 
 	// Register middleware
