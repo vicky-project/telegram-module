@@ -20,7 +20,7 @@
 		"joshbrw/laravel-module-installer": "^1.0",
 		"irazasyed/telegram-bot-sdk": "^3.15",
 		"vicky-project/core-module": "^1.0",
-		"vicky-project/usermanagement-module": "dev-dev"
+		"vicky-project/usermanagement-module": "^1.1"
 	},
 	"autoload": {
 		"psr-4": {
