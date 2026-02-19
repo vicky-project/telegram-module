@@ -33,5 +33,7 @@
 		"psr-4": {
 			"Modules\\Telegram\\Tests\\": "tests/"
 		}
-	}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true
 }
