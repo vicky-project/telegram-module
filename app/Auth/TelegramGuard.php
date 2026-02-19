@@ -5,7 +5,9 @@ namespace Modules\Telegram\Auth;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
+use Illuminate\Session\SessionManager;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Modules\Telegram\Services\TelegramService;
@@ -15,17 +17,19 @@ class TelegramGuard implements Guard
 	use GuardHelpers;
 
 	protected $request;
-	protected $provider;
+	protected $session;
 	protected $botToken;
 	protected $service;
 
 	public function __construct(
 		UserProvider $provider,
 		Request $request,
+		SessionManager $session,
 		TelegramService $service
 	) {
 		$this->provider = $provider;
 		$this->request = $request;
+		$this->session = $session;
 		$this->service = $service;
 		$this->botToken = config("telegram.bot.token");
 	}
@@ -37,6 +41,15 @@ class TelegramGuard implements Guard
 	{
 		if ($this->user !== null) {
 			return $this->user;
+		}
+
+		$userId = $this->session->get("telegram_user_id");
+		if ($userId) {
+			$user = $this->provider->retrieveById($userId);
+			if ($user) {
+				$this->user = $user;
+				return $user;
+			}
 		}
 
 		// Jika tidak ada parameter 'hash', tolak
@@ -61,8 +74,7 @@ class TelegramGuard implements Guard
 		try {
 			$user = $this->service->processTelegram($params);
 			if ($user) {
-				Auth::guard("web")->login($user);
-				$this->user = $user;
+				$this->setUser($user);
 				return $user;
 			}
 		} catch (\Exception $e) {
@@ -73,6 +85,13 @@ class TelegramGuard implements Guard
 		}
 
 		return null;
+	}
+
+	public function setUser(Authenticatable $user)
+	{
+		Auth::guard("web")->login($user);
+		$this->user = $user;
+		$this->session->put("telegram_user_id", $user->getAuthIdentifier());
 	}
 
 	/**
