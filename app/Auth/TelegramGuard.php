@@ -6,6 +6,7 @@ use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Modules\Telegram\Services\TelegramService;
 
@@ -60,6 +61,7 @@ class TelegramGuard implements Guard
 		try {
 			$user = $this->service->processTelegram($params);
 			if ($user) {
+				Auth::guard("web")->login($user);
 				$this->user = $user;
 				return $user;
 			}
