@@ -1,8 +1,8 @@
-@auth
+@auth('telegram')
 <img src="{{ auth()->user()->profile?->image()}}" class="img-fluid rounded-circle" style="width: 50px; height: 50px;" alt="{{ auth()->user()->name}}">
 @endauth
 
-@guest
+@guest('telegram')
 @php
 $tgService = app(\Modules\Telegram\Services\TelegramService::class);
 @endphp
