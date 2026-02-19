@@ -5,6 +5,7 @@ namespace Modules\Telegram\Providers;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
@@ -58,14 +59,13 @@ class TelegramServiceProvider extends ServiceProvider
 		);
 
 		Auth::extend("telegram", function ($app, $name, array $config) {
-			$provider = Auth::createUserProvider($config["provider"]);
 			return new \Modules\Telegram\Auth\TelegramGuard(
-				$provider,
+				Auth::createUserProvider($config["provider"]),
 				$app["request"]
 			);
 		});
 
-		$this->app["config"]->set("auth.guards.telegram", [
+		Config::set("auth.guards.telegram", [
 			"driver" => "telegram",
 			"provider" => "users",
 		]);
