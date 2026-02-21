@@ -1,18 +1,21 @@
-<h3 class="card-title mb-4 pb-2 border-bottom border-success">Telegram</h3>
+<h5 class="card-title mb-0 fw-bold" style="color: var(--tg-theme-text-color);">
+  <i class="bi bi-telegram me-2" style="color: var(--tg-theme-button-color);"></i>
+  Telegram
+</h5>
 <div id="telegram-info" class="row align-items-center">
   <div class="col-md-8">
     <div class="d-flex align-items-center mb-2">
       <div class="me-3">
-        <span class="badge bg-success status-badge">
-          <i class="me-1" id="telegram-connected-icon"></i> <span id="telegram-connected-status"></span>
+        <span class="badge status-badge" id="telegram-status-badge" style="background-color: var(--tg-theme-button-color);color: var(--tg-theme-button-text-color);">
+          <i class="bi me-1" id="telegram-connected-icon"></i> <span id="telegram-connected-status"></span>
         </span>
       </div>
       <div>
-        <p class="mb-0">
-          <span class="text-muted">Akun:</span>
+        <p class="mb-0" style="color: var(--tg-theme-text-color);">
+          <span style="color: var(--tg-theme-hint-color) !important;">Akun:</span>
           <strong id="telegram-username"></strong>
         </p>
-        <small class="text-muted" id="telegram-chat-id">Chat ID: -</small>
+        <small style="color: var(--tg-theme-hint-color) !important;" id="telegram-chat-id">Chat ID: -</small>
       </div>
     </div>
   </div>
@@ -29,7 +32,7 @@
 
 <div class="row mt-3">
   <div class="col-md-12">
-    <div class="d-flex align-items-center">
+    <div class="d-flex align-items-start">
       <div class="flex-shrink-0">
         <i class="
         @switch(config('telegram.injection.icon-provider', 'fontawesome'))
@@ -40,16 +43,16 @@
             bi bi-robot
             @break
         @endswitch
-        fs-2 text-secondary"></i>
+        fs-2" style="color: var(--tg-theme-button-color);"></i>
       </div>
       <div class="flex-grow-1 ms-3">
-        <h6 class="card-title mb-1">Informasi Bot Telegram</h6>
-        <p class="card-text mb-2">
-          Nama Bot: <a href="https://t.me/{{ config('telegram.bot.username') }}">
+        <h6 class="fw-semibold mb-1" style="color: var(--tg-theme-text-color);">Informasi Bot Telegram</h6>
+        <p class="mb-2" style="color: var(--tg-theme-text-color);">
+          Nama Bot: <a href="https://t.me/{{ config('telegram.bot.username') }}" style="color: var(--tg-theme-button-color);text-decoration: none;">
           <strong><span>@</span>{{ config('telegram.bot.username') }}</strong>
           </a>
+        <small style="color: var(--tg-theme-hint-color);">
         </p>
-        <small class="text-muted">
           <i class="
           @switch(config('telegram.injection.icon-provider', 'fontawesome'))
             @case('fontawesome')
@@ -214,6 +217,7 @@
       connectedStatus: document.getElementById('telegram-connected-status'),
       telegramBtnLink: document.getElementById('telegram-btn-connect'),
       btnDisconnectContainer: document.getElementById('btn-disconnect-container'),
+      statusBadge: document.getElementById('telegram-status-badge'),
     };
     
     const telegram = @json($telegram);
@@ -230,9 +234,22 @@
       elems.chatId.textContent = `Chat ID: ${telegram.telegram_id}`;
       elems.connectedIcon.className = getIconConnected(true) + ' me-1';
       elems.connectedStatus.textContent = 'Connected';
+      
+      if(elems.statusBadge){
+        elems.statusBadge.style.backgroundColor = '#28a745';
+      }
+      
       elems.btnDisconnectContainer.innerHTML = `
-        <button type="button" id="btn-disconnect" class="btn btn-sm btn-outline-danger" onclick="disconnect('${telegram.telegram_id}');">Disconnect</button>
+        <button type="button" id="btn-disconnect" class="btn btn-sm" style="background-color: transparent;color: var(--tg-theme-button-color);border: 1px solid var(--tg-theme-button-color);" onclick="disconnect('${telegram.telegram_id}');">Disconnect</button>
       `;
     }
   });
 </script>
+
+<style>
+  #telegram-status-badge {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 50px;
+  }
+</style>
