@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class TelegramApi
 {
-	protected ?Api $telegram;
+	protected ?Api $telegram = null;
 
 	public function __construct()
 	{
@@ -51,7 +51,7 @@ class TelegramApi
 		?string $parseMode = null,
 		?array $replyMarkup = null,
 		array $options = [],
-		?bool $withResponse = false
+		?bool $withResponse = false,
 	): bool|Message {
 		try {
 			$params = array_merge(
@@ -61,7 +61,7 @@ class TelegramApi
 					"parse_mode" => $parseMode,
 					"disable_web_page_preview" => $options["disable_preview"] ?? true,
 				],
-				$options
+				$options,
 			);
 
 			if ($replyMarkup) {
@@ -91,14 +91,14 @@ class TelegramApi
 		int $messageId,
 		string $text,
 		?array $replyMarkup = null,
-		?string $parseMode = null
+		?string $parseMode = null,
 	): bool {
 		try {
 			if ($replyMarkup !== null) {
 				$keys = array_keys($replyMarkup);
 				if (count($keys) !== 1 || $keys[0] !== "inline_keyboard") {
 					throw new TelegramSDKException(
-						"Invalid reply_markup for edit message text. Only inline_keyboard is allowed"
+						"Invalid reply_markup for edit message text. Only inline_keyboard is allowed",
 					);
 				}
 			}
@@ -160,7 +160,7 @@ class TelegramApi
 	public function answerCallbackQuery(
 		string $callbackQueryId,
 		string $text,
-		bool $showAlert = false
+		bool $showAlert = false,
 	): bool {
 		if ($this->telegram) {
 			try {
