@@ -8,14 +8,12 @@ use Illuminate\Support\Facades\Log;
 
 class TelegramApi
 {
-	protected ?Api $telegram = null;
+	protected Api $telegram;
 
 	public function __construct()
 	{
 		$token = config("telegram.bot.token");
-		if ($token) {
-			$this->telegram = new Api($token);
-		}
+		$this->telegram = new Api($token);
 	}
 
 	public function setWebhook(array $config): bool|string
