@@ -1,4 +1,4 @@
-<h5 class="card-title mb-0 fw-bold" style="color: var(--tg-theme-text-color);">
+<h5 class="card-title mb-3 fw-bold" style="color: var(--tg-theme-text-color);">
   <i class="bi bi-telegram me-2" style="color: var(--tg-theme-button-color);"></i>
   Telegram
 </h5>
@@ -220,17 +220,17 @@
       statusBadge: document.getElementById('telegram-status-badge'),
     };
     
-    const telegram = @json($telegram);
-    if(telegram.length === 0 && !telegram.telegram_id) {
-      elems.telegramBtnLink.classList.remove('d-none');
-      elems.container.classList.remove('d-none');
-      elems.container.classList.add('d-none');
+    const telegram = @json($telegram ?? null);
+    if(!telegram && !telegram.telegram_id) {
+      elems.telegramBtnLink?.classList.remove('d-none');
+      elems.container?.classList.remove('d-none');
+      elems.container?.classList.add('d-none');
     } else {
-      elems.telegramBtnLink.classList.remove('d-none');
-      elems.telegramBtnLink.classList.add('d-none');
-      elems.container.classList.remove('d-none');
+      elems.telegramBtnLink?.classList.remove('d-none');
+      elems.telegramBtnLink?.classList.add('d-none');
+      elems.container?.classList.remove('d-none');
       
-      elems.username.textContent = `@${telegram.username}`;
+      elems.username.textContent = telegram.username ? `@${telegram.username}` : '-';
       elems.chatId.textContent = `Chat ID: ${telegram.telegram_id}`;
       elems.connectedIcon.className = getIconConnected(true) + ' me-1';
       elems.connectedStatus.textContent = 'Connected';
