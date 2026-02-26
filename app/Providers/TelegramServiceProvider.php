@@ -11,20 +11,7 @@ use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Modules\Telegram\Services\TelegramService;
-use Modules\Telegram\Services\Handlers\CallbackHandler;
-use Modules\Telegram\Services\Handlers\CommandDispatcher;
-use Modules\Telegram\Services\Handlers\MessageHandler;
-use Modules\Telegram\Services\Handlers\ReplyDispatcher;
-use Modules\Telegram\Services\Handlers\Callbacks\UnlinkCallback;
-use Modules\Telegram\Services\Handlers\Commands\HelpCommand;
-use Modules\Telegram\Services\Handlers\Commands\StartCommand;
-use Modules\Telegram\Services\Handlers\Commands\UnlinkCommand;
-use Modules\Telegram\Services\Middlewares\AuthMiddleware;
-use Modules\Telegram\Services\Middlewares\CallbackThrottleMiddleware;
-use Modules\Telegram\Services\Middlewares\IDValidationMiddleware;
-use Modules\Telegram\Services\Support\TelegramApi;
-use Modules\Telegram\Services\Support\TelegramIdentifier;
+use Modules\Telegram\Services;
 
 class TelegramServiceProvider extends ServiceProvider
 {
@@ -55,7 +42,7 @@ class TelegramServiceProvider extends ServiceProvider
 
 		$this->app["router"]->aliasMiddleware(
 			"telegram",
-			\Modules\Telegram\Http\Middleware\TelegramApp::class
+			\Modules\Telegram\Http\Middleware\VerifyTelegramData::class,
 		);
 
 		Auth::extend("telegram", function ($app, $name, array $config) {
@@ -63,7 +50,7 @@ class TelegramServiceProvider extends ServiceProvider
 				Auth::createUserProvider($config["provider"]),
 				$app["request"],
 				$app->make("session"),
-				$app->make(TelegramService::class)
+				$app->make(Services\TelegramService::class),
 			);
 		});
 
@@ -74,93 +61,99 @@ class TelegramServiceProvider extends ServiceProvider
 	}
 
 	// Register middleware
-	protected function registerMiddlewares(CommandDispatcher $dispatcher): void
-	{
+	protected function registerMiddlewares(
+		Services\Handlers\CommandDispatcher $dispatcher,
+	): void {
 		$dispatcher->registerMiddleware(
 			"auth",
-			new AuthMiddleware(
-				$this->app->make(TelegramService::class),
-				$this->app->make(TelegramApi::class)
-			)
+			new Services\Middlewares\AuthMiddleware(
+				$this->app->make(Services\TelegramService::class),
+				$this->app->make(Services\Support\TelegramApi::class),
+			),
 		);
 		$dispatcher->registerMiddleware(
 			"ids",
-			new IDValidationMiddleware(
-				$this->app->make(TelegramIdentifier::class),
-				$this->app->make(TelegramApi::class)
-			)
+			new Services\Middlewares\IDValidationMiddleware(
+				$this->app->make(Services\Support\TelegramIdentifier::class),
+				$this->app->make(Services\Support\TelegramApi::class),
+			),
 		);
 	}
 
 	// Register command
 	protected function registerCommandHandlers(
-		CommandDispatcher $dispatcher
+		Services\Handlers\CommandDispatcher $dispatcher,
 	): void {
 		$dispatcher->registerCommand(
-			new StartCommand($this->app->make(TelegramApi::class))
-		);
-		$dispatcher->registerCommand(
-			new HelpCommand($this->app->make(TelegramApi::class))
-		);
-		$dispatcher->registerCommand(
-			new UnlinkCommand(
-				$this->app->make(TelegramApi::class),
-				$this->app->make(TelegramService::class)
+			new Services\Handlers\Commands\StartCommand(
+				$this->app->make(Services\Support\TelegramApi::class),
 			),
-			["auth"]
+		);
+		$dispatcher->registerCommand(
+			new Services\Handlers\Commands\HelpCommand(
+				$this->app->make(Services\Support\TelegramApi::class),
+			),
+		);
+		$dispatcher->registerCommand(
+			new Services\Handlers\Commands\UnlinkCommand(
+				$this->app->make(Services\Support\TelegramApi::class),
+				$this->app->make(Services\TelegramService::class),
+			),
+			["auth"],
 		);
 	}
 
 	protected function registerCallbackMiddlewares(
-		CallbackHandler $callback
+		Services\Handlers\CallbackHandler $callback,
 	): void {
 		$callback->registerMiddleware(
 			"auth",
-			new AuthMiddleware(
-				$this->app->make(TelegramService::class),
-				$this->app->make(TelegramApi::class)
-			)
+			new Services\Middlewares\AuthMiddleware(
+				$this->app->make(Services\TelegramService::class),
+				$this->app->make(Services\Support\TelegramApi::class),
+			),
 		);
 		$callback->registerMiddleware(
 			"ids",
-			new IDValidationMiddleware(
-				$this->app->make(TelegramIdentifier::class),
-				$this->app->make(TelegramApi::class)
-			)
+			new Services\Middlewares\IDValidationMiddleware(
+				$this->app->make(Services\Support\TelegramIdentifier::class),
+				$this->app->make(Services\Support\TelegramApi::class),
+			),
 		);
 		$callback->registerMiddleware(
 			"callback-throttle",
-			new CallbackThrottleMiddleware()
+			new Services\Middlewares\CallbackThrottleMiddleware(),
 		);
 	}
 
-	protected function registerCallbackHandlers(CallbackHandler $callback): void
-	{
+	protected function registerCallbackHandlers(
+		Services\Handlers\CallbackHandler $callback,
+	): void {
 		// Add callback handler
 		$callback->registerHandler(
-			new UnlinkCallback(
-				$this->app->make(TelegramApi::class),
-				$this->app->make(TelegramService::class)
+			new Services\Handlers\Callbacks\UnlinkCallback(
+				$this->app->make(Services\Support\TelegramApi::class),
+				$this->app->make(Services\TelegramService::class),
 			),
-			["auth"]
+			["auth"],
 		);
 	}
 
 	protected function registerReplyHandlers(
-		ReplyDispatcher $replyDispatcher
+		Services\Handlers\ReplyDispatcher $replyDispatcher,
 	): void {
 		// $replyDispatcher->registerHandler();
 	}
 
 	protected function registerReplyMiddlewares(
-		ReplyDispatcher $replyDispatcher
+		Services\Handlers\ReplyDispatcher $replyDispatcher,
 	): void {
 		$replyDispatcher->registerMiddleware(
 			"auth",
-			new AuthMiddleware(
-				$this->app->make(TelegramService::class),
-				$this->app->make(TelegramApi::class)
-			)
+			new Services\Middlewares\AuthMiddleware(
+				$this->app->make(Services\TelegramService::class),
+				$this->app->make(Services\Support\TelegramApi::class),
+			),
 		);
 	}
 
@@ -172,34 +165,44 @@ class TelegramServiceProvider extends ServiceProvider
 		$this->app->register(EventServiceProvider::class);
 		$this->app->register(RouteServiceProvider::class);
 
-		$this->app->singleton(CommandDispatcher::class, function ($app) {
-			$dispatcher = new CommandDispatcher();
+		$this->app->singleton(Services\Handlers\CommandDispatcher::class, function (
+			$app,
+		) {
+			$dispatcher = new Services\Handlers\CommandDispatcher();
 			$this->registerCommandHandlers($dispatcher);
 			$this->registerMiddlewares($dispatcher);
 			return $dispatcher;
 		});
 
-		$this->app->singleton(CallbackHandler::class, function ($app) {
-			$callback = new CallbackHandler($app->make(TelegramApi::class));
+		$this->app->singleton(Services\Handlers\CallbackHandler::class, function (
+			$app,
+		) {
+			$callback = new Services\Handlers\CallbackHandler(
+				$app->make(Services\Support\TelegramApi::class),
+			);
 			$this->registerCallbackHandlers($callback);
 			$this->registerCallbackMiddlewares($callback);
 			return $callback;
 		});
 
-		$this->app->singleton(ReplyDispatcher::class, function ($app) {
-			$replyDispatcher = new ReplyDispatcher();
+		$this->app->singleton(Services\Handlers\ReplyDispatcher::class, function (
+			$app,
+		) {
+			$replyDispatcher = new Services\Handlers\ReplyDispatcher();
 			$this->registerReplyHandlers($replyDispatcher);
 			$this->registerReplyMiddlewares($replyDispatcher);
 			return $replyDispatcher;
 		});
 
-		$this->app->bind(MessageHandler::class, function ($app) {
-			return new MessageHandler(
-				$this->app->make(CommandDispatcher::class),
-				$this->app->make(ReplyDispatcher::class),
-				$this->app->make(TelegramApi::class)
+		$this->app->bind(Services\Handlers\MessageHandler::class, function ($app) {
+			return new Services\Handlers\MessageHandler(
+				$this->app->make(Services\Handlers\CommandDispatcher::class),
+				$this->app->make(Services\Handlers\ReplyDispatcher::class),
+				$this->app->make(Services\Support\TelegramApi::class),
 			);
 		});
+
+		$this->app->singleton(Services\TelegramAuthService::class);
 	}
 
 	protected function registerHooks($hookService): void
@@ -224,21 +227,21 @@ class TelegramServiceProvider extends ServiceProvider
 
 				return "";
 			},
-			10
+			10,
 		);
 
 		// Add telegram button login in auth form
 		$hookService::add(
 			"auth.socials",
 			function ($data) {
-				$service = app(TelegramService::class);
+				$service = app(Services\TelegramService::class);
 				if ($service->checkDeviceKnown()) {
 					return view("telegram::auth.button")->render();
 				}
 
 				return "";
 			},
-			10
+			10,
 		);
 	}
 
@@ -274,7 +277,7 @@ class TelegramServiceProvider extends ServiceProvider
 		} else {
 			$this->loadTranslationsFrom(
 				module_path($this->name, "lang"),
-				$this->nameLower
+				$this->nameLower,
 			);
 			$this->loadJsonTranslationsFrom(module_path($this->name, "lang"));
 		}
@@ -287,12 +290,12 @@ class TelegramServiceProvider extends ServiceProvider
 	{
 		$configPath = module_path(
 			$this->name,
-			config("modules.paths.generator.config.path")
+			config("modules.paths.generator.config.path"),
 		);
 
 		if (is_dir($configPath)) {
 			$iterator = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator($configPath)
+				new RecursiveDirectoryIterator($configPath),
 			);
 
 			foreach ($iterator as $file) {
@@ -300,12 +303,12 @@ class TelegramServiceProvider extends ServiceProvider
 					$config = str_replace(
 						$configPath . DIRECTORY_SEPARATOR,
 						"",
-						$file->getPathname()
+						$file->getPathname(),
 					);
 					$config_key = str_replace(
 						[DIRECTORY_SEPARATOR, ".php"],
 						[".", ""],
-						$config
+						$config,
 					);
 					$segments = explode(".", $this->nameLower . "." . $config_key);
 
@@ -324,7 +327,7 @@ class TelegramServiceProvider extends ServiceProvider
 
 					$this->publishes(
 						[$file->getPathname() => config_path($config)],
-						"config"
+						"config",
 					);
 					$this->merge_config_from($file->getPathname(), $key);
 				}
@@ -353,17 +356,17 @@ class TelegramServiceProvider extends ServiceProvider
 
 		$this->publishes(
 			[$sourcePath => $viewPath],
-			["views", $this->nameLower . "-module-views"]
+			["views", $this->nameLower . "-module-views"],
 		);
 
 		$this->loadViewsFrom(
 			array_merge($this->getPublishableViewPaths(), [$sourcePath]),
-			$this->nameLower
+			$this->nameLower,
 		);
 
 		Blade::componentNamespace(
 			config("modules.namespace") . "\\" . $this->name . "\\View\\Components",
-			$this->nameLower
+			$this->nameLower,
 		);
 	}
 
