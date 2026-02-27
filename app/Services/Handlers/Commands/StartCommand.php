@@ -30,7 +30,7 @@ class StartCommand implements TelegramCommandInterface
 		int $chatId,
 		string $text,
 		?string $username = null,
-		array $params = []
+		array $params = [],
 	): array {
 		$service = app(TelegramService::class);
 		$user = $service->getUserByChatId($chatId);
@@ -61,12 +61,14 @@ class StartCommand implements TelegramCommandInterface
 	 */
 	private function getWelcomeMessageForNewUser(): string
 	{
+		$baseUrl = config("app.url");
+
 		return "👋 Selamat datang di {$this->appName} Bot!\n\n" .
 			"Untuk menghubungkan akun Anda:\n" .
 			"1. Login ke aplikasi web\n" .
 			"2. Buka Menu Settings → Telegram Integration\n" .
 			"3. Klik pada tombol Telegram untuk menghubungkan\n" .
-			"4. Atau klik link: https://vickyserver.my.id/server/settings\n\n" .
+			"4. Atau klik link: {$baseUrl}/settings\n\n" .
 			"Gunakan /help untuk perintah lainnya.";
 	}
 }
