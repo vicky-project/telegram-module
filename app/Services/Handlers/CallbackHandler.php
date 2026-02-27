@@ -46,7 +46,7 @@ class CallbackHandler
 	 */
 	public function registerHandler(
 		TelegramCallbackHandlerInterface $handler,
-		array $middleware = []
+		array $middleware = [],
 	): void {
 		$pattern = $handler->getPattern();
 		$this->handlers[$pattern] = $handler;
@@ -67,7 +67,7 @@ class CallbackHandler
 	 */
 	public function registerMiddleware(
 		string $name,
-		TelegramMiddlewareInterface $middleware
+		TelegramMiddlewareInterface $middleware,
 	): void {
 		$this->middleware[$name] = $middleware;
 		Log::info("Callback middleware registered", ["name" => $name]);
@@ -122,7 +122,7 @@ class CallbackHandler
 
 			// Create middleware pipeline
 			$pipeline = $this->createPipeline($middlewareStack, function (
-				$context
+				$context,
 			) use ($handler, $parsedData) {
 				return $handler->handle($parsedData, $context);
 			});
@@ -148,13 +148,12 @@ class CallbackHandler
 			// Acknowledge callback query (to remove loading state)
 			$this->answerCallbackQuery(
 				$callbackId,
-				$result["answer"] ?? ($result["message"] ?? "Ok")
+				$result["answer"] ?? ($result["message"] ?? "Ok"),
 			);
 
 			Log::info("Callback handled successfully", [
 				"callback_id" => $callbackId,
 				"handler" => $handler->getName(),
-				"result" => array_keys($result),
 			]);
 
 			return array_merge($result, [
@@ -174,7 +173,7 @@ class CallbackHandler
 				$this->telegramApi->answerCallbackQuery(
 					$callbackQuery->getId(),
 					"Terjadi kesalahan saat memproses permintaan.",
-					true
+					true,
 				);
 			} catch (\Exception $alertError) {
 				Log::error("Failed to answer callback query with error", [
@@ -205,7 +204,7 @@ class CallbackHandler
 	 * Find matching handler for parsed callback data
 	 */
 	private function findMatchingHandler(
-		array $parsedData
+		array $parsedData,
 	): ?TelegramCallbackHandlerInterface {
 		$callbackData = $parsedData["full"];
 
@@ -236,7 +235,7 @@ class CallbackHandler
 	private function patternMatches(
 		string $pattern,
 		string $callbackData,
-		array $parsedData
+		array $parsedData,
 	): bool {
 		// Check for exact match if no wildcards
 		if ($pattern === $callbackData) {
@@ -263,7 +262,7 @@ class CallbackHandler
 
 	private function matchesHierarchicalPattern(
 		string $pattern,
-		array $parsedData
+		array $parsedData,
 	): bool {
 		$patternParts = explode(":", $pattern);
 		$dataParts = explode(":", $parsedData["full"]);
@@ -299,7 +298,7 @@ class CallbackHandler
 	 */
 	private function createPipeline(
 		array $middleware,
-		callable $handler
+		callable $handler,
 	): callable {
 		$pipeline = array_reduce(
 			array_reverse($middleware),
@@ -314,7 +313,7 @@ class CallbackHandler
 					return $middleware->handle($context, $next);
 				};
 			},
-			$handler
+			$handler,
 		);
 
 		return $pipeline;
@@ -347,7 +346,7 @@ class CallbackHandler
 			$this->telegramApi->answerCallbackQuery(
 				$callbackId,
 				$text,
-				strlen($text) > 100
+				strlen($text) > 100,
 			);
 		} catch (\Exception $e) {
 			Log::error("Failed to answer callback query", [
@@ -365,7 +364,7 @@ class CallbackHandler
 		$this->telegramApi->answerCallbackQuery(
 			$callbackId,
 			"Aksi tidak dikenali atau telah kadaluarsa.",
-			true
+			true,
 		);
 
 		Log::warning("Unknown callback handled", [

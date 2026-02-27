@@ -36,7 +36,6 @@ class MessageHandler
 		Log::info("Telegram message received", [
 			"chat_id" => $chatId,
 			"username" => $username,
-			"text" => $text,
 			"reply" => $replyToMessage,
 		]);
 
@@ -126,4 +125,5 @@ class MessageHandler
 			return null;
 		}
 	}
+}
 }
