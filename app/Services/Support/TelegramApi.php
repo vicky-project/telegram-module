@@ -68,7 +68,7 @@ class TelegramApi
 			}
 			if ($this->telegram) {
 				$result = $this->telegram->sendMessage($params);
-				Log::info("Resulting send message.", ["result" => $result]);
+				Log::info("Send message success.");
 
 				return $withResponse ? $result : true;
 			}
