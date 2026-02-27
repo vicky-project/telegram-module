@@ -16,7 +16,7 @@ class MessageHandler
 	public function __construct(
 		CommandDispatcher $commandDispatcher,
 		ReplyDispatcher $replyDispatcher,
-		TelegramApi $telegramApi
+		TelegramApi $telegramApi,
 	) {
 		$this->commandDispatcher = $commandDispatcher;
 		$this->replyDispatcher = $replyDispatcher;
@@ -51,7 +51,7 @@ class MessageHandler
 			return $this->replyDispatcher->handleReply(
 				$chatId,
 				$text,
-				$replyToMessage->getMessageId()
+				$replyToMessage->getMessageId(),
 			);
 		}
 
@@ -125,5 +125,4 @@ class MessageHandler
 			return null;
 		}
 	}
-}
 }
