@@ -1,44 +1,4 @@
 {
-<<<<<<< HEAD
-	"name": "vicky-project/telegram-module",
-	"type": "laravel-module",
-	"description": "Telegram module for application.",
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Vicky Rahman",
-			"email": "pratamavr@gmail.com"
-		}
-	],
-	"extra": {
-		"laravel": {
-			"providers": [],
-			"aliases": {}
-		}
-	},
-	"require": {
-		"php": "^8.2",
-		"joshbrw/laravel-module-installer": "^1.0",
-		"irazasyed/telegram-bot-sdk": "^3.15",
-		"vicky-project/core-module": "^1.0",
-		"vicky-project/usermanagement-module": "^1.1"
-	},
-	"autoload": {
-		"psr-4": {
-			"Modules\\Telegram\\": "app/",
-			"Modules\\Telegram\\Database\\Factories\\": "database/factories/",
-			"Modules\\Telegram\\Database\\Seeders\\": "database/seeders/"
-		}
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Modules\\Telegram\\Tests\\": "tests/"
-		}
-	},
-	"minimum-stability": "dev",
-	"prefer-stable": true
-}
-=======
   "name": "vicky-project/telegram-module",
   "type": "laravel-module",
   "license": "MIT",
@@ -74,4 +34,3 @@
     }
   }
 }
->>>>>>> 984b245 (updates)

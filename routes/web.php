@@ -1,28 +1,4 @@
 <?php
-<<<<<<< HEAD
-
-use Illuminate\Support\Facades\Route;
-use Modules\Telegram\Http\Controllers\TelegramController;
-
-Route::prefix("telegram")
-	->name("telegram.")
-	->group(function () {
-		Route::middleware(["auth"])->group(function () {
-			Route::get("redirect-auth", [
-				TelegramController::class,
-				"redirectAuth",
-			])->name("redirect-auth");
-		});
-		Route::post("unlink", [TelegramController::class, "unlink"])->name(
-			"unlink"
-		);
-
-		Route::get("redirect-login", [
-			TelegramController::class,
-			"redirectLogin",
-		])->name("redirect-login");
-	});
-=======
 use Illuminate\Support\Facades\Route;
 use Modules\Telegram\Http\Controllers\MiniApp\MiniAppController;
 use Modules\Telegram\Http\Controllers\Auth\TelegramLoginController;
@@ -39,4 +15,3 @@ Route::group(['prefix' => 'telegram', 'middleware' => ['web'], 'as' => 'telegram
 
   Route::get('/login/telegram', [TelegramLoginController::class, 'redirect'])->name('login');
 });
->>>>>>> 984b245 (updates)
