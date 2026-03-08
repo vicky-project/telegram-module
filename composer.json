@@ -15,7 +15,7 @@
     "socialiteproviders/telegram":"^4.1",
     "vicky-project/coreui-module": "^1.0",
     "vicky-project/users-module": "^1.0",
-    "vicky-project/socialaccount-module": "dev-dev"
+    "vicky-project/socialaccount-module": "^1.0"
   },
   "extra": {
     "laravel": {
