@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 class MiniAppController extends Controller
 {
-  public function dashboard() {
+  public function index() {
     // Ambil data user dari session (diset oleh middleware)
     $telegramUser = session('telegram_user');
     return view('telegram::index', compact('telegramUser'));
