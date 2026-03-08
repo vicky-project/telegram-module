@@ -7,7 +7,11 @@ use Illuminate\Http\Request;
 class ValidateTelegramWebAppData
 {
   public function handle(Request $request, Closure $next) {
-    $initData = $request->input('initData') ?? $request->header('X-Telegram-Init-Data');
+    \Log::debug("Incoming Request", [
+      "request" => $request->all()
+    ]);
+
+    $initData = $request->input('initData') ?? $request->header('X-Telegram-Init-Data') ?? $request->query('initData');
 
     if (!$initData) {
       abort(403, 'Missing Telegram init data');
