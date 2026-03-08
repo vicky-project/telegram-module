@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
 	"name": "vicky-project/telegram-module",
 	"type": "laravel-module",
 	"description": "Telegram module for application.",
@@ -37,3 +38,40 @@
 	"minimum-stability": "dev",
 	"prefer-stable": true
 }
+=======
+  "name": "vicky-project/telegram-module",
+  "type": "laravel-module",
+  "license": "MIT",
+  "description": "module for integrate bot telegram, mini app telegram, and login using telegram",
+  "authors": [{
+    "name": "Vicky Rahman",
+    "email": "pratamavr@gmail.com"
+  }],
+  "require": {
+    "php": "^8.2",
+    "joshbrw/laravel-module-installer": "^1.0",
+    "irazasyed/telegram-bot-sdk": "^3.15",
+    "vicky-project/coreui-module": "^1.0",
+    "vicky-project/users-module": "^1.0",
+    "vicky-project/socialaccount-module": "^1.0"
+  },
+  "extra": {
+    "laravel": {
+      "providers": ["Modules\\Telegram\\Providers\\TelegramServiceProvider"],
+      "aliases": {}
+    }
+  },
+  "autoload": {
+    "psr-4": {
+      "Modules\\Telegram\\": "app/",
+      "Modules\\Telegram\\Database\\Factories\\": "database/factories/",
+      "Modules\\Telegram\\Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Modules\\Telegram\\Tests\\": "tests/"
+    }
+  }
+}
+>>>>>>> 984b245 (updates)
