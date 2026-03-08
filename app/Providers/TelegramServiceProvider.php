@@ -2,6 +2,7 @@
 namespace Modules\Telegram\Providers;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
@@ -45,6 +46,10 @@ class TelegramServiceProvider extends ServiceProvider
     ) {
       $this->registerHooks($class);
     }
+
+    Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+      $event->extendSocialite('telegram', \SocialiteProviders\Telegram\Provider::class);
+    });
 
     $this->mergeConfigFrom(module_path($this->name, 'config/telegram.php'), 'services');
   }
