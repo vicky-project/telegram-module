@@ -34,7 +34,7 @@ class TelegramServiceProvider extends ServiceProvider
       \Modules\Telegram\Http\Middleware\ValidateTelegramWebAppData::class,
     );
 
-    if (Module::collections()->has('SocialAccount') && Module::isEnabled('SocialAccount') && class_exists($managerService = \Modules\SocialAccount\Services\SocialProviderManager::class)) {
+    if (Module::has('SocialAccount') && Module::isEnabled('SocialAccount') && class_exists($managerService = \Modules\SocialAccount\Services\SocialProviderManager::class)) {
       $manager = app($managerService);
       $manager->register(new TelegramProvider());
     }
