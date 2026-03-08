@@ -45,6 +45,8 @@ class TelegramServiceProvider extends ServiceProvider
     ) {
       $this->registerHooks($class);
     }
+
+    $this->mergeConfigFrom(module_path($this->name, 'config/telegram.php'), 'services');
   }
 
   /**
