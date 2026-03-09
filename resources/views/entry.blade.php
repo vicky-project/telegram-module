@@ -67,7 +67,7 @@
 
       if (result.success) {
       // Autentikasi sukses, redirect ke dashboard mini app
-      window.location.href = '{{ route("telegram.dashboard") }}';
+      window.location.href = result.redirect;
       } else {
       // Gagal, redirect ke halaman utama dengan pesan (opsional)
       document.getElementById("spinner").style.display = "none";
