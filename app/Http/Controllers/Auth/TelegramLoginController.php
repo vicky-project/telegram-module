@@ -16,13 +16,13 @@ class TelegramLoginController extends Controller
   }
 
   public function process(Request $request, TelegramAuthService $authService, TelegramService $service) {
-    $data = $request->input('data');
+    $data = $request->input('data') ?? $request->query("data");
 
     if (!$data) {
       return response()->json(["error" => "No data"], 400);
     }
 
-    if (!$authService->verifyTelegramData(http_build_query($data), config("telegram.bot.token"))) {
+    if (!$authService->verifyTelegramData(urldecode(http_build_query($data)), config("telegram.bot.token"))) {
       return response()->json(["error" => "Invalid hash"], 403);
     }
 
