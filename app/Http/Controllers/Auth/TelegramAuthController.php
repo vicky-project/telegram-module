@@ -19,7 +19,7 @@ class TelegramAuthController extends Controller
       return response()->json(['success' => false, 'message' => 'Akun telegram belum terhubung dengan user manapun. Silakan login melalui web terlebih dahulu.'], 400);
     }
 
-    \Auth::login($user);
+    \Auth::guard("web")->login($user);
     session(["is_telegram_app" => true]);
     return response()->json(["success" => true, "user" => $user]);
   }
