@@ -55,6 +55,7 @@
       const response = await fetch('{{ secure_url(route("telegram.auth")) }}', {
       method: 'POST',
       headers: {
+      'Accept': 'application/json',
       'Content-Type': 'application/json',
       'X-CSRF-TOKEN': '{{ csrf_token() }}'
       },
@@ -72,6 +73,7 @@
       document.getElementById("message").innerHTML = '<span class="error">' + result.message + '</span>';
       }
       } catch (error) {
+      alert(error.message);
       document.getElementById("spinner").style.display = "none";
       document.getElementById("message").innerHTML = '<span class="error">Gagal terhubung ke server</span><br><a href="{{ config("app.url") }}" style="color: white;">Kembali ke beranda</a>';
       console.error('Error:', error);
