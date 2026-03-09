@@ -18,7 +18,6 @@ class TelegramRepository
         "telegram_id" => $data["id"],
       ],
       [
-        "telegram_id" => $data["id"],
         "username" => $data["username"] ?? null,
         "first_name" => $data["first_name"] ?? null,
         "last_name" => $data["last_name"] ?? null,

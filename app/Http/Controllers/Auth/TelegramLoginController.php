@@ -45,6 +45,6 @@ class TelegramLoginController extends Controller
       return response()->json(["success" => true, "redirect" => route("profile")]);
     }
 
-    return redirect()->route("login")->withErrors("Tidak ditemukan user dengan provider: telegran. Silakan login manual atau registrasi user baru.");
+    return $request->wantsJson() ? response()->json(["error" => "Gagal menghubungkan akun telegram."], 400) : redirect()->route("login")->withErrors("Tidak ditemukan user dengan provider: telegran. Silakan login manual atau registrasi user baru.");
   }
 }
