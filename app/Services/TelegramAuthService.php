@@ -17,6 +17,7 @@ class TelegramAuthService
   public function verifyTelegramData(
     string $initData,
     string $botToken,
+    bool $isWebApp = true
   ): bool {
     \Log::debug("initData", ["data" => $initData]);
     $params = [];
@@ -27,10 +28,23 @@ class TelegramAuthService
 
     if (!$hash) return false;
 
-    ksort($params);
+    if ($isWebApp) {
+      ksort($params);
+      $dataCheckString = urldecode(http_build_query($params, "", "\n"));
+      $secretKey = hash_hmac("sha256", "WebAppData", $botToken, true);
+    } else {
+      if (time() - $params["auth_date"] > 86400) {
+        return false;
+      }
 
-    $dataCheckString = urldecode(http_build_query($params, "", "\n"));
-    $secretKey = hash_hmac("sha256", "WebAppData", $botToken, true);
+      $data_check_arr = [];
+      foreach ($params as $key => $value) {
+        $data_check_arr[] = $key . "=" . $value;
+      }
+      sort($data_check_arr);
+      $dataCheckString = implode("\n", $data_check_arr);
+      $secretKey = hash("sha256", $botToken, true);
+    }
     $computedHash = hash_hmac("sha256", $dataCheckString, $secretKey);
 
     return hash_equals($computedHash, $hash);
