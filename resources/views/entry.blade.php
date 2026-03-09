@@ -50,7 +50,7 @@
       return;
       }
 
-      alert(JSON.stringify(initData));
+      alert(initData);
 
       try {
       // Kirim initData ke server
