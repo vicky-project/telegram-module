@@ -1,5 +1,5 @@
 <?php
-namespace Modules\Telegram\Http\Controllers;
+namespace Modules\Telegram\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
