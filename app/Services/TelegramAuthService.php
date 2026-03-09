@@ -19,11 +19,8 @@ class TelegramAuthService
     string $botToken,
     bool $isWebApp = true
   ): bool {
-    \Log::debug("InitData", ["data" => $initData]);
-    $params = [];
     parse_str($initData, $params);
 
-    \Log::debug("params", ["params" => $params]);
     $hash = $params["hash"] ?? null;
     unset($params["hash"]);
 
@@ -31,6 +28,7 @@ class TelegramAuthService
 
     if ($isWebApp) {
       // For mini web app telegram
+      $params = $params["user"];
       ksort($params);
       $dataCheckString = urldecode(http_build_query($params, "", "\n"));
       $secretKey = hash_hmac("sha256", $botToken, "WebAppData", true);
