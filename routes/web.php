@@ -22,7 +22,7 @@ Route::group([
   });
 
   // Halaman Mini App (dilindungi middleware validasi)
-  Route::group(['middleware' => ['web', 'telegram.auth', 'auth']], function () {
+  Route::group(['middleware' => ['web', 'telegram.auth']], function () {
     Route::get("/dashboard", [MiniAppController::class, "index"])->name("dashboard");
   });
 });
