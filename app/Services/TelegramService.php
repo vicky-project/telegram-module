@@ -33,7 +33,7 @@ class TelegramService
       return $this->saveAndConnectToSocialAccount($user, $data, $options);
     }
 
-    $telegram = Telegram::query()
+    $telegram = TelegramUser::query()
     ->byTelegramId($data["id"])
     ->first();
 
