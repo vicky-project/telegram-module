@@ -59,6 +59,7 @@
       'Content-Type': 'application/json',
       'X-CSRF-TOKEN': '{{ csrf_token() }}'
       },
+      credentials: 'include',
       body: JSON.stringify({ initData })
       });
 

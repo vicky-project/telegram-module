@@ -5,7 +5,7 @@ use Modules\Telegram\Http\Controllers\Auth\TelegramAuthController;
 use Modules\Telegram\Http\Controllers\Auth\TelegramLoginController;
 
 Route::group([
-  "prefix" => "telegram", "as" => "telegram."], function() {
+  "prefix" => "telegram", "as" => "telegram.", "middleware" => "web"], function() {
   Route::get("/", function() {
     return view("telegram::entry");
   })->name("entry");
@@ -22,7 +22,7 @@ Route::group([
   });
 
   // Halaman Mini App (dilindungi middleware validasi)
-  Route::group(['middleware' => ['web', 'telegram.auth']], function () {
+  Route::group(['middleware' => ['telegram.auth']], function () {
     Route::get("/dashboard", [MiniAppController::class, "index"])->name("dashboard");
   });
 });
