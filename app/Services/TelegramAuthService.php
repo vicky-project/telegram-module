@@ -145,9 +145,15 @@ class TelegramAuthService
       return true;
     }
 
+    $log = $user->authentications()->first();
+    if (!$log) {
+      return false;
+    }
+
     // Buat social account
     $socialAccount = new SocialAccount([
       "user_id" => $user->id,
+      "authlog_id" => $log->id,
       "provider" => Provider::TELEGRAM,
       "last_used_at" => now(),
       "provider_data" => $params,
