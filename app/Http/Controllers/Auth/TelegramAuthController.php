@@ -13,6 +13,8 @@ class TelegramAuthController extends Controller
       return response()->json(['success' => false, 'message' => 'Data telegram tidak ditemukan'], 400);
     }
 
+    \Log::debug("Telegram user data:", ["data" => $telegramUserData]);
+
     $user = $authService->authenticate($telegramUserData, config("telegram.bot.token"));
 
     if (!$user) {
