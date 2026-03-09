@@ -14,7 +14,7 @@ class TelegramAuthService
 {
   public function __construct(protected TelegramService $telegramService) {}
 
-  protected function verifyTelegramData(
+  public function verifyTelegramData(
     string $initData,
     string $botToken,
   ): bool {
