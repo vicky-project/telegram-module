@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Modules\Telegram\Models\TelegramUser;
 use Modules\Telegram\Repositories\TelegramRepository;
-use Modules\UserManagement\Services\SocialAccountService;
+use Modules\SocialAccount\Services\SocialAccountService;
 use Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint;
 use Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog;
 
