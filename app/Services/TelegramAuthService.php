@@ -29,7 +29,7 @@ class TelegramAuthService
 
     if ($isWebApp) {
       // For mini web app telegram
-      $params = parse_str($params['user']);
+      parse_str($params['user'], $params);
       ksort($params);
       $dataCheckString = urldecode(http_build_query($params, "", "\n"));
       $secretKey = hash_hmac("sha256", "WebAppData", $botToken);
