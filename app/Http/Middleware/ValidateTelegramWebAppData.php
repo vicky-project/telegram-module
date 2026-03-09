@@ -17,7 +17,7 @@ class ValidateTelegramWebAppData
     }
 
     $botToken = config('telegram.bot.token');
-    if (!$this->service->verifyTelegramData($initData, $botToken)) {
+    if (!$this->service->verifyTelegramData(is_array($initData) ? http_build_query($initData) : $initData, $botToken)) {
       abort(403, 'Invalid Telegram init data');
     }
 
