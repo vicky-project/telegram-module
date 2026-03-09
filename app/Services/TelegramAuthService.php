@@ -28,7 +28,7 @@ class TelegramAuthService
 
     if ($isWebApp) {
       // For mini web app telegram
-      $params = explode(",", $params["user"]);
+      $params = (array) $params["user"];
       ksort($params);
       $dataCheckString = urldecode(http_build_query($params, "", "\n"));
       \Log::debug("data check", ["data" => $dataCheckString]);
