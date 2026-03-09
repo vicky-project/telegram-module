@@ -23,6 +23,7 @@ class TelegramAuthService
     $params = [];
     parse_str($initData, $params);
 
+    \Log::debug("params", ["params" => $params]);
     $hash = $params["hash"] ?? null;
     unset($params["hash"]);
 
