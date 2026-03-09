@@ -22,7 +22,7 @@ class TelegramLoginController extends Controller
       return response()->json(["error" => "No data"], 400);
     }
 
-    if (!$authService->verifyTelegramData(urldecode(http_build_query($data)), config("telegram.bot.token"))) {
+    if (!$authService->verifyTelegramData(http_build_query($data), config("telegram.bot.token"))) {
       return response()->json(["error" => "Invalid hash"], 403);
     }
 
