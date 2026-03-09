@@ -4,8 +4,8 @@ namespace Modules\Telegram\Services;
 
 use Modules\Telegram\Models\Telegram;
 use Modules\Telegram\Services\TelegramService;
-use Modules\UserManagement\Models\SocialAccount;
-use Modules\UserManagement\Enums\Provider;
+use Modules\SocialAccount\Models\SocialAccount;
+use Modules\SocialAccount\Enums\Provider;
 use Modules\Users\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
