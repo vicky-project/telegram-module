@@ -77,6 +77,7 @@ class TelegramAuthService
     }
 
     $user = $this->telegramService->getUserByTelegramId($telegramUser["id"]);
+    Log::debug("User: ", $user);
 
     if ($user) {
       return $user;
