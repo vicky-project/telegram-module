@@ -19,7 +19,6 @@ class TelegramAuthService
     string $botToken,
     bool $isWebApp = true
   ): bool {
-    \Log::debug("initData", ["data" => $initData]);
     $params = [];
     parse_str($initData, $params);
 
@@ -30,9 +29,9 @@ class TelegramAuthService
 
     if ($isWebApp) {
       // For mini web app telegram
-      ksort($params);
+      ksort($params["user"]);
       $dataCheckString = urldecode(http_build_query($params, "", "\n"));
-      $secretKey = hash_hmac("sha256", "WebAppData", $botToken, true);
+      $secretKey = hash_hmac("sha256", "WebAppData", $botToken);
     } else {
       // for login with telegram
       if (time() - $params["auth_date"] > 86400) {
@@ -47,6 +46,7 @@ class TelegramAuthService
       $dataCheckString = implode("\n", $data_check_arr);
       $secretKey = hash("sha256", $botToken, true);
     }
+
     $computedHash = hash_hmac("sha256", $dataCheckString, $secretKey);
 
     return hash_equals($computedHash, $hash);
