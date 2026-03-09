@@ -3,7 +3,7 @@ namespace Modules\Telegram\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Modules\SocialAccount\Models\SocialAccount;
-use Modules\UserManagement\Interfaces\SocialAccountInterface;
+use Modules\SocialAccount\Interfaces\SocialAccountInterface;
 
 
 class TelegramUser extends Model implements SocialAccountInterface
