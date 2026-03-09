@@ -31,6 +31,7 @@ class TelegramAuthService
       ksort($params);
       $params = $params["user"];
       $dataCheckString = urldecode($params);
+      \Log::debug("data check string", ["data" => $dataCheckString]);
       $secretKey = hash_hmac("sha256", $botToken, "WebAppData", true);
     } else {
       // for login with telegram
