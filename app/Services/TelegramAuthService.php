@@ -68,6 +68,7 @@ class TelegramAuthService
 
     parse_str($initData, $params);
     $telegramUser = json_decode($params["user"], true);
+    Log::debug("User: ", $params);
 
     // Cek auth_date (24 jam)
     $authDate = $params["auth_date"] ?? 0;
@@ -77,7 +78,6 @@ class TelegramAuthService
     }
 
     $user = $this->telegramService->getUserByTelegramId($telegramUser["id"]);
-    Log::debug("User: ", $user);
 
     if ($user) {
       return $user;
