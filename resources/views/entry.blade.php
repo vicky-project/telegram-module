@@ -53,6 +53,7 @@
       window.location.href = '{{ config("app.url") }}';
       return;
       }
+      alert(initData);
 
       window.location.href = "{{ route('telegram.auth') }}?initData="+ initData;
       })();
