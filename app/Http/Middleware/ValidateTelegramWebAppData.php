@@ -32,8 +32,10 @@ class ValidateTelegramWebAppData
   private function validateInitData(string $initData, string $token): bool
   {
     parse_str($initData, $data);
+    \Log::debug("Parse data:", ["data" => $data]);
     $hash = $data['hash'] ?? null;
     unset($data['hash']);
+    \Log::debug("Found hash:" . $hash);
 
     if (!$hash) {
       return false;
