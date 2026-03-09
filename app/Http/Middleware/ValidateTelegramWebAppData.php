@@ -20,7 +20,7 @@ class ValidateTelegramWebAppData
 
     // Parse user data and store in session
     $userData = $this->parseUserData($initData);
-    session(['telegram_user' => $userData]);
+    session(['telegram_user' => $userData, "init_data" => $initData]);
 
     return $next($request);
   }
