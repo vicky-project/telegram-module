@@ -29,10 +29,12 @@ class TelegramAuthService
     if (!$hash) return false;
 
     if ($isWebApp) {
+      // For mini web app telegram
       ksort($params);
       $dataCheckString = urldecode(http_build_query($params, "", "\n"));
       $secretKey = hash_hmac("sha256", "WebAppData", $botToken, true);
     } else {
+      // for login with telegram
       if (time() - $params["auth_date"] > 86400) {
         return false;
       }
