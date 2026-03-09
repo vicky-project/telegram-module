@@ -14,7 +14,7 @@ Route::group([
     return view("telegram::not-connected");
   })->name("not-connected");
 
-  Route::post("/auth", [TelegramAuthController::class, "authenticate"])->middleware(["web", "telegram.webapp"])->name("auth");
+  Route::get("/auth", [TelegramAuthController::class, "authenticate"])->middleware(["web", "telegram.webapp"])->name("auth");
 
   Route::group(["prefix" => "login", "as" => "login."], function() {
     Route::get("/", [TelegramLoginController::class, "index"])->name("index");
