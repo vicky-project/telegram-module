@@ -27,7 +27,7 @@ class TelegramRepository
     );
   }
 
-  public function getByChatId(int $chatId) {
-    return $this->model->byTelegramId($chatId)->first();
+  public function getByTelegramId(int $telegramId) {
+    return $this->model->byTelegramId($telegramId)->first();
   }
 }

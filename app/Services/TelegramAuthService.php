@@ -76,7 +76,7 @@ class TelegramAuthService
       return null;
     }
 
-    $user = $this->telegramService->getUserByChatId($telegramUser["id"]);
+    $user = $this->telegramService->getUserByTelegramId($telegramUser["id"]);
 
     if ($user) {
       return $user;

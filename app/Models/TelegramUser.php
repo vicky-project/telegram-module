@@ -27,4 +27,8 @@ class TelegramUser extends Model implements SocialAccountInterface
   public function scopeByTelegramId($query, $telegramId) {
     return $query->where("telegram_id", $telegramId);
   }
+
+  public function scopeByTelegramId($query, $telegramId) {
+    return $query->where("telegram_id", $telegramId);
+  }
 }
