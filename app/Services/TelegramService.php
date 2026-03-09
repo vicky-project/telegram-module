@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Telegram\Services;
 
-use App\Models\User;
+use Modules\Users\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -27,9 +27,9 @@ class TelegramService
     $this->service = $service;
   }
 
-  public function processTelegram(array $data, ?User $user = null) {
+  public function processTelegram(array $data, ?User $user = null, $options = []) {
     if ($user) {
-      return $this->saveAndConnectToSocialAccount($user, $data);
+      return $this->saveAndConnectToSocialAccount($user, $data, $options);
     }
 
     $telegram = Telegram::query()
@@ -134,14 +134,15 @@ class TelegramService
     }
   }
 
-  protected function saveAndConnectToSocialAccount(User $user, array $data) {
+  protected function saveAndConnectToSocialAccount(User $user, array $data, array $options = []) {
     try {
       $telegram = $this->telegram->firstOrCreate($data);
 
       $socialAccount = $this->service->saveUserSocialAccountByProvider(
         $user,
         $telegram,
-        "telegram"
+        "telegram",
+        $options
       );
 
       return $telegram;
