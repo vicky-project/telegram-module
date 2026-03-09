@@ -50,8 +50,6 @@
       return;
       }
 
-      alert(initData);
-
       try {
       // Kirim initData ke server
       const response = await fetch('{{ secure_url(config("app.url")) }}/telegram/auth', {
