@@ -2,9 +2,9 @@
 namespace Modules\Telegram\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Modules\SocialAccount\Models\SocialAccount;
 use Modules\SocialAccount\Interfaces\SocialAccountInterface;
-
 
 class TelegramUser extends Model implements SocialAccountInterface
 {
