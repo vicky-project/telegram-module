@@ -42,7 +42,7 @@ class TelegramLoginController extends Controller
       $user = $socialAccount->user;
       Auth::login($user);
       $socialAccount->update(['last_used_at' => now()]);
-      return redirect()->intended('/dashboard');
+      return response()->json(["success" => true, "redirect" => route("profile")]);
     }
 
     return redirect()->route("login")->withErrors("Tidak ditemukan user dengan provider: telegran. Silakan login manual atau registrasi user baru.");
