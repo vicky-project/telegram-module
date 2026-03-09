@@ -18,6 +18,7 @@ class TelegramAuthService
     string $initData,
     string $botToken,
   ): bool {
+    \Log::debug("initData", ["data" => $initData]);
     $params = [];
     parse_str($initData, $params);
 
