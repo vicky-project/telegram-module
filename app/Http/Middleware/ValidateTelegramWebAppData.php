@@ -42,10 +42,10 @@ class ValidateTelegramWebAppData
     }
 
     ksort($data);
-    $checkString = urldecode(http_build_query($data));
+    $checkString = urldecode(http_build_query($data, "", "\n"));
     \Log::debug("Check string: ". $checkString);
 
-    $secretKey = hash_hmac('sha256', $token, 'WebAppData', true);
+    $secretKey = hash_hmac('sha256', 'WebAppData', $token, true);
     \Log::debug("Secret Key: ". $secretKey);
     $calculatedHash = hash_hmac('sha256', $checkString, $secretKey);
     \Log::debug("Calculated Hash: ". $calculatedHash);
