@@ -7,189 +7,190 @@ use Modules\Telegram\Services\Support\TelegramApi;
 
 class UnlinkCallback extends BaseCallbackHandler
 {
-	protected $telegramService;
-	protected $appName;
+  protected $telegramService;
+  protected $appName;
 
-	public function __construct(
-		TelegramApi $telegramApi,
-		TelegramService $telegramService
-	) {
-		$this->telegramService = $telegramService;
-		$this->appName = config("app.name", "Financial");
+  public function __construct(
+    TelegramApi $telegramApi,
+    TelegramService $telegramService
+  ) {
+    $this->telegramService = $telegramService;
+    $this->appName = config("app.name", "Financial");
 
-		parent::__construct($telegramApi);
-	}
+    parent::__construct($telegramApi);
+  }
 
-	public function getModuleName(): string
-	{
-		return "telegram";
-	}
+  public function getModuleName(): string
+  {
+    return "telegram";
+  }
 
-	public function getName(): string
-	{
-		return "System Callback Handler";
-	}
+  public function getName(): string
+  {
+    return "System Callback Handler";
+  }
 
-	public function getScope(): string
-	{
-		return "system";
-	}
+  public function getScope(): string
+  {
+    return "system";
+  }
 
-	public function handle(array $data, array $context): array
-	{
-		try {
-			return $this->handleCallbackWithAutoAnswer(
-				$context,
-				$data,
-				fn($data, $context) => $this->processCallback($data, $context)
-			);
-		} catch (\Exception $e) {
-			Log::error("Failed to handle callback of system", [
-				"message" => $e->getMessage(),
-				"trace" => $e->getTraceAsString(),
-			]);
+  public function handle(array $data, array $context): array
+  {
+    try {
+      return $this->handleCallbackWithAutoAnswer(
+        $context,
+        $data,
+        fn($data, $context) => $this->processCallback($data, $context)
+      );
+    } catch (\Exception $e) {
+      Log::error("Failed to handle callback of system", [
+        "message" => $e->getMessage(),
+        "trace" => $e->getTraceAsString(),
+      ]);
 
-			return ["status" => "callback_failed", "answer" => $e->getMessage()];
-		}
-	}
+      return ["status" => "callback_failed",
+        "answer" => $e->getMessage()];
+    }
+  }
 
-	private function processCallback(array $data, array $context): array
-	{
-		$entity = $data["entity"];
-		$action = $data["action"];
-		$id = $data["id"] ?? null;
-		$chatId = $context["chat_id"] ?? null;
-		$messageId = $context["message_id"] ?? null;
-		$params = $data["params"] ?? [];
-		$user = $context["user"] ?? null;
-		Log::info("Processing callback...", [
-			"action" => $action,
-			"chat_id" => $chatId,
-			"message_id" => $messageId,
-			"id" => $id,
-			"entity" => $entity,
-			"user" => $user,
-		]);
+  private function processCallback(array $data, array $context): array
+  {
+    $entity = $data["entity"];
+    $action = $data["action"];
+    $id = $data["id"] ?? null;
+    $chatId = $context["chat_id"] ?? null;
+    $messageId = $context["message_id"] ?? null;
+    $params = $data["params"] ?? [];
+    $user = $context["user"] ?? null;
+    Log::info("Processing callback...", [
+      "action" => $action,
+      "chat_id" => $chatId,
+      "message_id" => $messageId,
+      "id" => $id,
+      "entity" => $entity,
+      "user" => $user,
+    ]);
 
-		if (!$user) {
-			return [
-				"status" => "unauthorized",
-				"answer" => "Anda perlu login terlebih dahulu",
-				"show_alert" => true,
-			];
-		}
+    if (!$user) {
+      return [
+        "status" => "unauthorized",
+        "answer" => "Anda perlu login terlebih dahulu",
+        "show_alert" => true,
+      ];
+    }
 
-		if (!$id) {
-			return [
-				"status" => "unknown_account",
-				"answer" => "Kehilangan ID akun. Ketik perintah akun kembali.",
-				"show_alert" => true,
-			];
-		}
+    if (!$id) {
+      return [
+        "status" => "unknown_account",
+        "answer" => "Kehilangan ID akun. Ketik perintah akun kembali.",
+        "show_alert" => true,
+      ];
+    }
 
-		if ($entity !== "telegram") {
-			return [
-				"status" => "unknown_entity",
-				"answer" => "Akses tidak dikenali",
-				"show_alert" => true,
-			];
-		}
+    if ($entity !== "telegram") {
+      return [
+        "status" => "unknown_entity",
+        "answer" => "Akses tidak dikenali",
+        "show_alert" => true,
+      ];
+    }
 
-		return $this->processUnlinkCallback($action, $chatId, $messageId);
-	}
+    return $this->processUnlinkCallback($action, $chatId, $messageId);
+  }
 
-	private function processUnlinkCallback(
-		string $action,
-		int $chatId,
-		int $messageId
-	): array {
-		Log::debug("Doing action: " . $action, [
-			"action" => $action,
-			"chat_id" => $chatId,
-			"message_id" => $chatId,
-		]);
-		switch ($action) {
-			case "unlink_confirm":
-				return $this->processUnlinkConfirm($chatId);
+  private function processUnlinkCallback(
+    string $action,
+    int $chatId,
+    int $messageId
+  ): array {
+    Log::debug("Doing action: " . $action, [
+      "action" => $action,
+      "chat_id" => $chatId,
+      "message_id" => $chatId,
+    ]);
+    switch ($action) {
+      case "unlink_confirm":
+        return $this->processUnlinkConfirm($chatId);
 
-			case "unlink_cancel":
-				return $this->processUnlinkCancel($chatId, $messageId);
+      case "unlink_cancel":
+        return $this->processUnlinkCancel($chatId, $messageId);
 
-			default:
-				return [
-					"status" => "unknown_action",
-					"answer" => "Aksi tidak dikenali",
-					"show_alert" => true,
-				];
-		}
-	}
+      default:
+        return [
+          "status" => "unknown_action",
+          "answer" => "Aksi tidak dikenali",
+          "show_alert" => true,
+        ];
+    }
+  }
 
-	private function processUnlinkConfirm(int $chatId): array
-	{
-		try {
-			$user = $this->telegramService->getUserByChatId($chatId);
+  private function processUnlinkConfirm(int $chatId): array
+  {
+    try {
+      $user = $this->telegramService->getUserByTelegramId($chatId);
 
-			if (!$user) {
-				Log::error("User not found", ["chat_id" => $chatId, "data" => $user]);
+      if (!$user) {
+        Log::error("User not found", ["chat_id" => $chatId, "data" => $user]);
 
-				return [
-					"status" => "unknown_user",
-					"answer" => "User not found",
-					"show_alert" => true,
-				];
-			}
+        return [
+          "status" => "unknown_user",
+          "answer" => "User not found",
+          "show_alert" => true,
+        ];
+      }
 
-			\Log::debug("Using user: " . $user->name);
-			$this->telegramService->unlink($user, $chatId);
+      \Log::debug("Using user: " . $user->name);
+      $this->telegramService->unlink($user, $chatId);
 
-			$message =
-				"✅ *Akun berhasil diputuskan.* {$this->appName}\n\n" .
-				"Anda bisa menghubungkan kembali melalui web app.\n" .
-				"Terima kasih telah menggunakan bot kami! 👋";
+      $message =
+      "✅ *Akun berhasil diputuskan.* {$this->appName}\n\n" .
+      "Anda bisa menghubungkan kembali melalui web app.\n" .
+      "Terima kasih telah menggunakan bot kami! 👋";
 
-			return [
-				"status" => "unlink_success",
-				"answer" => "Success unlink account",
-				"edit_message" => $this->createEditMessageData($message),
-			];
-		} catch (\RuntimeException $e) {
-			Log::error("Failed to unlink account", [
-				"message" => $e->getMessage(),
-				"trace" => $e->getTraceAsString(),
-			]);
+      return [
+        "status" => "unlink_success",
+        "answer" => "Success unlink account",
+        "edit_message" => $this->createEditMessageData($message),
+      ];
+    } catch (\RuntimeException $e) {
+      Log::error("Failed to unlink account", [
+        "message" => $e->getMessage(),
+        "trace" => $e->getTraceAsString(),
+      ]);
 
-			return [
-				"status" => "failed_unlink",
-				"answer" => "Failed to unlink account",
-				"show_alert" => true,
-			];
-		}
-	}
+      return [
+        "status" => "failed_unlink",
+        "answer" => "Failed to unlink account",
+        "show_alert" => true,
+      ];
+    }
+  }
 
-	private function processUnlinkCancel(int $chatId, int $messageId): array
-	{
-		try {
-			$message =
-				"❌ *Pemutusan Akun Dibatalkan*\n\n" .
-				"Akun Anda tetap terhubung dengan bot.\n" .
-				"Anda dapat terus menggunakan semua fitur.";
+  private function processUnlinkCancel(int $chatId, int $messageId): array
+  {
+    try {
+      $message =
+      "❌ *Pemutusan Akun Dibatalkan*\n\n" .
+      "Akun Anda tetap terhubung dengan bot.\n" .
+      "Anda dapat terus menggunakan semua fitur.";
 
-			return [
-				"edit_message" => $this->createEditMessageData($message),
-			];
-		} catch (\RuntimeException $e) {
-			Log::error("Failed to delete message.", [
-				"chat_id" => $chatId,
-				"message_id" => $messageId,
-				"message" => $e->getMessage(),
-				"trace" => $e->getTraceAsString(),
-			]);
+      return [
+        "edit_message" => $this->createEditMessageData($message),
+      ];
+    } catch (\RuntimeException $e) {
+      Log::error("Failed to delete message.", [
+        "chat_id" => $chatId,
+        "message_id" => $messageId,
+        "message" => $e->getMessage(),
+        "trace" => $e->getTraceAsString(),
+      ]);
 
-			return [
-				"status" => "failed_delete_message",
-				"answer" => "Gagal hapus pesan. Proses unlink dibatalkan.",
-				"show_alert" => false,
-			];
-		}
-	}
+      return [
+        "status" => "failed_delete_message",
+        "answer" => "Gagal hapus pesan. Proses unlink dibatalkan.",
+        "show_alert" => false,
+      ];
+    }
+  }
 }
