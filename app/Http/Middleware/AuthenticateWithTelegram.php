@@ -19,8 +19,9 @@ class AuthenticateWithTelegram
       return redirect()->route('telegram.entry')->with('error', 'Data Telegram tidak ditemukan.');
     }
 
-    \Log::debug("Init data", $initData);
-    $telegramUser = $initData["user"];
+    \Log::debug("Init data", [$initData]);
+    parse_str($initData, $telegram);
+    $telegramUser = $telegram["user"];
 
     // Cari telegram user di database
     $telegramUserModel = TelegramUser::where('telegram_id', $telegramUser['id'])->first();
