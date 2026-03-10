@@ -16,7 +16,7 @@ class TelegramMiniApp {
 
     if (!$initData) {
       // Init data tidak ditemukan di request
-      \Log::error("Missing Telegram init data.", $request->all());
+      \Log::error("Missing Telegram init data.", ["request" => $request->all(), "user" => Auth::user()]);
       abort(403, 'Missing Telegram init data');
     }
 

@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 class MiniAppController extends Controller
 {
   public function index(Request $request) {
-    // Ambil data user dari session (diset oleh middleware)
-    \Log::debug("User: ", ["user" => \Auth::user()]);
     return view('telegram::index');
   }
 
