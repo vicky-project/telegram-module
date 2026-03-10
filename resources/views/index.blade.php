@@ -39,7 +39,7 @@
 @push('scripts')
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-  const initData = window.Telegram?.WebApp?.initData || '{{ request()->get("initData") }}';
+  const initData = window.Telegram?.WebApp?.initData || @json(request()->get("initData", ""));
   if(!initData) return;
 
   const menus = document.querySelectorAll('.menu-item');
