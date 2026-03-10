@@ -20,8 +20,8 @@ class AuthenticateWithTelegram
     }
 
     parse_str($initData, $telegram);
-    \Log::debug("Init data", [$telegram]);
-    $telegramUser = $telegram["user"];
+    $telegramUser = (array) $telegram["user"];
+    \Log::debug("Init data", [$telegramUser]);
 
     // Cari telegram user di database
     $telegramUserModel = TelegramUser::where('telegram_id', $telegramUser['id'])->first();
