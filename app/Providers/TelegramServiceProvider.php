@@ -8,6 +8,7 @@ use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Nwidart\Modules\Facades\Module;
+use Modules\Telegram\Services;
 
 class TelegramServiceProvider extends ServiceProvider
 {
@@ -61,10 +62,146 @@ class TelegramServiceProvider extends ServiceProvider
   {
     $this->app->register(EventServiceProvider::class);
     $this->app->register(RouteServiceProvider::class);
+
+    $this->app->singleton(Services\Handlers\CommandDispatcher::class, function (
+      $app,
+    ) {
+      $dispatcher = new Services\Handlers\CommandDispatcher();
+      $this->registerCommandHandlers($dispatcher);
+      $this->registerMiddlewares($dispatcher);
+      return $dispatcher;
+    });
+
+    $this->app->singleton(Services\Handlers\CallbackHandler::class, function (
+      $app,
+    ) {
+      $callback = new Services\Handlers\CallbackHandler(
+        $app->make(Services\Support\TelegramApi::class),
+      );
+      $this->registerCallbackHandlers($callback);
+      $this->registerCallbackMiddlewares($callback);
+      return $callback;
+    });
+
+    $this->app->singleton(Services\Handlers\ReplyDispatcher::class, function (
+      $app,
+    ) {
+      $replyDispatcher = new Services\Handlers\ReplyDispatcher();
+      $this->registerReplyHandlers($replyDispatcher);
+      $this->registerReplyMiddlewares($replyDispatcher);
+      return $replyDispatcher;
+    });
+
+    $this->app->bind(Services\Handlers\MessageHandler::class, function ($app) {
+      return new Services\Handlers\MessageHandler(
+        $this->app->make(Services\Handlers\CommandDispatcher::class),
+        $this->app->make(Services\Handlers\ReplyDispatcher::class),
+        $this->app->make(Services\Support\TelegramApi::class),
+      );
+    });
+
+    $this->app->singleton(Services\TelegramAuthService::class);
   }
 
   protected function registerHooks($hookService): void
   {}
+
+  // Register middleware
+  protected function registerMiddlewares(
+    Services\Handlers\CommandDispatcher $dispatcher,
+  ): void {
+    $dispatcher->registerMiddleware(
+      "auth",
+      new Services\Middlewares\AuthMiddleware(
+        $this->app->make(Services\TelegramService::class),
+        $this->app->make(Services\Support\TelegramApi::class),
+      ),
+    );
+    $dispatcher->registerMiddleware(
+      "ids",
+      new Services\Middlewares\IDValidationMiddleware(
+        $this->app->make(Services\Support\TelegramIdentifier::class),
+        $this->app->make(Services\Support\TelegramApi::class),
+      ),
+    );
+  }
+
+  // Register command
+  protected function registerCommandHandlers(
+    Services\Handlers\CommandDispatcher $dispatcher,
+  ): void {
+    $dispatcher->registerCommand(
+      new Services\Handlers\Commands\StartCommand(
+        $this->app->make(Services\Support\TelegramApi::class),
+      ),
+    );
+    $dispatcher->registerCommand(
+      new Services\Handlers\Commands\HelpCommand(
+        $this->app->make(Services\Support\TelegramApi::class),
+      ),
+    );
+    $dispatcher->registerCommand(
+      new Services\Handlers\Commands\UnlinkCommand(
+        $this->app->make(Services\Support\TelegramApi::class),
+        $this->app->make(Services\TelegramService::class),
+      ),
+      ["auth"],
+    );
+  }
+
+  protected function registerCallbackMiddlewares(
+    Services\Handlers\CallbackHandler $callback,
+  ): void {
+    $callback->registerMiddleware(
+      "auth",
+      new Services\Middlewares\AuthMiddleware(
+        $this->app->make(Services\TelegramService::class),
+        $this->app->make(Services\Support\TelegramApi::class),
+      ),
+    );
+    $callback->registerMiddleware(
+      "ids",
+      new Services\Middlewares\IDValidationMiddleware(
+        $this->app->make(Services\Support\TelegramIdentifier::class),
+        $this->app->make(Services\Support\TelegramApi::class),
+      ),
+    );
+    $callback->registerMiddleware(
+      "callback-throttle",
+      new Services\Middlewares\CallbackThrottleMiddleware(),
+    );
+  }
+
+  protected function registerCallbackHandlers(
+    Services\Handlers\CallbackHandler $callback,
+  ): void {
+    // Add callback handler
+    $callback->registerHandler(
+      new Services\Handlers\Callbacks\UnlinkCallback(
+        $this->app->make(Services\Support\TelegramApi::class),
+        $this->app->make(Services\TelegramService::class),
+      ),
+      ["auth"],
+    );
+  }
+
+  protected function registerReplyHandlers(
+    Services\Handlers\ReplyDispatcher $replyDispatcher,
+  ): void {
+    // $replyDispatcher->registerHandler();
+  }
+
+  protected function registerReplyMiddlewares(
+    Services\Handlers\ReplyDispatcher $replyDispatcher,
+  ): void {
+    $replyDispatcher->registerMiddleware(
+      "auth",
+      new Services\Middlewares\AuthMiddleware(
+        $this->app->make(Services\TelegramService::class),
+        $this->app->make(Services\Support\TelegramApi::class),
+      ),
+    );
+  }
 
   /**
   * Register commands in the format of Command::class
