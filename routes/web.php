@@ -1,7 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use Modules\Telegram\Http\Controllers\MiniApp\MiniAppController;
-use Modules\Telegram\Http\Controllers\Auth\TelegramAuthController;
 use Modules\Telegram\Http\Controllers\Auth\TelegramLoginController;
 
 Route::group([

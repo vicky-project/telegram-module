@@ -31,20 +31,21 @@ class TelegramLoginController extends Controller
       return response()->json(["error" => "Missing user ID"], 400);
     }
 
-    $user = null;
-    if (Auth::check()) {
-      $user = Auth::user();
-    }
+    $user = Auth::check() ? Auth::user() : null;
 
     $socialAccount = $service->processTelegram($data, $user, $data);
 
     if ($socialAccount) {
       $user = $socialAccount->user;
-      Auth::login($user);
+      if (!Auth::check()) {
+        Auth::login($user);
+        session()->regenerate();
+      }
+
       $socialAccount->update(['last_used_at' => now()]);
       return response()->json(["success" => true, "redirect" => route("profile")]);
     }
 
-    return $request->wantsJson() ? response()->json(["error" => "Gagal menghubungkan akun telegram."], 400) : redirect()->route("login")->withErrors("Tidak ditemukan user dengan provider: telegran. Silakan login manual atau registrasi user baru.");
+    return $request->wantsJson() ? response()->json(["error" => "Gagal menghubungkan akun telegram."], 400) : redirect()->route("login")->withErrors("Tidak ditemukan user dengan provider: telegram. Silakan login manual atau registrasi user baru.");
   }
 }
