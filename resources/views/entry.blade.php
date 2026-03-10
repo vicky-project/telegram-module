@@ -54,7 +54,7 @@
       return;
       }
 
-      window.location.href = "{{ route('telegram.auth') }}?initData="+ encodeURIComponent(initData);
+      window.location.href = "{{ route('telegram.home') }}?initData="+ encodeURIComponent(initData);
       })();
       </script>
       </body>

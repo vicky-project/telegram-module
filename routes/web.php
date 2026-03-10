@@ -14,15 +14,13 @@ Route::group([
     return view("telegram::not-connected");
   })->name("not-connected");
 
-  Route::get("/auth", [TelegramAuthController::class, "authenticate"])->middleware(["web", "telegram.webapp"])->name("auth");
-
   Route::group(["prefix" => "login", "as" => "login."], function() {
     Route::get("/", [TelegramLoginController::class, "index"])->name("index");
     Route::post("/process", [TelegramLoginController::class, "process"])->name("process");
   });
 
   // Halaman Mini App (dilindungi middleware validasi)
-  Route::group(['middleware' => ['web', 'telegram.auth']], function () {
+  Route::group(['middleware' => ['web', 'telegram.miniapp']], function () {
     Route::get("/home", [MiniAppController::class, "index"])->name("home");
   });
 });

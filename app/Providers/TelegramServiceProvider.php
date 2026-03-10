@@ -31,10 +31,9 @@ class TelegramServiceProvider extends ServiceProvider
 
     // Register middleware
     $this->app["router"]->aliasMiddleware(
-      "telegram.webapp",
-      \Modules\Telegram\Http\Middleware\ValidateTelegramWebAppData::class
+      "telegram.miniapp",
+      \Modules\Telegram\Http\Middleware\TelegramMiniApp::class
     );
-    $this->app["router"]->aliasMiddleware("telegram.auth", \Modules\Telegram\Http\Middleware\AuthenticateWithTelegram::class);
 
     if (Module::has('SocialAccount') && Module::isEnabled('SocialAccount') && class_exists($managerService = \Modules\SocialAccount\Services\SocialProviderManager::class)) {
       $manager = app($managerService);
