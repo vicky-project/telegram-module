@@ -40,7 +40,7 @@
 <script>
   const menus = document.querySelectorAll('.menu-item');
   menus.forEach(menu => {
-  menu.href += `?initData=${encodeURIComponent(window.Telegram.WebApp.initData)}`;
+  menu.href += `?initData=${encodeURIComponent(window.Telegram?.WebApp?.initData)}`;
   });
 </script>
 @endpush
