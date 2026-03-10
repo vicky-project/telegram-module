@@ -63,6 +63,7 @@ class TelegramMiniApp {
     }
 
     $request->merge(["telegram_user" => $telegramUser->toArray(), "initData" => $initData]);
+    session(["is_telegram_app" => true]);
 
     return $next($request);
   }
