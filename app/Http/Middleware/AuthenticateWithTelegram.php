@@ -15,12 +15,14 @@ class AuthenticateWithTelegram
 
     $telegramUser = session('telegram_user');
     if (!$telegramUser) {
+      \Log::error("Data user telegram tidak ditemukan.");
       return redirect()->route('telegram.entry')->with('error', 'Data Telegram tidak ditemukan.');
     }
 
     // Cari telegram user di database
     $telegramUserModel = TelegramUser::where('telegram_id', $telegramUser['id'])->first();
     if (!$telegramUserModel) {
+      \Log::error("Akun telegram belum teehubung.");
       return redirect()->route('telegram.entry')->with('error', 'Akun Telegram belum terhubung. Silakan login melalui web dan hubungkan akun Anda.');
     }
 
@@ -31,6 +33,7 @@ class AuthenticateWithTelegram
     ->first();
 
     if (!$socialAccount) {
+      \Log::error("Telegram tidak terhubung dengan social account");
       return redirect()->route('telegram.not-connected');
     }
 
