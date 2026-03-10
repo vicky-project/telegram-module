@@ -23,7 +23,7 @@ class TelegramMiniApp {
     $botToken = config('telegram.bot.token');
 
     // Verifikasi init data berasal dari telegram valid
-    if (!$this->service->verifyTelegramData($initData, $botToken)) {
+    if (!$this->authService->verifyTelegramData($initData, $botToken)) {
       // Init data tidak valid dari telegram
       \Log::error("Invalid Telegram init data.", ['initData' => $initData]);
       abort(403, 'Invalid Telegram init data');
