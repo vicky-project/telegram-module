@@ -1,11 +1,10 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use Modules\Telegram\Http\Controllers\MiniApp\MiniAppController;
-use Modules\Telegram\Http\Controllers\Auth\TelegramAuthController;
 use Modules\Telegram\Http\Controllers\Auth\TelegramLoginController;
 
 Route::group([
-  "prefix" => "telegram", "as" => "telegram."], function() {
+  "prefix" => "telegram", "as" => "telegram.", "middleware" => "web"], function() {
   Route::get("/", function() {
     return view("telegram::entry");
   })->name("entry");
@@ -14,15 +13,13 @@ Route::group([
     return view("telegram::not-connected");
   })->name("not-connected");
 
-  Route::post("/auth", [TelegramAuthController::class, "authenticate"])->middleware(["web", "telegram.webapp"])->name("auth");
-
   Route::group(["prefix" => "login", "as" => "login."], function() {
     Route::get("/", [TelegramLoginController::class, "index"])->name("index");
     Route::post("/process", [TelegramLoginController::class, "process"])->name("process");
   });
 
   // Halaman Mini App (dilindungi middleware validasi)
-  Route::group(['middleware' => ['web', 'telegram.auth', 'auth']], function () {
-    Route::get("/dashboard", [MiniAppController::class, "index"])->name("dashboard");
+  Route::group(['middleware' => ['web', 'telegram.miniapp']], function () {
+    Route::get("/home", [MiniAppController::class, "index"])->name("home");
   });
 });

@@ -17,19 +17,37 @@ class TelegramAuthService
   public function verifyTelegramData(
     string $initData,
     string $botToken,
+    bool $isWebApp = true
   ): bool {
-    $params = [];
     parse_str($initData, $params);
 
     $hash = $params["hash"] ?? null;
-    unset($params["hash"]);
-
     if (!$hash) return false;
 
-    ksort($params);
+    unset($params["hash"]);
 
-    $dataCheckString = urldecode(http_build_query($params, "", "\n"));
-    $secretKey = hash_hmac("sha256", "WebAppData", $botToken, true);
+    if ($isWebApp) {
+      // For mini web app telegram
+      ksort($params);
+      $dataCheckString = implode("\n", array_map(function($key, $value) {
+        return $key . "=" . $value;
+      }, array_keys($params), $params));
+      $secretKey = hash_hmac("sha256", $botToken, "WebAppData", true);
+    } else {
+      // for login with telegram
+      if (time() - $params["auth_date"] > 86400) {
+        return false;
+      }
+
+      $data_check_arr = [];
+      foreach ($params as $key => $value) {
+        $data_check_arr[] = $key . "=" . $value;
+      }
+      sort($data_check_arr);
+      $dataCheckString = implode("\n", $data_check_arr);
+      $secretKey = hash("sha256", $botToken, true);
+    }
+
     $computedHash = hash_hmac("sha256", $dataCheckString, $secretKey);
 
     return hash_equals($computedHash, $hash);
@@ -59,7 +77,7 @@ class TelegramAuthService
       return null;
     }
 
-    $user = $this->telegramService->getUserByChatId($telegramUser["id"]);
+    $user = $this->telegramService->getUserByTelegramId($telegramUser["id"]);
 
     if ($user) {
       return $user;
@@ -127,9 +145,15 @@ class TelegramAuthService
       return true;
     }
 
+    $log = $user->authentications()->first();
+    if (!$log) {
+      return false;
+    }
+
     // Buat social account
     $socialAccount = new SocialAccount([
       "user_id" => $user->id,
+      "authlog_id" => $log->id,
       "provider" => Provider::TELEGRAM,
       "last_used_at" => now(),
       "provider_data" => $params,

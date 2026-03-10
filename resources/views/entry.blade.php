@@ -36,7 +36,11 @@
       <body>
       <div>
       <div class="spinner" id="spinner"></div>
+      @if(session("error"))
+      <p>{{ session("error") }}</p>
+      @else
       <p id="message">Memverifikasi akses Telegram...</p>
+      @endif
       </div>
 
       <script>
@@ -50,34 +54,7 @@
       return;
       }
 
-      try {
-      // Kirim initData ke server
-      const response = await fetch('{{ secure_url(config("app.url")) }}/telegram/auth', {
-      method: 'POST',
-      headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-CSRF-TOKEN': '{{ csrf_token() }}'
-      },
-      body: JSON.stringify({ initData })
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-      // Autentikasi sukses, redirect ke dashboard mini app
-      window.location.href = '{{ route("telegram.dashboard") }}';
-      } else {
-      // Gagal, redirect ke halaman utama dengan pesan (opsional)
-      document.getElementById("spinner").style.display = "none";
-      document.getElementById("message").innerHTML = '<span class="error">' + result.message + '</span>';
-      }
-      } catch (error) {
-      alert(error.message);
-      document.getElementById("spinner").style.display = "none";
-      document.getElementById("message").innerHTML = '<span class="error">Gagal terhubung ke server</span><br><a href="{{ config("app.url") }}" style="color: white;">Kembali ke beranda</a>';
-      console.error('Error:', error);
-      }
+      window.location.href = "{{ route('telegram.home') }}?initData="+ encodeURIComponent(initData);
       })();
       </script>
       </body>

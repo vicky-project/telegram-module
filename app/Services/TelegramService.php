@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Modules\Telegram\Models\TelegramUser;
 use Modules\Telegram\Repositories\TelegramRepository;
+use Modules\SocialAccount\Models\SocialAccount;
 use Modules\SocialAccount\Services\SocialAccountService;
 use Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint;
 use Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog;
@@ -27,12 +28,12 @@ class TelegramService
     $this->service = $service;
   }
 
-  public function processTelegram(array $data, ?User $user = null, $options = []) {
+  public function processTelegram(array $data, ?User $user = null, $options = []) : ?SocialAccount {
     if ($user) {
       return $this->saveAndConnectToSocialAccount($user, $data, $options);
     }
 
-    $telegram = Telegram::query()
+    $telegram = TelegramUser::query()
     ->byTelegramId($data["id"])
     ->first();
 
@@ -40,17 +41,10 @@ class TelegramService
       return null;
     }
 
-    $user = $telegram
+    return $telegram
     ->provider()
     ->byProvider("telegram")
-    ->first()?->user;
-
-    if (!$user) {
-      return null;
-    }
-
-    Auth::login($user);
-    return $user;
+    ->first();
   }
 
   public function checkDeviceKnown(): bool
@@ -111,8 +105,8 @@ class TelegramService
     }
   }
 
-  public function getUserByChatId(int $chatId) {
-    return optional($this->telegram->getByChatId($chatId), function (
+  public function getUserByTelegramId(int $telegramId) {
+    return optional($this->telegram->getByTelegramId($telegramId), function (
       TelegramUser $telegram
     ) {
       return $telegram->provider?->user;
@@ -138,14 +132,12 @@ class TelegramService
     try {
       $telegram = $this->telegram->firstOrCreate($data);
 
-      $socialAccount = $this->service->saveUserSocialAccountByProvider(
+      return $this->service->saveUserSocialAccountByProvider(
         $user,
         $telegram,
         "telegram",
         $options
       );
-
-      return $telegram;
     } catch (\Exception $e) {
       throw $e;
     }
