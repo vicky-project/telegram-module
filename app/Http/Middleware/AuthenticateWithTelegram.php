@@ -15,7 +15,7 @@ class AuthenticateWithTelegram
 
     $telegramUser = $request->input("telegram_user") ?? $request->query("telegram_user");
     if (!$telegramUser) {
-      \Log::error("Data user telegram tidak ditemukan.", session()->all());
+      \Log::error("Data user telegram tidak ditemukan.", $request->all());
       return redirect()->route('telegram.entry')->with('error', 'Data Telegram tidak ditemukan.');
     }
 
