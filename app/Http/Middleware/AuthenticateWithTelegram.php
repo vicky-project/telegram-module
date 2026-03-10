@@ -21,7 +21,6 @@ class AuthenticateWithTelegram
 
     parse_str($initData, $data);
     $telegramUser = json_decode($data['user'] ?? '{}', true);
-    dd($telegramUser);
 
     // Cari telegram user di database
     $telegramUserModel = TelegramUser::where('telegram_id', $telegramUser['id'])->first();
