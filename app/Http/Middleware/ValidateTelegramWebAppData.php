@@ -13,11 +13,13 @@ class ValidateTelegramWebAppData
     $initData = $request->input('initData') ?? $request->header('X-Telegram-Init-Data') ?? $request->query('initData');
 
     if (!$initData) {
+      \Log::error("Tidak ditemukan initData.");
       abort(403, 'Missing Telegram init data');
     }
 
     $botToken = config('telegram.bot.token');
     if (!$this->service->verifyTelegramData(is_array($initData) ? http_build_query($initData) : $initData, $botToken)) {
+      \Log::error("Gagal verifikasi data telegram.");
       abort(403, 'Invalid Telegram init data');
     }
 
