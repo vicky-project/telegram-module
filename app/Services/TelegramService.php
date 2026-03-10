@@ -116,7 +116,7 @@ class TelegramService
   public function unlink(User $user, int $telegramId): bool
   {
     try {
-      $telegram = $this->telegram->getByChatId($telegramId);
+      $telegram = $this->telegram->getByTelegramId($telegramId);
 
       return $user
       ->socialAccounts()
@@ -145,7 +145,7 @@ class TelegramService
 
   protected function tryLoginUsingTelegam(array $data) {
     try {
-      $telegram = $this->telegram->getByChatId($data["id"]);
+      $telegram = $this->telegram->getByTelegramId($data["id"]);
 
       if ($telegram) {
         $user = $telegram->provider->user;
