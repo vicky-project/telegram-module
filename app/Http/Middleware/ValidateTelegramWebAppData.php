@@ -25,7 +25,6 @@ class ValidateTelegramWebAppData
 
     // Parse user data and store in session
     $userData = $this->parseUserData($initData);
-    \Log::info("Session saved", ['user_data' => $userData, 'init_data' => $initData]);
     $request->merge(["initData" => $initData, "telegram_user" => $userData]);
 
     return $next($request);

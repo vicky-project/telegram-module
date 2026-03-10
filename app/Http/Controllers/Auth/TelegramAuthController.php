@@ -21,9 +21,9 @@ class TelegramAuthController extends Controller
       return back()->with('error', 'Akun telegram belum terhubung dengan user manapun. Silakan login melalui web terlebih dahulu.');
     }
 
-    \Log::info("Login as: ", [$user]);
+    \Log::info("Login as: ", $user);
     \Auth::guard("web")->login($user);
     session(["is_telegram_app" => true]);
-    return redirect()->route("telegram.dashboard");
+    return redirect()->route("telegram.dashboard", [$telegramInitData]);
   }
 }
