@@ -8,60 +8,58 @@ use Modules\Telegram\Services\Support\TelegramApi;
 
 class AuthMiddleware implements TelegramMiddlewareInterface
 {
-	protected TelegramService $service;
-	protected TelegramApi $telegram;
+  protected TelegramService $service;
+  protected TelegramApi $telegram;
 
-	public function __construct(TelegramService $service, TelegramApi $telegam)
-	{
-		$this->service = $service;
-		$this->telegram = $telegam;
-	}
+  public function __construct(TelegramService $service, TelegramApi $telegam) {
+    $this->service = $service;
+    $this->telegram = $telegam;
+  }
 
-	public function handle(array $context, callable $next)
-	{
-		$chatId = $context["chat_id"];
-		$username = $context["username"];
+  public function handle(array $context, callable $next) {
+    $chatId = $context["chat_id"];
+    $username = $context["username"];
 
-		Log::debug("AuthMiddleware checking", [
-			"chat_id" => $chatId,
-			"username" => $username,
-		]);
+    Log::debug("AuthMiddleware checking", [
+      "chat_id" => $chatId,
+      "username" => $username,
+    ]);
 
-		// Check if user exists
-		$user = $this->service->getUserByChatId($chatId);
+    // Check if user exists
+    $user = $this->service->getUserByTelegramId($chatId);
 
-		if (!$user) {
-			Log::warning("User not authenticated", [
-				"chat_id" => $chatId,
-				"username" => $username,
-			]);
+    if (!$user) {
+      Log::warning("User not authenticated", [
+        "chat_id" => $chatId,
+        "username" => $username,
+      ]);
 
-			if (!isset($context["callback_id"])) {
-				$message =
-					"❌ Anda belum terhubung.\n" .
-					"Gunakan /start untuk instruksi linking.";
+      if (!isset($context["callback_id"])) {
+        $message =
+        "❌ Anda belum terhubung.\n" .
+        "Gunakan /start untuk instruksi linking.";
 
-				$this->telegram->sendMessage($chatId, $message);
-			}
+        $this->telegram->sendMessage($chatId, $message);
+      }
 
-			return [
-				"answer" => isset($context["callback_id"]) ? "UnAuthorized user" : null,
-				"status" => "unauthorized",
-				"message" =>
-					"Anda perlu mendaftar terlebih dahulu. Gunakan /register untuk mendaftar.",
-				"chat_id" => $chatId,
-				"block_handler" => true,
-			];
-		}
+      return [
+        "answer" => isset($context["callback_id"]) ? "UnAuthorized user" : null,
+        "status" => "unauthorized",
+        "message" =>
+        "Anda perlu mendaftar terlebih dahulu. Gunakan /register untuk mendaftar.",
+        "chat_id" => $chatId,
+        "block_handler" => true,
+      ];
+    }
 
-		// Add user to context for next middleware/command
-		$context["user"] = $user;
+    // Add user to context for next middleware/command
+    $context["user"] = $user;
 
-		Log::debug("User authenticated", [
-			"user_id" => $user->id,
-			"username" => $username,
-		]);
+    Log::debug("User authenticated", [
+      "user_id" => $user->id,
+      "username" => $username,
+    ]);
 
-		return $next($context);
-	}
+    return $next($context);
+  }
 }
