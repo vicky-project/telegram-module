@@ -23,6 +23,6 @@ class TelegramAuthController extends Controller
 
     \Auth::guard("web")->login($user);
     session(["is_telegram_app" => true]);
-    return redirect()->route("telegram.dashboard", [$telegramInitData]);
+    return redirect()->route("telegram.dashboard", ["initData" => $telegramInitData]);
   }
 }
