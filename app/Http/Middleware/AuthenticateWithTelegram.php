@@ -13,13 +13,14 @@ class AuthenticateWithTelegram
       return $next($request);
     }
 
-    $telegramUser = $request->input("telegram_user") ?? $request->query("telegram_user");
-    if (!$telegramUser) {
+    $initData = $request->input("initData") ?? $request->query("initData");
+    if (!$initData) {
       \Log::error("Data user telegram tidak ditemukan.", $request->all());
       return redirect()->route('telegram.entry')->with('error', 'Data Telegram tidak ditemukan.');
     }
 
-    \Log::debug("Telegram user data", $telegramUser);
+    parse_str($initData, $data);
+    $telegramUser = json_decode($data['user'] ?? '{}', true);
     dd($telegramUser);
 
     // Cari telegram user di database
