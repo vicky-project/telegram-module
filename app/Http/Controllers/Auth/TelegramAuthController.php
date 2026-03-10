@@ -8,7 +8,7 @@ use Modules\Telegram\Services\TelegramAuthService;
 class TelegramAuthController extends Controller
 {
   public function authenticate(Request $request, TelegramAuthService $authService) {
-    $telegramInitData = session('init_data');
+    $telegramInitData = $request->input("initData") ?? $request->query("initData");
     if (!$telegramInitData) {
       \Log::error("Data telegram tidak ditemukan.");
       return back()->with('error', 'Data telegram tidak ditemukan');
