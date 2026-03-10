@@ -41,7 +41,9 @@
   document.addEventListener("DOMContentLoaded", function() {
   const menus = document.querySelectorAll('.menu-item');
   menus.forEach(menu => {
-  menu.href += `?initData=${encodeURIComponent(window.Telegram?.WebApp?.initData)}`;
+  const urlObj = new URL(menu.href);
+  urlObj.searchParams.set("initData", encodeURIComponent(window.Telegram?.WebApp?.initData));
+  menu.href += urlObj.toString();
   });
   });
 </script>
