@@ -20,7 +20,6 @@ class TelegramAuthService
     bool $isWebApp = true
   ): bool {
     parse_str($initData, $params);
-    \Log::debug("Parsing init data: ", $params);
 
     $hash = $params["hash"] ?? null;
     if (!$hash) return false;
