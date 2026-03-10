@@ -42,7 +42,7 @@
   const menus = document.querySelectorAll('.menu-item');
   menus.forEach(function(menu) {
   const urlObj = new URL(menu.href);
-  urlObj.searchParams.set("initData", encodeURIComponent(window.Telegram?.WebApp?.initData) || '{{ request()->get("initData")}}');
+  urlObj.searchParams.set("initData", encodeURIComponent(window.Telegram?.WebApp?.initData) || encodeURIComponent('{{ request()->get("initData")}}'));
   menu.href = urlObj.toString();
   });
   });
