@@ -22,16 +22,14 @@ class TelegramAuthService
     parse_str($initData, $params);
 
     $hash = $params["hash"] ?? null;
-    unset($params["hash"]);
-
     if (!$hash) return false;
+
+    unset($params["hash"]);
 
     if ($isWebApp) {
       // For mini web app telegram
-      $params = (array) $params["user"];
       ksort($params);
-      $dataCheckString = urldecode(http_build_query($params, "", "\n"));
-      \Log::debug("data check", ["data" => $dataCheckString]);
+      $dataCheckString = implode("\n", array_map(fn($key, $value) => $key . "=" . $value), array_keys($params), $params);
       $secretKey = hash_hmac("sha256", $botToken, "WebAppData", true);
     } else {
       // for login with telegram
