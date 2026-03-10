@@ -40,7 +40,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
   const menus = document.querySelectorAll('.menu-item');
-  menus.forEach(menu => {
+  menus.forEach(function(menu) {
   const urlObj = new URL(menu.href);
   urlObj.searchParams.set("initData", encodeURIComponent(window.Telegram?.WebApp?.initData));
   menu.href = urlObj.toString();
