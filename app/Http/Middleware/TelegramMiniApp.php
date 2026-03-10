@@ -62,7 +62,7 @@ class TelegramMiniApp {
       }
     }
 
-    $request->merge(["telegram_user" => $telegramUser->toArray(), "initData" => json_encode($initData)]);
+    $request->merge(["telegram_user" => $telegramUser->toArray(), "initData" => $initData]);
 
     return $next($request);
   }

@@ -39,10 +39,13 @@
 @push('scripts')
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+  const initData = window.Telegram?.WebApp?.initData || '{{ request()->get("initData") }}';
+  if(!initData) return;
+
   const menus = document.querySelectorAll('.menu-item');
   menus.forEach(function(menu) {
-  const urlObj = new URL(menu.href);
-  urlObj.searchParams.set("initData", encodeURIComponent(window.Telegram?.WebApp?.initData) || '{{ request()->get("initData")}}');
+  const urlObj = new URL(menu.href, window.location.origin);
+  urlObj.searchParams.set("initData", initData);
   menu.href = urlObj.toString();
   });
   });
