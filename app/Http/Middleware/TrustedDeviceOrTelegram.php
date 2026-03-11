@@ -12,6 +12,10 @@ class TrustedDeviceOrTelegram
       return $next($request);
     }
 
+    if (auth()->guard('sanctum')->check()) {
+      return $next($request);
+    }
+
     // Cek apakah request berasal dari Telegram Mini App
     if ($request->session()->get('is_telegram_app') || $this->getInitData($request)) {
       // Jika dari Telegram, langsung lanjutkan tanpa verifikasi perangkat tepercaya

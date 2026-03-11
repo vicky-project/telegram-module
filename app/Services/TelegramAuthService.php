@@ -67,8 +67,7 @@ class TelegramAuthService
       return null;
     }
 
-    parse_str($initData, $params);
-    $telegramUser = json_decode($params["user"], true);
+    $telegramUser = $this->parseUserData($initData);
 
     // Cek auth_date (24 jam)
     $authDate = $params["auth_date"] ?? 0;
@@ -121,8 +120,7 @@ class TelegramAuthService
       return false;
     }
 
-    parse_str($initData, $params);
-    $telegramUser = json_decode($params["user"], true);
+    $telegramUser = $this->parseUserData($initData);
 
     $telegram = Telegram::firstOrCreate(
       ["telegram_id" => $telegramUser["id"]],
@@ -161,5 +159,10 @@ class TelegramAuthService
     $telegram->provider()->save($socialAccount);
 
     return true;
+  }
+
+  public function parseUserData(string $initData) : array {
+    parse_str($initData, $data);
+    return json_decode($data["user"]??"{}", true);
   }
 }

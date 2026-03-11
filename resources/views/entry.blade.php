@@ -54,7 +54,18 @@
       return;
       }
 
-      window.location.href = "{{ route('telegram.home') }}?initData="+ encodeURIComponent(initData);
+      fetch('{{ secure_url(config("app.url"))}}/api/telegram/auth', {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ initData })
+      }).then(res => res.json()).then(data => {
+      if(data.token) {
+      localStorage.setItem("telegram_token", data.token);
+      window.location.href = "{{ route('telegram.home') }}?token="+ data.token +"&initData="+ encodeURIComponent(initData);
+      } else {
+      alert(data.error);
+      }
+      });
       })();
       </script>
       </body>
