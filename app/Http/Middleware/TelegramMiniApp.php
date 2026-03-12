@@ -55,9 +55,9 @@ class TelegramMiniApp {
     }
 
     // Jika belum login
-    if (!Auth::check()) {
+    if (!Auth::guard("web")->check()) {
       // Telegram sudah terhubung dengan social account
-      Auth::login($socialAccount->user);
+      Auth::guard("web")->login($socialAccount->user);
       $request->session()->regenerate();
     }
 
