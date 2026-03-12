@@ -62,11 +62,8 @@ class TelegramMiniApp {
       }
     }
 
-    \Log::debug("Request before merge", ["request" => $request->all()]);
-
     $request->merge(["telegram_user" => $telegramUser->toArray(), "initData" => $initData]);
     $request->session(["is_telegram_app" => true]);
-    \Log::debug("Request after merge", ["request" => $request->all()]);
 
     return $next($request);
   }
