@@ -38,6 +38,7 @@ class AuthenticateWithTokenOrSession
       return $next($request);
     }
 
+    \Log::error("User unauthenticated");
     throw new AuthenticationException('Unauthenticated.');
   }
 }
