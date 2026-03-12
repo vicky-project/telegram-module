@@ -48,6 +48,7 @@
   urlObj.searchParams.set("initData", initData);
   urlObj.searchParams.set("token", token);
   menu.href = urlObj.toString();
+  menu.setAttribute("disabled", false);
   });
   });
 </script>
