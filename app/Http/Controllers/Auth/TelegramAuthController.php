@@ -50,7 +50,7 @@ class TelegramAuthController extends Controller
     }
 
     $user = $socialAccount->user;
-    $token = $user->createToken('telegram-token')->plainTextToken;
+    $token = $user->createToken('telegram-token', ["*"], now()->plus(weeks: 1))->plainTextToken;
 
     return response()->json([
       'success' => true,

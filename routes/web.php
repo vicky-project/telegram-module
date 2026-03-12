@@ -5,9 +5,7 @@ use Modules\Telegram\Http\Controllers\Auth\TelegramLoginController;
 
 Route::group([
   "prefix" => "telegram", "as" => "telegram.", "middleware" => "web"], function() {
-  Route::get("/", function() {
-    return view("telegram::entry");
-  })->name("entry");
+  Route::view("/", "telegram::entry")->name("entry");
 
   Route::get("/not-connected", function() {
     return view("telegram::not-connected");
