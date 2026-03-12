@@ -35,7 +35,7 @@ class TelegramOrWebAuth
     }
 
     // Jika tidak, jalankan middleware auth default
-    \log::info("Using middleware auth");
+    \Log::info("Using middleware auth");
     return $this->authMiddleware->handle($request, $next);
   }
 
