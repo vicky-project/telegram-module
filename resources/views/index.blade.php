@@ -40,7 +40,7 @@
   if(!initData) return;
 
   const token = localStorage.getItem("telegram_token") || '{{ request()->get("token") }}' || '{{ $token }}';
-  if(token) return;
+  if(!token) return;
 
   const menus = document.querySelectorAll('.menu-item');
   menus.forEach(function(menu) {
