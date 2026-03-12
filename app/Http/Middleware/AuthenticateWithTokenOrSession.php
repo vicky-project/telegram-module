@@ -23,7 +23,7 @@ class AuthenticateWithTokenOrSession
       $request->headers->set("Authorization", "Bearer ".$token);
     }
 
-    if ($token) {
+    if ($request->bearerToken()) {
       \Log::debug("Using bearer token");
       if ($this->auth->guard('sanctum')->check()) {
         $this->auth->shouldUse('sanctum');

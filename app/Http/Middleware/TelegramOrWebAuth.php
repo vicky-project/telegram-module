@@ -30,10 +30,12 @@ class TelegramOrWebAuth
 
     if ($initData) {
       // Jalankan middleware TelegramMiniApp
+      \Log::info("Menjalankan middleware Telegram Mini App");
       return $this->telegramMiddleware->handle($request, $next);
     }
 
     // Jika tidak, jalankan middleware auth default
+    \Log::info("Menjalankan middleware Auth");
     return $this->authMiddleware->handle($request, $next);
   }
 
