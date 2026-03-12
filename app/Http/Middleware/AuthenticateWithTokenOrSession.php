@@ -18,11 +18,13 @@ class AuthenticateWithTokenOrSession
     $token = $request->bearerToken();
 
     if (!$token && $request->has("token")) {
+      \Log::info("Using token");
       $token = $request->get("token");
       $request->headers->set("Authorization", "Bearer ".$token);
     }
 
     if ($token) {
+      \Log::info("Using bearer token");
       if ($this->auth->guard('sanctum')->check()) {
         $this->auth->shouldUse('sanctum');
         return $next($request);
@@ -31,6 +33,7 @@ class AuthenticateWithTokenOrSession
 
     // Jika tidak ada token atau token invalid, coba session (web)
     if ($this->auth->guard('web')->check()) {
+      \Log::info("Check session web");
       $this->auth->shouldUse('web');
       return $next($request);
     }
