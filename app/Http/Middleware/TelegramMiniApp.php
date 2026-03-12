@@ -30,8 +30,7 @@ class TelegramMiniApp {
     }
 
     // Parsing init data lalu ambil telegram id
-    parse_str($initData, $data);
-    $telegramUserData = json_decode($data['user'] ?? '{}', true);
+    $telegramUserData = $this->authService->parseUserData($initData);
     $telegramId = $telegramUserData["id"]??null;
 
     if (!$telegramId) {
@@ -46,24 +45,27 @@ class TelegramMiniApp {
       return $this->buildNotConnectResponse($request);
     }
 
-    // Jika belum login
-    if (!Auth::check()) {
-      // Ambil data social account dari telegram
-      $socialAccount = $this->getSocialAccount($telegramUser);
+    // Ambil data social account dari telegram
+    $socialAccount = $this->getSocialAccount($telegramUser);
 
-      if (!$socialAccount) {
-        // Telegram belum terhubung dengan social account
-        \Log::error("Telegram tidak terhubung dengan social account.");
-        return redirect()->route('telegram.not-connected');
-      } else {
-        // Telegram sudah terhubung dengan social account
-        Auth::login($socialAccount->user);
-        session()->regenerate();
-      }
+    if (!$socialAccount) {
+      // Telegram belum terhubung dengan social account
+      \Log::error("Telegram tidak terhubung dengan social account.");
+      return $this->buildNotConnectResponse($request);
     }
 
-    $request->merge(["telegram_user" => $telegramUser->toArray(), "initData" => $initData]);
-    $request->session(["is_telegram_app" => true]);
+    // Jika belum login
+    if (!Auth::check()) {
+      // Telegram sudah terhubung dengan social account
+      Auth::login($socialAccount->user);
+      $request->session()->regenerate();
+    }
+
+    $request->merge([
+      "telegram_user" => $telegramUser->toArray(),
+      "initData" => $initData
+    ]);
+    session(["is_telegram_app" => true]);
 
     return $next($request);
   }
@@ -81,7 +83,8 @@ class TelegramMiniApp {
   }
 
   private function buildNotConnectResponse(Request $request) {
-    \Log::error("Akun telegram belum terdaftar.");
-    return $request->expectsJson() ? response()->json(["success" => false, "message" => "Akun telegram belum terdaftar. Silakan login melalui web."], 403) : redirect()->route('telegram.entry')->with('error', 'Akun Telegram belum terdaftar. Silakan login melalui web dan hubungkan akun telegram Anda.');
+    $message = "Akun telegram belum terhubung. Silakan login melalui web dan hubungkan Akun telegram anda";
+
+    return $request->expectsJson() ? response()->json(["success" => false, "message" => $message], 403) : redirect()->route('telegram.entry')->with('error', $message);
   }
 }
