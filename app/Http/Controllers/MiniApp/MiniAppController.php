@@ -8,7 +8,7 @@ class MiniAppController extends Controller
 {
   public function index(Request $request) {
     $token = $request->get("token");
-    return view('telegram::index', $token);
+    return view('telegram::index', compact("token"));
   }
 
   public function profile() {
