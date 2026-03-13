@@ -66,14 +66,6 @@ class TelegramMiniApp {
     return $request->input('initData') ?? $request->header('X-Telegram-Init-Data') ?? $request->query('initData');
   }
 
-  private function getSocialAccount(TelegramUser $telegramUser) {
-    // Cari social account
-    return \Modules\SocialAccount\Models\SocialAccount::where('provider', 'telegram')
-    ->where('providerable_id', $telegramUser->id)
-    ->where('providerable_type', get_class($telegramUser))
-    ->first();
-  }
-
   private function buildNotConnectResponse(Request $request) {
     $message = "Akun telegram belum terhubung. Silakan login melalui web dan hubungkan Akun telegram anda";
 
