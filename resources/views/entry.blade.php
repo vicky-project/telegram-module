@@ -69,7 +69,7 @@
       window.location.href = "{{ route('telegram.home') }}?token="+ data.token +"&initData="+ encodeURIComponent(initData);
       });
       } else {
-      window.location.href = '{{ route("telegram.not-connected") }}';
+      window.location.href = '{{ route("telegram.home") }}?initData=' + encodeURIComponent(initData);
       }
       });
       })();
