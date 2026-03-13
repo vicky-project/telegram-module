@@ -36,18 +36,22 @@
 @push('scripts')
 <script>
   document.querySelectorAll(".menu-item").forEach(function(item) {
+  try {
   item.addEventListener("click", function(e) {
   e.preventDefault();
   e.stopPropagation();
-  const urlObj = new URL(e.target.href, window.location.origin);
+  const urlObj = new URL(this.href, window.location.origin);
   const query = urlObj.searchParams.get("initData");
   if(!query || query == "") {
   appendQuery();
   return;
   }
 
-  window.location = e.target.href;
+  window.location = this.href;
   });
+  } catch(error) {
+  alert(error.message)
+  }
   });
 
   function appendQuery() {
