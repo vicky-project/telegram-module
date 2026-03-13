@@ -40,7 +40,7 @@ class TelegramMiniApp {
     }
 
     $telegramUser = TelegramUser::firstOrCreate(
-      ['telegram_id', $telegramId],
+      ['telegram_id' => $telegramId],
       [
         'first_name' => $telegramUserData['first_name'] ?? '',
         'last_name' => $telegramUserData['last_name'] ?? '',
