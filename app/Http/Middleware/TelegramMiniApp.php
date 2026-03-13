@@ -39,27 +39,15 @@ class TelegramMiniApp {
       abort(403, "Invalid user data");
     }
 
-    $telegramUser = TelegramUser::where('telegram_id', $telegramId)->first();
-    if (!$telegramUser) {
-      // Akun telegram belum ada.
-      return $this->buildNotConnectResponse($request);
-    }
-
-    // Ambil data social account dari telegram
-    $socialAccount = $this->getSocialAccount($telegramUser);
-
-    if (!$socialAccount) {
-      // Telegram belum terhubung dengan social account
-      \Log::error("Telegram tidak terhubung dengan social account.");
-      return $this->buildNotConnectResponse($request);
-    }
-
-    // Jika belum login
-    if (!Auth::guard("web")->check()) {
-      // Telegram sudah terhubung dengan social account
-      Auth::guard("web")->login($socialAccount->user);
-      $request->session()->regenerate();
-    }
+    $telegramUser = TelegramUser::firstOrCreate(
+      ['telegram_id', $telegramId],
+      [
+        'first_name' => $telegramUserData['first_name'] ?? '',
+        'last_name' => $telegramUserData['last_name'] ?? '',
+        'username' => $telegramUserData['username'] ?? '',
+        'photo_url' => $telegramUserData['photo_url'] ?? '',
+        'data' => $telegramUserData,
+      ])->first();
 
     $request->merge([
       "telegram_user" => $telegramUser->toArray(),
