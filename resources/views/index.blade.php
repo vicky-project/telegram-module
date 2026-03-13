@@ -60,7 +60,7 @@
     menus.forEach(function(menu) {
     const urlObj = new URL(menu.href, window.location.origin);
     urlObj.searchParams.set("initData", initData);
-    urlObj.searchParams.set("token", token);
+    urlObj.searchParams.set("token", token || "");
     menu.href = urlObj.toString();
     menu.setAttribute("disabled", false);
     });
