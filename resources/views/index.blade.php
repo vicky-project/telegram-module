@@ -41,26 +41,34 @@
   e.stopPropagation();
   const urlObj = new URL(e.target.href, window.location.origin);
   const query = urlObj.searchParams.get("initData");
-  if(!query || query == "") return;
+  if(!query || query == "") {
+  appendQuery();
+  return;
+  }
 
   window.location = e.target.href;
   });
   });
+
+  function appendQuery() {
+    const initData = window.Telegram?.WebApp?.initData || @json(request()->get("initData", ""));
+    if (!initData) return;
+
+    let token = localStorage.getItem("telegram_token") || '{{ request()->get("token") }}';
+    if (!token) return;
+
+    const menus = document.querySelectorAll('.menu-item');
+    menus.forEach(function(menu) {
+    const urlObj = new URL(menu.href, window.location.origin);
+    urlObj.searchParams.set("initData", initData);
+    urlObj.searchParams.set("token", token);
+    menu.href = urlObj.toString();
+    menu.setAttribute("disabled", false);
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
-  const initData = window.Telegram?.WebApp?.initData || @json(request()->get("initData", ""));
-  if(!initData) return;
-
-  let token = localStorage.getItem("telegram_token") || '{{ request()->get("token") }}';
-  if(!token) return;
-
-  const menus = document.querySelectorAll('.menu-item');
-  menus.forEach(function(menu) {
-  const urlObj = new URL(menu.href, window.location.origin);
-  urlObj.searchParams.set("initData", initData);
-  urlObj.searchParams.set("token", token);
-  menu.href = urlObj.toString();
-  menu.setAttribute("disabled", false);
-  });
+  appendQuery();
   });
 </script>
 @endpush
