@@ -6,9 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Modules\Telegram\Models\TelegramUser;
 use Modules\Telegram\Services\TelegramAuthService;
+use Illuminate\Contracts\Auth\Factory as AuthFactory;
 
 class TelegramMiniApp {
-  public function __construct(protected TelegramAuthService $authService) {}
+  public function __construct(
+    protected TelegramAuthService $authService,
+    protected AuthFactory $auth
+  ) {}
 
   public function handle(Request $request, Closure $next) {
     // Ambil init data dari request
@@ -49,9 +53,39 @@ class TelegramMiniApp {
         'data' => $telegramUserData,
       ])->first();
 
+    $socialAccount = $this->getSocialAccount($telegramUser);
+    $token = null;
+    $user = null;
+
+    if ($socialAccount) {
+      $user = $socialAccount->user;
+      $token = $request->bearerToken();
+
+      if (!$token && $request->has("token")) {
+        $token = $request->get("token");
+        $request->headers->set("Authorization", "Bearer ".$token);
+      }
+
+      if ($request->bearerToken()) {
+        if ($this->auth->guard('sanctum')->check()) {
+          $this->auth->shouldUse('sanctum');
+        } else {
+          $token = $user->createToken('telegram-token', ["*"], now()->plus(weeks: 1))->plainTextToken;
+        }
+      }
+
+      if ($this->auth->guard('web')->check()) {
+        $this->auth->shouldUse('web');
+        $this->auth->guard("web")->login($user);
+        session()->regenerate();
+      }
+    }
+
     $request->merge([
       "telegram_user" => $telegramUser->toArray(),
-      "initData" => $initData
+      "initData" => $initData,
+      "token" => $token,
+      "user" => $user
     ]);
     session(["is_telegram_app" => true]);
 
