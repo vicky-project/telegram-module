@@ -55,12 +55,13 @@
     if (!initData) return;
 
     let token = localStorage.getItem("telegram_token") || '{{ request()->get("token") }}';
+    if (!token) return;
 
     const menus = document.querySelectorAll('.menu-item');
     menus.forEach(function(menu) {
     const urlObj = new URL(menu.href, window.location.origin);
-    urlObj.searchParams.set("initData", initData);
     urlObj.searchParams.set("token", token || "");
+    urlObj.searchParams.set("initData", initData);
     menu.href = urlObj.toString();
     menu.setAttribute("disabled", false);
     });
