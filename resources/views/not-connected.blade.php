@@ -50,7 +50,7 @@
       <h1>Akun Belum Terhubung</h1>
       <p>Akun telegram anda belum terhubung dengan akun pengguna di aplikasi kami.</p>
       <p>Silakan login melalui website terlebih dahulu, lalu hubungkan Akun Telegram anda dihalaman profile.</p>
-      <a href="{{ config('app.url') }}" class="btn">Ke Beranda</a>
+      <a href="{{ url()->previous() }}" class="btn">Kembali</a>
       </div>
       </body>
       </html>
