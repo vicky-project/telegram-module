@@ -35,6 +35,17 @@
 
 @push('scripts')
 <script>
+  document.querySelectorAll(".menu-item").forEach(function(item) {
+  item.addEventListener("click", function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const urlObj = new URL(e.target.href, window.location.origin);
+  const query = urlObj.searchParams.get("initData");
+  if(!query || query == "") return;
+
+  window.location = e.target.href;
+  });
+  });
   document.addEventListener("DOMContentLoaded", function() {
   const initData = window.Telegram?.WebApp?.initData || @json(request()->get("initData", ""));
   if(!initData) return;
