@@ -43,6 +43,7 @@
   const urlObj = new URL(this.href, window.location.origin);
   const query = urlObj.searchParams.get("initData");
   if(!query || query == "") {
+  this.setAttribute("disabled", true);
   appendQuery();
   return;
   }
