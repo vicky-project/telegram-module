@@ -5,6 +5,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
+use Modules\Telegram\Models\TelegramUser;
 use Modules\Telegram\Services\TelegramAuthService;
 
 class AuthenticateWithTokenOrSession
