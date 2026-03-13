@@ -60,8 +60,14 @@
       body: JSON.stringify({ initData })
       }).then(res => res.json()).then(data => {
       if(data.token) {
-      localStorage.setItem("telegram_token", data.token);
+      window.Telegram.WebApp.DeviceStorage.setItem("telegram_token", data.token, function(error, isStored) {
+      if(error) {
+      alert(data.error);
+      }
+
       window.location.href = "{{ route('telegram.home') }}?token="+ data.token +"&initData="+ encodeURIComponent(initData);
+      });
+      //localStorage.setItem("telegram_token", data.token);
       } else {
       alert(data.error);
       }
