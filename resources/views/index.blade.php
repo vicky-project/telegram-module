@@ -55,7 +55,6 @@
     if (!initData) return;
 
     let token = localStorage.getItem("telegram_token") || '{{ request()->get("token") }}';
-    if (!token) return;
 
     const menus = document.querySelectorAll('.menu-item');
     menus.forEach(function(menu) {
