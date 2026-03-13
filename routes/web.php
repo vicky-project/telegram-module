@@ -7,9 +7,7 @@ Route::group([
   "prefix" => "telegram", "as" => "telegram.", "middleware" => "web"], function() {
   Route::view("/", "telegram::entry")->name("entry");
 
-  Route::get("/not-connected", function() {
-    return view("telegram::not-connected");
-  })->name("not-connected");
+  Route::view("/not-connected", "telegram::not-connected")->name("not-connected");
 
   Route::group(["prefix" => "login", "as" => "login."], function() {
     Route::get("/", [TelegramLoginController::class, "index"])->name("index");
