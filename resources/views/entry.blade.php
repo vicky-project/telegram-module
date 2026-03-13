@@ -62,8 +62,8 @@
       if(data.token) {
       window.Telegram.WebApp.DeviceStorage.setItem("telegram_token", data.token, function(error, isStored) {
       if(error) {
-      alert(data.error);
-      window.location.href = '{{ route("telegram.not-conncted") }}';
+      alert(error);
+      window.location.href = '{{ route("telegram.not-connected") }}';
       }
 
       window.location.href = "{{ route('telegram.home') }}?token="+ data.token +"&initData="+ encodeURIComponent(initData);
