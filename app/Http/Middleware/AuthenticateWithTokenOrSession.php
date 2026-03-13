@@ -47,6 +47,14 @@ class AuthenticateWithTokenOrSession
     return $request->input('initData') ?? $request->header('X-Telegram-Init-Data') ?? $request->query('initData');
   }
 
+  private function getSocialAccount(TelegramUser $telegramUser) {
+    // Cari social account
+    return \Modules\SocialAccount\Models\SocialAccount::where('provider', 'telegram')
+    ->where('providerable_id', $telegramUser->id)
+    ->where('providerable_type', get_class($telegramUser))
+    ->first();
+  }
+
   private function usingTelegram(Request $request, Closure $next) {
     $initData = $this->getInitData($request);
     $botToken = config('telegram.bot.token');
