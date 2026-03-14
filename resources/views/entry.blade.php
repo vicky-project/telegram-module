@@ -69,7 +69,7 @@
       window.location.href = '{{ route("telegram.not-connected") }}';
       }
 
-      urlObj.searchParams.set("token", token);
+      urlObj.searchParams.set("token", data.token);
       window.location.href = urlObj.toString();
       });
       } else {
