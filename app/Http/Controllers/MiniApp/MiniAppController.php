@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 class MiniAppController extends Controller
 {
   public function index(Request $request) {
-    dd($request->all());
-    $token = $request->get("token");
-    return view('telegram::index', compact("token"));
+    return view('telegram::index');
   }
 
   public function profile() {
