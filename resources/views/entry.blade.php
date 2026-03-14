@@ -54,22 +54,26 @@
       return;
       }
 
+      const urlObj = new URL('{{ route("telegram.home") }}', window.location.origin);
+      urlObj.searchParams.set("initData", initData);
+
       fetch('{{ secure_url(config("app.url"))}}/api/telegram/auth', {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ initData })
       }).then(res => res.json()).then(data => {
       if(data.token) {
-      window.Telegram.WebApp.DeviceStorage.setItem("telegram_token", data.token, function(error, isStored) {
+      window.Telegram.WebApp.SecureStorage.setItem("telegram_token", data.token, function(error, isStored) {
       if(error) {
       alert(error);
       window.location.href = '{{ route("telegram.not-connected") }}';
       }
 
-      window.location.href = "{{ route('telegram.home') }}?token="+ data.token +"&initData="+ encodeURIComponent(initData);
+      urlObj.searchParams.set("token", token);
+      window.location.href = urlObj.toString();
       });
       } else {
-      window.location.href = '{{ route("telegram.home") }}?initData=' + encodeURIComponent(initData);
+      window.location.href = urlObj.toString();
       }
       });
       })();
