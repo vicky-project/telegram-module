@@ -64,15 +64,9 @@
       urlObj.searchParams.set("initData", initData);
 
       if(data.token) {
-      window.Telegram.WebApp.DeviceStorage.setItem("telegram_token", data.token, function(error, isStored) {
-      if(error) {
-      alert(error);
-      window.location.href = '{{ route("telegram.not-connected") }}';
-      }
-
+      localStorage.setItem("telegram_token", data.token);
       urlObj.searchParams.set("token", data.token);
       window.location.href = urlObj.toString();
-      });
       } else {
       window.location.href = urlObj.toString();
       }
