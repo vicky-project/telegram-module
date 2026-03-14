@@ -54,14 +54,15 @@
       return;
       }
 
-      const urlObj = new URL('{{ route("telegram.home") }}', window.location.origin);
-      urlObj.searchParams.set("initData", initData);
 
       fetch('{{ secure_url(config("app.url"))}}/api/telegram/auth', {
       method: "POST",
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ initData })
       }).then(res => res.json()).then(data => {
+      const urlObj = new URL('{{ route("telegram.home") }}', window.location.origin);
+      urlObj.searchParams.set("initData", initData);
+
       if(data.token) {
       window.Telegram.WebApp.SecureStorage.setItem("telegram_token", data.token, function(error, isStored) {
       if(error) {
