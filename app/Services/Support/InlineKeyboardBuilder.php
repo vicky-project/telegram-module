@@ -134,26 +134,26 @@ class InlineKeyboardBuilder
   {
     $keyboard = [];
     $row = [];
-    $hasLocation = false;
 
     foreach ($items as $index => $item) {
-      $data = ["text" => $item["text"]];
-
-      if (isset($item["callback_data"])) {
-        $data["callback_data"] = GlobalCallbackBuilder::build(
-          $this->scope,
-          $this->module ?? null,
-          $this->entity ?? null,
-          $item["callback_data"]["action"],
-          $item["callback_data"]["value"] ?? null
-        );
-      } elseif (isset($item["url"])) {
-        $data["url"] = $item["url"];
-      } elseif (isset($item["login_url"])) {
-        $data["login_url"] = $item["login_url"];
-      } elseif (isset($item["request_location"])) {
+      if (isset($item["request_location"])) {
         $data["request_location"] = true;
-        $hasLocation = true;
+      } else {
+        $data = ["text" => $item["text"]];
+
+        if (isset($item["callback_data"])) {
+          $data["callback_data"] = GlobalCallbackBuilder::build(
+            $this->scope,
+            $this->module ?? null,
+            $this->entity ?? null,
+            $item["callback_data"]["action"],
+            $item["callback_data"]["value"] ?? null
+          );
+        } elseif (isset($item["url"])) {
+          $data["url"] = $item["url"];
+        } elseif (isset($item["login_url"])) {
+          $data["login_url"] = $item["login_url"];
+        }
       }
 
       $row[] = $data;
