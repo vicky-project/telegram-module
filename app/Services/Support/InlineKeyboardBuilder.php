@@ -164,14 +164,6 @@ class InlineKeyboardBuilder
       }
     }
 
-    if ($hasLocation) {
-      return [
-        "keyboard" => $keyboard,
-        "one_time_keyboard" => true,
-        "resize_keyboard" => true
-      ];
-    }
-
     if (!empty($row)) {
       $keyboard[] = $row;
     }
