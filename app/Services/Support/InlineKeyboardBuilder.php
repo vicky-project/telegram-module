@@ -187,6 +187,7 @@ class InlineKeyboardBuilder
   public function replyKeyboardGrid(
     array $items,
     int $columns = 2,
+    bool $forceReply = false,
     bool $oneTimeKeyboard = true,
     bool $resizeKeyboard = true
   ): array {
@@ -215,6 +216,7 @@ class InlineKeyboardBuilder
       'keyboard' => $keyboard,
       'one_time_keyboard' => $oneTimeKeyboard,
       'resize_keyboard' => $resizeKeyboard,
+      "force_reply" => $forceReply
     ];
   }
 }
