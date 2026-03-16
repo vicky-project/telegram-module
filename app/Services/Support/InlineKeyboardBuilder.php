@@ -56,7 +56,7 @@ class InlineKeyboardBuilder
   */
   protected function makeReplyButton(string $text, bool $requestLocation = false, bool $requestContact = false): array
   {
-    return Keyboard::replyButton([
+    return Keyboard::button([
       'text' => $text,
       'request_location' => $requestLocation,
       'request_contact' => $requestContact,
