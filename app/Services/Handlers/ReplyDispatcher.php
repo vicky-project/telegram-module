@@ -42,7 +42,7 @@ class ReplyDispatcher
     TelegramMiddlewareInterface $middleware
   ): void {
     $this->middleware[$name] = $middleware;
-    Log::info("Reply middleware registered", ["name" => $name]);
+    Log::info("Reply middleware registered: ". $name);
   }
 
   /**
