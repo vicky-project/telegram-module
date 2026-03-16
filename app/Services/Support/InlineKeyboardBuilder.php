@@ -56,11 +56,14 @@ class InlineKeyboardBuilder
   */
   protected function makeReplyButton(string $text, bool $requestLocation = false, bool $requestContact = false): array
   {
-    return Keyboard::button([
-      'text' => $text,
-      'request_location' => $requestLocation,
-      'request_contact' => $requestContact,
-    ]);
+    $button = ['text' => $text];
+    if ($requestLocation) {
+      $button['request_location'] = true;
+    }
+    if ($requestContact) {
+      $button['request_contact'] = true;
+    }
+    return $button;
   }
 
   /**
