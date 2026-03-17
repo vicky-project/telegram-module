@@ -4,7 +4,7 @@ namespace Modules\Telegram\Traits;
 use Telegram\Bot\Objects\Message;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Services\Support\TelegramMarkdownHelper;
-use Modules\Telegram\Services\Support\CacheReplyStateManager;
+use Modules\Telegram\Services\Support\Cache\CacheReplyStateManager;
 
 trait MessageOperations
 {

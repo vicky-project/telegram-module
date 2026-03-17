@@ -5,21 +5,25 @@ use Telegram\Bot\Objects\Message;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
 use Modules\Telegram\Services\Handlers\ReplyDispatcher;
+use Modules\Telegram\Services\Handlers\LocationDispatcher;
 use Modules\Telegram\Services\Support\TelegramApi;
 
 class MessageHandler
 {
   protected CommandDispatcher $commandDispatcher;
   protected ReplyDispatcher $replyDispatcher;
+  protected LocationDispatcher $locationDispatcher;
   protected TelegramApi $telegramApi;
 
   public function __construct(
     CommandDispatcher $commandDispatcher,
     ReplyDispatcher $replyDispatcher,
+    LocationDispatcher $locationDispatcher,
     TelegramApi $telegramApi,
   ) {
     $this->commandDispatcher = $commandDispatcher;
     $this->replyDispatcher = $replyDispatcher;
+    $this->locationDispatcher = $locationDispatcher;
     $this->telegramApi = $telegramApi;
   }
 
@@ -46,6 +50,12 @@ class MessageHandler
       Log::info("Handling command");
       return $this->commandDispatcher->handleCommand($chatId, $text, $username);
     }
+
+    if ($location) {
+      Log::info("Location handling", ["lat" => $location->getLatitude(), "lon" => $location->getLongitude()]);
+      return $this->locationDispatcher->handleLocation($chatId, $location->getLatitude(), $location->getLongitude(), $username);
+    }
+
 
     if ($replyToMessage) {
       // handle replyToMessage
