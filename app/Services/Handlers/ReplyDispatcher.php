@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Interfaces\TelegramReplyHandlerInterface;
 use Modules\Telegram\Interfaces\TelegramMiddlewareInterface;
-use Modules\Telegram\Services\Support\CacheReplyStateManager;
+use Modules\Telegram\Services\Support\Cache\CacheReplyStateManager;
 
 class ReplyDispatcher
 {

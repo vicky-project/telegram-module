@@ -92,6 +92,11 @@ class TelegramServiceProvider extends ServiceProvider
       return $replyDispatcher;
     });
 
+    $this->app->singleton(Services\Handlers\LocationDispatcher::class, function ($app) {
+      $locationDispatcher = new Services\Handlers\LocationDispatcher();
+      return $locationDispatcher;
+    });
+
     $this->app->bind(Services\Handlers\MessageHandler::class, function ($app) {
       return new Services\Handlers\MessageHandler(
         $this->app->make(Services\Handlers\CommandDispatcher::class),
