@@ -73,7 +73,7 @@ class TelegramServiceProvider extends ServiceProvider
     });
 
     $this->app->singleton(Services\Handlers\CallbackHandler::class, function (
-      $app,
+      $app
     ) {
       $callback = new Services\Handlers\CallbackHandler(
         $app->make(Services\Support\TelegramApi::class),
@@ -101,6 +101,7 @@ class TelegramServiceProvider extends ServiceProvider
       return new Services\Handlers\MessageHandler(
         $this->app->make(Services\Handlers\CommandDispatcher::class),
         $this->app->make(Services\Handlers\ReplyDispatcher::class),
+        $this->app->make(Services\Handlers\LocationDispatcher::class),
         $this->app->make(Services\Support\TelegramApi::class),
       );
     });
