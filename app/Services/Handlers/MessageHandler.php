@@ -57,6 +57,7 @@ class MessageHandler
       );
     }
 
+
     // Handle regular text message
     return $this->handleTextMessage($chatId, $text);
   }

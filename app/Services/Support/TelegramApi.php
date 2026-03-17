@@ -12,7 +12,7 @@ class TelegramApi
 
   public function __construct() {
     $token = config("telegram.bot.token");
-    $this->telegram = new Api($token, true);
+    $this->telegram = new Api($token);
   }
 
   public function setWebhook(array $config): bool|string
