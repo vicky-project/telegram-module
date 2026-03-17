@@ -47,8 +47,6 @@ class MessageHandler
       return $this->commandDispatcher->handleCommand($chatId, $text, $username);
     }
 
-    if ($location) {}
-
     if ($replyToMessage) {
       // handle replyToMessage
       Log::info("Handling to reply message");
