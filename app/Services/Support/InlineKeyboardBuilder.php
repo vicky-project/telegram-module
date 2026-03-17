@@ -40,7 +40,7 @@ class InlineKeyboardBuilder
       $value,
       $params
     );
-    return Keyboard::inlineButton(['text' => $text, 'callback_data' => $callbackData]);
+    return Keyboard::inlineButton(['text' => $text, 'callback_data' => $callbackData])->toArray();
   }
 
   /**
@@ -48,7 +48,7 @@ class InlineKeyboardBuilder
   */
   protected function makeUrlButton(string $text, string $url): array
   {
-    return Keyboard::inlineButton(['text' => $text, 'url' => $url]);
+    return Keyboard::inlineButton(['text' => $text, 'url' => $url])->toArray();
   }
 
   /**
