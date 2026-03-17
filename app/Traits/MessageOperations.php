@@ -39,7 +39,7 @@ trait MessageOperations
 
       // Send error message
       $errorMessage = $this->getErrorAnswer($e->getMessage());
-      $this->sendMessage($chatId, $errorMessage, null, "Markdown");
+      $this->sendMessage($chatId, $errorMessage, null, "MarkdownV2");
 
       return [
         "status" => "error",
