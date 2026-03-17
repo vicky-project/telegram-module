@@ -93,7 +93,7 @@ class TelegramServiceProvider extends ServiceProvider
     });
 
     $this->app->singleton(Services\Handlers\LocationDispatcher::class, function ($app) {
-      $locationDispatcher = new Services\Handlers\LocationDispatcher();
+      $locationDispatcher = new Services\Handlers\LocationDispatcher($app->make(Services\Support\TelegramApi::class));
       return $locationDispatcher;
     });
 
