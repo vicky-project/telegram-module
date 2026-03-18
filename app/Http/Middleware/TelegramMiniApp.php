@@ -57,6 +57,7 @@ class TelegramMiniApp {
       "telegram_user" => $telegramUser->toArray(),
       "initData" => $initData,
     ]);
+    view()->share('telegramUser', $telegramUser);
     session(["is_telegram_app" => true]);
 
     return $next($request);
