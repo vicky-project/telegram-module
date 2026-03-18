@@ -38,12 +38,7 @@ class MessageHandler
     $replyToMessage = $message->getReplyToMessage();
     $location = $message->getLocation();
 
-    Log::info("Telegram message received", [
-      "chat_id" => $chatId,
-      "username" => $username,
-      "reply" => $replyToMessage,
-      "location" => $location
-    ]);
+    Log::info("Telegram message received");
 
     // Handle command
     if ($this->isCommand($text)) {
@@ -52,7 +47,7 @@ class MessageHandler
     }
 
     if ($location) {
-      Log::info("Location handling", ["lat" => $location->getLatitude(), "lon" => $location->getLongitude()]);
+      Log::info("Location handling");
       return $this->locationDispatcher->handleLocation($chatId, $location->getLatitude(), $location->getLongitude(), $username);
     }
 

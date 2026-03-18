@@ -27,12 +27,12 @@ abstract class BaseLocationHandler implements TelegramLocationInterface
   */
   public function handle(array $parsedData, array $context): array
   {
-    \Log::debug("Base location handler", ["parsed_data" =>$parsedData,"context" =>$context]);
     $chatId = $parsedData["chat_id"];
     $latitude = $parsedData["latitude"];
     $longitude = $parsedData["longitude"];
+    $username = $parsedData["username"] ?? null;
 
-    return $this->processLocation($chatId, $latitude, $longitude, null, $context);
+    return $this->processLocation($chatId, $latitude, $longitude, $username, $context);
   }
 
   /**
