@@ -7,6 +7,8 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Factory as AuthFactory;
 use Modules\Telegram\Models\TelegramUser;
 use Modules\Telegram\Services\TelegramAuthService;
+use Modules\SocialAccount\Enums\Provider;
+use Modules\SocialAccount\Models\SocialAccount;
 
 class AuthenticateWithTokenOrSession
 {
@@ -49,7 +51,7 @@ class AuthenticateWithTokenOrSession
 
   private function getSocialAccount(TelegramUser $telegramUser) {
     // Cari social account
-    return \Modules\SocialAccount\Models\SocialAccount::where('provider', 'telegram')
+    return SocialAccount::where('provider', Provider::TELEGRAM)
     ->where('providerable_id', $telegramUser->id)
     ->where('providerable_type', get_class($telegramUser))
     ->first();
