@@ -23,4 +23,5 @@ return [
     "enabled" => false,
     "service" => \Modules\CoreUI\Services\UIService::class,
   ],
+  "timezone" => env("TELEGRAM_TIMEZONE", "Asia/Makassar")
 ];

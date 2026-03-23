@@ -67,6 +67,11 @@ class TelegramServiceProvider extends ServiceProvider
     $this->app->register(EventServiceProvider::class);
     $this->app->register(RouteServiceProvider::class);
 
+    $this->app
+    ->make("config")
+    ->set("app.timezone",
+      config("telegram.timezone", 'Asia/Jakarta'));
+
     $this->app->singleton(Services\Handlers\CommandDispatcher::class, function (
       $app,
     ) {
