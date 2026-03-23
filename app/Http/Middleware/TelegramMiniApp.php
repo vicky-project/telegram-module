@@ -54,7 +54,7 @@ class TelegramMiniApp {
         'data' => $telegramUserData,
       ])->first();
 
-    $data = array_merge($telegramUser->data ?? [], ['auth_date' => now()->format('d-m-Y H:i:s')]);
+    $data = array_merge($telegramUser->data ?? [], ['auth_date' => now(config('telegram.timezone'))->format('d-m-Y H:i:s')]);
     $telegramUser->update(["data" => $data]);
 
     $request->merge([
