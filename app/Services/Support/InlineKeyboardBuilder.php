@@ -140,7 +140,8 @@ class InlineKeyboardBuilder
       if (isset($item['callback_data'])) {
         $action = $item['callback_data']['action'] ?? '';
         $value = $item['callback_data']['value'] ?? null;
-        $button = $this->makeInlineButton($text, $action, $value);
+        $params = $item['callback_data']['params'] ?? [];
+        $button = $this->makeInlineButton($text, $action, $value, $params);
       } elseif (isset($item['url'])) {
         $button = $this->makeUrlButton($text, $item['url']);
       } elseif (isset($item['login_url'])) {
