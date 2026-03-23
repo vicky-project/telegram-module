@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Modules\Telegram\Models\TelegramUser;
 use Modules\Telegram\Repositories\TelegramRepository;
+use Modules\SocialAccount\Enums\Provider;
 use Modules\SocialAccount\Models\SocialAccount;
 use Modules\SocialAccount\Services\SocialAccountService;
 use Rappasoft\LaravelAuthenticationLog\Helpers\DeviceFingerprint;
@@ -43,7 +44,7 @@ class TelegramService
 
     return $telegram
     ->provider()
-    ->byProvider("telegram")
+    ->byProvider(Provider::TELEGRAM)
     ->first();
   }
 
@@ -88,7 +89,7 @@ class TelegramService
         return false;
       }
 
-      $telegram = $socialAccounts->where("provider", "telegram")->first();
+      $telegram = $socialAccounts->where("provider", Provider::TELEGRAM)->first();
 
       // Social Account not have provider
       if (!$telegram || !$telegram->providerable) {
@@ -120,7 +121,7 @@ class TelegramService
 
       return $user
       ->socialAccounts()
-      ->byProvider("telegram")
+      ->byProvider(Provider::TELEGRAM)
       ->where("providerable_id", $telegram->id)
       ->delete();
     } catch (\Exception $e) {
@@ -135,7 +136,7 @@ class TelegramService
       return $this->service->saveUserSocialAccountByProvider(
         $user,
         $telegram,
-        "telegram",
+        Provider::TELEGRAM,
         $options
       );
     } catch (\Exception $e) {

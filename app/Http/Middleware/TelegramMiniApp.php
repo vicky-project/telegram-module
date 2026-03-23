@@ -43,6 +43,8 @@ class TelegramMiniApp {
       abort(403, "Invalid user data");
     }
 
+    $telegramUserData["auth_date"] = now()->format('d-m-Y H:i:s');
+
     $telegramUser = TelegramUser::firstOrCreate(
       ['telegram_id' => $telegramId],
       [

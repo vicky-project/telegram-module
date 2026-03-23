@@ -3,6 +3,7 @@ namespace Modules\Telegram\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\SocialAccount\Enums\Provider;
 use Modules\SocialAccount\Models\SocialAccount;
 use Modules\Telegram\Models\TelegramUser;
 use Modules\Telegram\Services\TelegramAuthService;
@@ -40,7 +41,7 @@ class TelegramAuthController extends Controller
     );
 
     // Cari social account yang terhubung
-    $socialAccount = SocialAccount::where('provider', 'telegram')
+    $socialAccount = SocialAccount::where('provider', Provider::TELEGRAM)
     ->where('providerable_id', $telegramUser->id)
     ->where('providerable_type', TelegramUser::class)
     ->first();

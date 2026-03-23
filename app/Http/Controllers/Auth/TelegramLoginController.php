@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Telegram\Models\TelegramUser;
 use Modules\Telegram\Services\TelegramAuthService;
 use Modules\Telegram\Services\TelegramService;
-use Modules\SocialAccount\Models\SocialAccount;
 
 class TelegramLoginController extends Controller
 {
