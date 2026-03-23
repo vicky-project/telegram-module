@@ -77,6 +77,7 @@ class UpdateHandler
 
     $telegramUser = TelegramUser::firstOrCreate([
       "telegram_id" => $chatId
+    ],
       [
         "first_name" => $data["first_name"],
         "last_name" => $data["last_name"],
@@ -85,51 +86,51 @@ class UpdateHandler
         'data' => $data,
       ])->first();
 
-      return $telegramUser;
-    }
-
-    /**
-    * Get webhook info
-    */
-    public function getWebhookInfo(): array
-    {
-      $info = $this->telegram->getWebhookInfo();
-
-      return [
-        "url" => $info->getUrl(),
-        "has_custom_certificate" => $info->getHasCustomCertificate(),
-        "pending_update_count" => $info->getPendingUpdateCount(),
-        "last_error_date" => $info->getLastErrorDate(),
-        "last_error_message" => $info->getLastErrorMessage(),
-        "max_connections" => $info->getMaxConnections(),
-        "allowed_updates" => $info->getAllowedUpdates(),
-      ];
-    }
-
-    /**
-    * Set webhook URL
-    */
-    public function setWebhook(string $url, ?string $secretToken = null): bool
-    {
-      $params = [
-        "url" => $url,
-        "max_connections" => 40,
-        "allowed_updates" => config("telegram.bot.allowed_updates", ["message"]),
-      ];
-
-      if ($secretToken) {
-        $params["secret_token"] = $secretToken;
-      }
-
-      return $this->telegram->setWebhook($params);
-    }
-
-    /**
-    * Remove webhook
-    */
-    public function removeWebhook(): bool
-    {
-      $response = $this->telegram->removeWebhook();
-      return $response;
-    }
+    return $telegramUser;
   }
+
+  /**
+  * Get webhook info
+  */
+  public function getWebhookInfo(): array
+  {
+    $info = $this->telegram->getWebhookInfo();
+
+    return [
+      "url" => $info->getUrl(),
+      "has_custom_certificate" => $info->getHasCustomCertificate(),
+      "pending_update_count" => $info->getPendingUpdateCount(),
+      "last_error_date" => $info->getLastErrorDate(),
+      "last_error_message" => $info->getLastErrorMessage(),
+      "max_connections" => $info->getMaxConnections(),
+      "allowed_updates" => $info->getAllowedUpdates(),
+    ];
+  }
+
+  /**
+  * Set webhook URL
+  */
+  public function setWebhook(string $url, ?string $secretToken = null): bool
+  {
+    $params = [
+      "url" => $url,
+      "max_connections" => 40,
+      "allowed_updates" => config("telegram.bot.allowed_updates", ["message"]),
+    ];
+
+    if ($secretToken) {
+      $params["secret_token"] = $secretToken;
+    }
+
+    return $this->telegram->setWebhook($params);
+  }
+
+  /**
+  * Remove webhook
+  */
+  public function removeWebhook(): bool
+  {
+    $response = $this->telegram->removeWebhook();
+    return $response;
+  }
+}
