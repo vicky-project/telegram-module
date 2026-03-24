@@ -151,7 +151,7 @@ class TelegramService
       if ($telegram) {
         $user = $telegram->provider->user;
 
-        \Auth::login($user);
+        \Auth::login($user, true);
         return $user;
       }
 

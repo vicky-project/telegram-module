@@ -2,7 +2,7 @@
 
 namespace Modules\Telegram\Services;
 
-use Modules\Telegram\Models\Telegram;
+use Modules\Telegram\Models\TelegramUser;
 use Modules\Telegram\Services\TelegramService;
 use Modules\SocialAccount\Models\SocialAccount;
 use Modules\SocialAccount\Enums\Provider;
@@ -122,13 +122,14 @@ class TelegramAuthService
 
     $telegramUser = $this->parseUserData($initData);
 
-    $telegram = Telegram::firstOrCreate(
+    $telegram = TelegramUser::firstOrCreate(
       ["telegram_id" => $telegramUser["id"]],
       [
         "username" => $telegramUser["username"] ?? null,
         "first_name" => $telegramUser["first_name"] ?? "",
         "last_name" => $telegramUser["last_name"] ?? null,
-        "auth_date" => $params["auth_date"] ?? time(),
+        "photo_url" => $telegramUser["photo_url"] ?? '',
+        'data' => $telegramUser
       ],
     );
 
@@ -154,7 +155,7 @@ class TelegramAuthService
       "authlog_id" => $log->id,
       "provider" => Provider::TELEGRAM,
       "last_used_at" => now(),
-      "provider_data" => $params,
+      "provider_data" => $telegramUser,
     ]);
     $telegram->provider()->save($socialAccount);
 
