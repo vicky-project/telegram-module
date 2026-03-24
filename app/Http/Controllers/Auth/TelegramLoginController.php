@@ -37,7 +37,7 @@ class TelegramLoginController extends Controller
     if ($socialAccount) {
       $user = $socialAccount->user;
       if (!Auth::check()) {
-        Auth::login($user);
+        Auth::login($user, true);
         session()->regenerate();
       }
 
