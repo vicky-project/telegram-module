@@ -1,7 +1,6 @@
 <?php
 namespace Modules\Telegram\Services\Handlers;
 
-use DeepSeek\DeepSeekClient;
 use Telegram\Bot\Objects\Message;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
@@ -97,6 +96,7 @@ class MessageHandler
     $useDeepseek = config("telegram.use_deepseek_ai", false);
 
     if (!$useDeepseek) {
+      Log::info("Default message text sent.");
       return $this->sendDefaultMessage($chatId);
     }
 
@@ -112,6 +112,7 @@ class MessageHandler
       ->withModel("deepseek-chat")
       ->setTemperature(1.5)
       ->run();
+      Log::info("Message replied by deepseek.ai", ["response" => $response]);
 
       return [
         "status" => "deepseek_replied",
