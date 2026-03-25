@@ -9,7 +9,7 @@
         @if($user->photo_url)
         <img src="{{ $user->photo_url}}" alt="{{ $user->first_name }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
         @else
-        <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(trim($user->first_name))) }}?s=200&d=mp" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
+        <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(trim($user->first_name . '@vickyserver.my.id'))) }}?s=200&d=mp" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
         <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3" width="80" height="80">
           <i class="bi bi-person-fill fs-1 text-white"></i>
         </div>
