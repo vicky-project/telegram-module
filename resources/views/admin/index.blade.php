@@ -1,21 +1,49 @@
 @extends('coreui::layouts.admin')
 @section('title', 'Telegram Users')
 @section('content')
-<div class="card shadow">
-  <div class="card-header">
-    <h5 class="card-title mb-0">Telegram Users</h5>
-  </div>
-  <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped table-hover">
-        <thead>
-          <tr>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+<div class="row">
+  @foreach($tgUsers as $user)
+  <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body text-center">
+        @if($user->photo_url)
+        <img src="{{ $user->photo_url}}" alt="{{ $user->first_name }}" class="rounded-circle mb-3"width="80" height="80" style="object-fit: cover;">
+        @else
+        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3" width="80" height="80">
+          <i class="bi bi-person-fill fs-1 text-white"></i>
+        </div>
+        @endif
+        <h5 class="card-title mb-1">{{ $user->first_name }} {{ $user->last_name }}</h5>
+        @if($user->username)
+        <p class="text-muted small mb-2">
+          <span>@</span>{{ $user->username }}
+        </p>
+        @endif
+        <span class="small text-muted">Last Used:</span> {{ now()->createFrom($user->data["auth_date"])->diffForHumans() }}
+      </div>
+      <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+        @if($user->username)
+        <a href="https://t.me/{{ $user->username}}" target="_blank" class="btn btn-sm btn-outline-primary w-100">
+          <i class="bi bi-telegram me-1"></i> Buka di Telegram
+        </a>
+        @endif
+      </div>
     </div>
   </div>
+  @endforeach
 </div>
 @endsection
+
+@push('styles')
+<style>
+  .card {
+    transition: transform 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+  }
+  .rounded-circle {
+    border: 2px solid #1f1f1f;
+  }
+</style>
+@endpush
