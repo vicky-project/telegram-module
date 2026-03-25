@@ -112,7 +112,8 @@ class MessageHandler
       ->withModel("deepseek-chat")
       ->setTemperature(1.5)
       ->run();
-      Log::warning("Message replied by deepseek.ai", ["response" => (string) $response]);
+      Log::warning("Message replied by deepseek.ai", ["response" => $response]);
+      $response = json_decode($response);
 
       if (isset($response->error)) {
         throw new \Exception($response->error->message);
