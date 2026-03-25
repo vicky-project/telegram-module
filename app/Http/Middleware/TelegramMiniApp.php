@@ -50,6 +50,7 @@ class TelegramMiniApp {
         'first_name' => $telegramUserData['first_name'] ?? '',
         'last_name' => $telegramUserData['last_name'] ?? '',
         'username' => $telegramUserData['username'] ?? '',
+        'language_code' => $telegramUserData['language_code'] ?? null,
         'photo_url' => $telegramUserData['photo_url'] ?? '',
         'data' => $telegramUserData,
       ])->first();

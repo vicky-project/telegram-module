@@ -35,6 +35,7 @@ class TelegramAuthController extends Controller
         'first_name' => $telegramData['first_name'] ?? '',
         'last_name' => $telegramData['last_name'] ?? '',
         'username' => $telegramData['username'] ?? '',
+        'language_code' => $telegramData['language_code'],
         'photo_url' => $telegramData['photo_url'] ?? '',
         'data' => $telegramData,
       ]
