@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Telegram\Services\Handlers;
 
-use DeepSeekClient\DeepSeekClient;
+use DeepSeek\DeepSeekClient;
 use Telegram\Bot\Objects\Message;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
