@@ -114,14 +114,14 @@ class MessageHandler
       ->run();
       Log::info("Message replied by deepseek.ai", ["response" => $response]);
 
-      if (isset($response["error"])) {
-        throw new \Exception($response["error"]["message"]);
+      if (isset($response->error)) {
+        throw new \Exception($response->error->message);
       }
 
       return [
         "status" => "deepseek_replied",
         "chat_id" => $chatId,
-        "response" => $response["success"]["message"]
+        "response" => $response->success->message
       ];
     } catch (\Exception $e) {
       Log::error("DeepSeek API error: " . $e->getMessage());
