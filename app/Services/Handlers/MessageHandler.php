@@ -95,7 +95,7 @@ class MessageHandler
   private function handleTextMessage(int $chatId, string $text): array
   {
     $appName = config("app.name");
-    $useDeepseek = config("use_deepseek_ai", false);
+    $useDeepseek = config("telegram.use_deepseek_ai", false);
 
     if (!$useDeepseek) {
       $response =
