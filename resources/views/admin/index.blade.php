@@ -19,7 +19,7 @@
           <span>@</span>{{ $user->username }}
         </p>
         @endif
-        <span class="small text-muted">Last Used:</span> {{ now()->createFrom($user->data["auth_date"])->diffForHumans() }}
+        <span class="small text-muted">Last Used:</span> {{ now()->parse($user->data["auth_date"])->diffForHumans() }}
       </div>
       <div class="card-footer bg-transparent border-0 pt-0 pb-3">
         @if($user->username)
