@@ -9,7 +9,10 @@
         @if($user->photo_url)
         <img src="{{ $user->photo_url}}" alt="{{ $user->first_name }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
         @else
-        <img src="https://www.gravatar.com/avatar/{{ md5(strtolower(trim($user->first_name . '@vickyserver.my.id'))) }}?s=200&d=mp" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
+        @php
+        $fullName = $user->first_name . $user->last_name ? ' '. $user->last_name : '';
+        @endphp
+        <img src="{{ Avatar::create($fullName)->setDimension(80, 80)->toBase64() }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
         @endif
         <h5 class="card-title mb-1">{{ $user->first_name }} {{ $user->last_name }}</h5>
         @if($user->username)
@@ -20,7 +23,7 @@
         @php
         $authDate = $user->data["auth_date"] ?? null;
         @endphp
-        <span class="small text-muted">Last Used:</span> {{ $authDate ? now()->parse($user->data["auth_date"])->diffForHumans() : 'Never' }}
+        <span class="small text-muted">Last Used:</span> {{ $authDate ? now()->parse($authDate)->diffForHumans() : 'Never' }}
       </div>
       <div class="card-footer bg-transparent border-0 pt-0 pb-3">
         @if($user->username)
