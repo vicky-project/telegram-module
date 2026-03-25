@@ -96,7 +96,7 @@ class MessageHandler
     $useDeepseek = config("telegram.use_deepseek_ai", false);
 
     if (!$useDeepseek) {
-      Log::info("Default message text sent.");
+      Log::info("Using default message text sent.");
       return $this->sendDefaultMessage($chatId);
     }
 
@@ -112,7 +112,7 @@ class MessageHandler
       ->withModel("deepseek-chat")
       ->setTemperature(1.5)
       ->run();
-      Log::info("Message replied by deepseek.ai", ["response" => $response]);
+      Log::warning("Message replied by deepseek.ai", ["response" => $response]);
 
       if (isset($response->error)) {
         throw new \Exception($response->error->message);
