@@ -4,6 +4,7 @@ return [
   'name' => 'Telegram',
   'base_url' => env('APP_URL').'/telegram',
   "logo_url" => env("LOGO_URL", "/homeserver.png"),
+  "use_deepseek_ai" => env("TELEGRAM_DEEPSEEK_ENABLED", false),
 
   "bot" => [
     "token" => env("TELEGRAM_BOT_TOKEN"),

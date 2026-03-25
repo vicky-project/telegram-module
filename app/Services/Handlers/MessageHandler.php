@@ -1,6 +1,7 @@
 <?php
 namespace Modules\Telegram\Services\Handlers;
 
+use DeepSeekClient;
 use Telegram\Bot\Objects\Message;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Services\Handlers\CommandDispatcher;
@@ -94,17 +95,32 @@ class MessageHandler
   private function handleTextMessage(int $chatId, string $text): array
   {
     $appName = config("app.name");
+    $useDeepseek = config("use_deepseek_ai", false);
 
-    $response =
-    "Halo! Saya adalah bot untuk aplikasi {$appName}.\n\n" .
-    "Gunakan /help untuk melihat command yang tersedia.";
+    if (!$useDeepseek) {
+      $response =
+      "Halo! Saya adalah bot untuk aplikasi {$appName}.\n\n" .
+      "Gunakan /help untuk melihat command yang tersedia.";
 
-    $this->telegramApi->sendMessage($chatId, $response);
+      $this->telegramApi->sendMessage($chatId, $response);
+
+      return [
+        "status" => "text_message",
+        "chat_id" => $chatId,
+        "response" => $response,
+      ];
+    }
+
+    $deepseek = app(DeepSeekClient::class);
+    $response = $deepseek->query($text, 'user')
+    ->withModel("deepseek-chat")
+    ->setTemperature(1.5)
+    ->run();
 
     return [
-      "status" => "text_message",
+      "status" => "deepseek_replied",
       "chat_id" => $chatId,
-      "response" => $response,
+      "response" => $response
     ];
   }
 
