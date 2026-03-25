@@ -12,7 +12,7 @@
         @php
         $fullName = $user->first_name . $user->last_name ? ' '. $user->last_name : '';
         @endphp
-        <img src="{{ Avatar::create($fullName)->setDimension(80, 80)->toBase64() }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
+        <img src="{{ Avatar::create($fullName)->setDimension(80, 80)->setBackground('#00580d')->toBase64() }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
         @endif
         <h5 class="card-title mb-1">{{ $user->first_name }} {{ $user->last_name }}</h5>
         @if($user->username)
@@ -45,9 +45,6 @@
   }
   .card:hover {
     transform: translateY(-4px);
-  }
-  .rounded-circle {
-    border: 2px solid #40a7e3;
   }
 </style>
 @endpush
