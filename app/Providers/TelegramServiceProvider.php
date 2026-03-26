@@ -75,9 +75,6 @@ class TelegramServiceProvider extends ServiceProvider
     ->make("config")
     ->set("app.timezone",
       config("telegram.timezone", 'Asia/Jakarta'));
-    $this->app
-    ->make("config")
-    ->set("authentication-log.notifications", require module_path($this->name, 'config/authentication-log.php'));
 
     Notification::resolved(function(ChannelManager $service): void {
       $service->extend("telegram", fn(Application $app) => $app->make(TelegramChannel::class));
