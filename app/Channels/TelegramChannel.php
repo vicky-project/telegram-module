@@ -16,7 +16,7 @@ class TelegramChannel
   /**
   * Authenticate the user's access to the channel.
   */
-  public function send(mixed $notifiable, Notificatons $notification) {
+  public function send(mixed $notifiable, Notification $notification) {
     if (!method_exists($notification, 'toTelegram')) {
       return;
     }
