@@ -114,11 +114,6 @@ class CommandDispatcher
       // Execute pipeline
       $result = $pipeline($context);
 
-      Log::info("Command executed successfully", [
-        "command" => $commandName,
-        "chat_id" => $chatId,
-      ]);
-
       return $result;
     } catch (\Exception $e) {
       Log::error("Failed to handle command", [

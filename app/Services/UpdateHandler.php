@@ -33,20 +33,27 @@ class UpdateHandler
   {
     try {
       $update = $this->telegram->getWebhookUpdate();
-      $this->recordUser($update->getMessage());
+
+      Log::debug("Webhook update received.", [
+        "update_id" => $update->getUpdateId,
+        "has_message" => $update->has("message"),
+        "has_edited_message" => $update->has("edited_message"),
+        "has_callback_query" => $update->has("callback_query")
+      ]);
 
       if ($update->has("message")) {
+        $this->recordUser($update->getMessage());
         return $this->messageHandler->handle($update->getMessage());
-      } elseif ($update->has("edited_message")) {
+      }
+
+      if ($update->has("edited_message")) {
         return $this->messageHandler->handleEditedMessage(
           $update->getEditedMessage()
         );
-      } elseif ($update->has("callback_query")) {
+      }
+
+      if ($update->has("callback_query")) {
         return $this->callbackHandler->handle($update->getCallbackQuery());
-      } elseif ($update->has("edited_message")) {
-        return $this->messageHandler->handleEditedMessage(
-          $update->getEditedMessage()
-        );
       }
 
       Log::warning("Unhandled update type", [
@@ -65,26 +72,62 @@ class UpdateHandler
     }
   }
 
-  private function recordUser(Message $message) {
-    $chatId = $message->getChat()->getId();
+  private function recordUser(Message $message): TelegramUser
+  {
+    $chat = $message->getChat();
+    $chatId = $chat->getId();
+
     $data = [
-      'first_name' => $message->getChat()->getFirstName() ?? '',
-      'last_name' => $message->getChat()->getLastName() ?? '',
-      'username' => $message->getChat()->getUsername() ?? '',
-      'photo_url' => $message->getChat()->getPhoto(),
+      'first_name' => $chat->getFirstName() ?? '',
+      'last_name' => $chat->getLastName() ?? '',
+      'username' => $chat->getUsername() ?? '',
+      'photo_url' => $chat->getPhoto(),
       "auth_date" => now()->format("d-m-Y H:i:s")
     ];
 
-    $telegramUser = TelegramUser::firstOrCreate([
-      "telegram_id" => $chatId
-    ],
+    $telegramUser = TelegramUser::firstOrCreate(
+      ["telegram_id" => $chatId],
       [
         "first_name" => $data["first_name"],
         "last_name" => $data["last_name"],
         "username" => $data["username"],
         "photo_url" => $data["photo_url"],
         'data' => $data,
-      ])->first();
+      ]
+    );
+
+    if ($telegramUser->wasRecentlyCreated) {
+      Log::info("New Telegram user recorded", [
+        "telegram_id" => $chatId,
+        "username" => $data["username"]
+      ]);
+    } else {
+      $changed = false;
+      if ($telegramUser->first_name != $data["first_name"]) {
+        $telegramUser->first_name = $data["first_name"];
+        $changed = true;
+      }
+      if ($telegramUser->last_name != $data["last_name"]) {
+        $telegramUser->last_name = $data["last_name"];
+        $changed = true;
+      }
+      if ($telegramUser->username != $data["username"]) {
+        $telegramUser->username = $data["username"];
+        $changed = true;
+      }
+      if ($telegramUser->photo_url != $data["photo_url"]) {
+        $telegramUser->photo_url = $data["photo_url"];
+        $changed = true;
+      }
+
+      if ($changed) {
+        $telegramUser->save();
+        Log::info("Telegram user data updated", [
+          "telegram_id" => $chatId,
+          "username" => $data["username"]
+        ]);
+      }
+    }
 
     return $telegramUser;
   }
@@ -122,7 +165,26 @@ class UpdateHandler
       $params["secret_token"] = $secretToken;
     }
 
-    return $this->telegram->setWebhook($params);
+    try {
+      $result = $this->telegram->setWebhook($params);
+      if ($result) {
+        Log::info("Webhook set successfuly", [
+          "url" => $url,
+          "has_secret" => !empty($secretToken)
+        ]);
+        return true;
+      } else {
+        Log::warning("Failed to set webhook", ["url" => $url]);
+        return false;
+      }
+    } catch(\Exception $e) {
+      Log::error("Exception while setting webhook.", [
+        "url" => $url,
+        "error" => $e->getMessage()
+      ]);
+
+      return false;
+    }
   }
 
   /**
@@ -130,7 +192,20 @@ class UpdateHandler
   */
   public function removeWebhook(): bool
   {
-    $response = $this->telegram->removeWebhook();
-    return $response;
+    try {
+      $response = $this->telegram->removeWebhook();
+      if ($response) {
+        Log::info("Webhook removed successfuly.");
+        return true;
+      } else {
+        Log::warning("Failed to remove webhook");
+        return false;
+      }
+    } catch(\Exception $e) {
+      Log::error("Exception while removing webhook", [
+        "error" => $e->getMessage()
+      ]);
+      return false;
+    }
   }
 }

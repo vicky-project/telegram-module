@@ -147,11 +147,6 @@ class CallbackHandler
         $result["answer"] ?? ($result["message"] ?? "Ok"),
       );
 
-      Log::info("Callback handled successfully", [
-        "callback_id" => $callbackId,
-        "handler" => $handler->getName(),
-      ]);
-
       return array_merge($result, [
         "status" => "success",
         "callback_id" => $callbackId,

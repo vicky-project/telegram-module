@@ -491,7 +491,7 @@ trait MessageOperations
         $replyMarkup
       );
       $messageId = $response->getMessageId() ?? null;
-      Log::info("Getting message_id with: " . $messageId);
+      Log::debug("Getting message_id with: " . $messageId);
     }
 
     if ($messageId) {
@@ -503,7 +503,7 @@ trait MessageOperations
       );
     }
 
-    Log::info("Saving state", [
+    Log::debug("Saving state", [
       "chat_id" => $chatId,
       "message_id" => $messageId,
       "handling_identifier" => $handlerIdentifier,
