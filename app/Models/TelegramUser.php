@@ -3,11 +3,14 @@ namespace Modules\Telegram\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Notificatons\Notifiable;
 use Modules\SocialAccount\Models\SocialAccount;
 use Modules\SocialAccount\Interfaces\SocialAccountInterface;
 
 class TelegramUser extends Model implements SocialAccountInterface
 {
+  use Notifiable;
+
   protected $fillable = [
     'telegram_id',
     'first_name',
@@ -26,5 +29,9 @@ class TelegramUser extends Model implements SocialAccountInterface
 
   public function scopeByTelegramId($query, $telegramId) {
     return $query->where("telegram_id", $telegramId);
+  }
+
+  public function routeNotificationForTelegram() {
+    return $this->telegram_id;
   }
 }
