@@ -1,14 +1,17 @@
 <?php
 namespace Modules\Telegram\Providers;
 
+use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\ServiceProvider;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Nwidart\Modules\Facades\Module;
 use Modules\Telegram\Services;
+use Modules\Telegram\Channels\TelegramChannel;
 
 class TelegramServiceProvider extends ServiceProvider
 {
@@ -71,6 +74,10 @@ class TelegramServiceProvider extends ServiceProvider
     ->make("config")
     ->set("app.timezone",
       config("telegram.timezone", 'Asia/Jakarta'));
+
+    Notification::resolved(function(ChannelManager $service): void {
+      $service->extend("telegram", fn($app) => $app->make(TelegramChannel::class));
+    });
 
     $this->app->singleton(Services\Handlers\CommandDispatcher::class, function (
       $app,
