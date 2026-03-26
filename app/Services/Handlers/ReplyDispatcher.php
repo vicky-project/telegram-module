@@ -28,9 +28,7 @@ class ReplyDispatcher
     }
 
     Log::info("Reply handler registered with middleware", [
-      "identifier" => $identifier,
       "handler" => get_class($handler),
-      "middleware" => $middleware,
     ]);
   }
 
