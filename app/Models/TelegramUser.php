@@ -3,7 +3,7 @@ namespace Modules\Telegram\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Notificatons\Notifiable;
+use Illuminate\Notifications\Notifiable;
 use Modules\SocialAccount\Models\SocialAccount;
 use Modules\SocialAccount\Interfaces\SocialAccountInterface;
 
