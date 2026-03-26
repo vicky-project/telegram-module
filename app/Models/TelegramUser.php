@@ -31,6 +31,11 @@ class TelegramUser extends Model implements SocialAccountInterface
     return $query->where("telegram_id", $telegramId);
   }
 
+  public function notifyAuthenticationLogVia(): array
+  {
+    return ['telegram'];
+  }
+
   public function routeNotificationForTelegram() {
     return $this->telegram_id;
   }
