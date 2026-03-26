@@ -1,6 +1,7 @@
 <?php
 namespace Modules\Telegram\Providers;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Notifications\ChannelManager;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
@@ -76,7 +77,7 @@ class TelegramServiceProvider extends ServiceProvider
       config("telegram.timezone", 'Asia/Jakarta'));
 
     Notification::resolved(function(ChannelManager $service): void {
-      $service->extend("telegram", fn($app) => $app->make(TelegramChannel::class));
+      $service->extend("telegram", fn(Application $app) => $app->make(TelegramChannel::class));
     });
 
     $this->app->singleton(Services\Handlers\CommandDispatcher::class, function (
