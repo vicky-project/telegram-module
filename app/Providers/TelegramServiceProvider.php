@@ -61,6 +61,7 @@ class TelegramServiceProvider extends ServiceProvider
     });
 
     $this->mergeConfigFrom(module_path($this->name, 'config/telegram.php'), 'services');
+    $this->mergeConfigFrom(module_path($this->name, 'config/authentication-log.php'), 'authentication-log');
   }
 
   /**
