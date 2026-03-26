@@ -38,23 +38,25 @@ class MessageHandler
     $replyToMessage = $message->getReplyToMessage();
     $location = $message->getLocation();
 
-    Log::info("Telegram message received");
+    Log::debug("Telegram message received", [
+      "chat_id" => $chatId,
+      "has_text" => !empty($text),
+      "has_location" => (bool) $location,
+      "is_reply" => (bool) $replyToMessage
+    ]);
 
     // Handle command
     if ($this->isCommand($text)) {
-      Log::info("Handling command");
       return $this->commandDispatcher->handleCommand($chatId, $text, $username);
     }
 
     if ($location) {
-      Log::info("Location handling");
       return $this->locationDispatcher->handleLocation($chatId, $location->getLatitude(), $location->getLongitude(), $username);
     }
 
 
     if ($replyToMessage) {
       // handle replyToMessage
-      Log::info("Handling to reply message");
       return $this->replyDispatcher->handleReply(
         $chatId,
         $text,
@@ -96,7 +98,7 @@ class MessageHandler
     $useDeepseek = config("telegram.use_deepseek_ai", false);
 
     if (!$useDeepseek) {
-      Log::info("Using default message text sent.");
+      Log::debug("Using default message text sent.", ["chat_id" => $chatId]);
       return $this->sendDefaultMessage($chatId);
     }
 
@@ -112,7 +114,7 @@ class MessageHandler
       ->withModel("deepseek-chat")
       ->setTemperature(1.5)
       ->run();
-      Log::warning("Message replied by deepseek.ai", ["response" => $response]);
+      Log::debug("Message replied by deepseek.ai", ["chat_id" => $chatId]);
       $response = json_decode($response);
 
       if (isset($response->error)) {

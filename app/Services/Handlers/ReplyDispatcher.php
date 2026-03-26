@@ -97,7 +97,7 @@ class ReplyDispatcher
       // Cek apakah middleware memblokir handler
       if ($this->isBlocked($result)) {
         // Hapus state karena request diblokir
-        Log::warning("Message wes blocked", [
+        Log::info("Reply blocked", [
           "status" => $result["status"],
           "answer" => $result["answer"],
         ]);

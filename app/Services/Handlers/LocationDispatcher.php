@@ -74,12 +74,6 @@ class LocationDispatcher
     ?string $username
   ): array {
     try {
-      Log::info("Processing location", [
-        'chat_id' => $chatId,
-        'lat' => $latitude,
-        'lon' => $longitude,
-      ]);
-
       // Cek apakah ada handler yang diharapkan
       $expected = LocationStateManager::getExpectedLocation($chatId);
 
@@ -125,11 +119,6 @@ class LocationDispatcher
 
       // Eksekusi pipeline
       $result = $pipeline($context);
-
-      Log::info("Location handled successfully", [
-        'chat_id' => $chatId,
-        'handler' => $handlerName,
-      ]);
 
       return array_merge($result, [
         'status' => 'success',
