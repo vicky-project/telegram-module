@@ -77,12 +77,7 @@ class TelegramServiceProvider extends ServiceProvider
       config("telegram.timezone", 'Asia/Jakarta'));
     $this->app
     ->make("config")
-    ->set("authentication-log.notifications.new-device.template",
-      \Modules\Telegram\Notifications\NewDevice::class);
-    $this->app
-    ->make("config")
-    ->set("authentication-log.notifications.failed-login.template",
-      \Modules\Telegram\Notifications\FailedLogin::class);
+    ->set("authentication-log.notifications", config('telegram.authentication-log.notifications'));
 
     Notification::resolved(function(ChannelManager $service): void {
       $service->extend("telegram", fn(Application $app) => $app->make(TelegramChannel::class));
