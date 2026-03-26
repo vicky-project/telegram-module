@@ -69,4 +69,4 @@ class NewDevice extends Notification implements ShouldQueue
       "parse_mode" => "MarkdownV2"
     ];
   }
-}.
+}
