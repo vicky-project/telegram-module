@@ -60,10 +60,7 @@ class TelegramServiceProvider extends ServiceProvider
       $event->extendSocialite('telegram', \SocialiteProviders\Telegram\Provider::class);
     });
 
-    $this->app->booted(function() {
-      $this->mergeConfigFrom(module_path($this->name, 'config/telegram.php'), 'services');
-      $this->mergeConfigFrom(module_path($this->name, 'config/authentication-log.php'), 'authentication-log');
-    });
+    $this->mergeConfigFrom(module_path($this->name, 'config/telegram.php'), 'services');
   }
 
   /**
@@ -78,6 +75,14 @@ class TelegramServiceProvider extends ServiceProvider
     ->make("config")
     ->set("app.timezone",
       config("telegram.timezone", 'Asia/Jakarta'));
+    $this->app
+    ->make("config")
+    ->set("authentication-log.notifications.new-device.template",
+      \Modules\Telegram\Notifications\NewDevice::class);
+    $this->app
+    ->make("config")
+    ->set("authentication-log.notifications.failed-login.template",
+      \Modules\Telegram\Notifications\FailedLogin::class);
 
     Notification::resolved(function(ChannelManager $service): void {
       $service->extend("telegram", fn(Application $app) => $app->make(TelegramChannel::class));
