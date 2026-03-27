@@ -1,5 +1,8 @@
 @extends('coreui::layouts.admin')
 @section('title', 'Telegram Users')
+
+@use('Carbon\Carbon')
+
 @section('content')
 <div class="row">
   @foreach($tgUsers as $user)
