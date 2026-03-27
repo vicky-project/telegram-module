@@ -18,11 +18,13 @@ class TelegramChannel
   */
   public function send(mixed $notifiable, Notification $notification) {
     if (!method_exists($notification, 'toTelegram')) {
+      \Log::warning("Method toTelegram not exist in class: {class}", ["class" => get_class($notification)]);
       return;
     }
 
     $telegramId = $notifiable->routeNotificationFor("telegram");
     if (!$telegramId) {
+      \Log::warning("User Telegram with {id} not found.", ["id" => $telegramId]);
       return;
     }
 
