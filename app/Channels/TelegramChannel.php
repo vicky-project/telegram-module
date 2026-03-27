@@ -2,7 +2,7 @@
 
 namespace Modules\Telegram\Channels;
 
-use Illuminate\Notificatons\Notification;
+use Illuminate\Notifications\Notification;
 use Modules\Telegram\Services\Support\TelegramApi;
 use Modules\Telegram\Services\Support\TelegramMarkdownHelper;
 
