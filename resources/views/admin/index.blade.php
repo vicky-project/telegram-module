@@ -21,9 +21,9 @@
         </p>
         @endif
         @php
-        $authDate = $user->data["auth_date"] ?? null;
+        $authDate = $user->data["auth_date"] ? Carbon::parse($user->data["auth_date"]) : 'Never';
         @endphp
-        <span class="small text-muted">Last Used:</span> {{ $authDate ? now(config('telegram.timezone'))->parse($authDate)->diffForHumans() : 'Never' }}
+        <span class="small text-muted">Last Used:</span> {{ $authDate }}
       </div>
       <div class="card-footer bg-transparent border-0 pt-0 pb-3">
         @if($user->username)
