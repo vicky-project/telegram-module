@@ -24,7 +24,7 @@
         </p>
         @endif
         @php
-        $authDate = isset($user->data["auth_date"]) ? Carbon::parse($user->data["auth_date"]) : 'Never';
+        $authDate = isset($user->data["auth_date"]) ? Carbon::parse($user->data["auth_date"])->diffForHumans() : 'Never';
         @endphp
         <span class="small text-muted">Last Used:</span> {{ $authDate }}
       </div>
