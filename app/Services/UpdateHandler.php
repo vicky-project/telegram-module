@@ -42,6 +42,11 @@ class UpdateHandler
         "has_callback_query" => $update->has("callback_query")
       ]);
 
+      activity()->withProperties([
+        "telegram_id" => $update->getMessage()->getChat()->getId(),
+        "text" => $update->getMessage()->getText()
+      ])->log("Mengirim pesan ke bot.");
+
       if ($update->has("message")) {
         $this->recordUser($update->getMessage());
         return $this->messageHandler->handle($update->getMessage());
