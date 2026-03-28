@@ -19,7 +19,7 @@
         @endif
         <h5 class="card-title mb-1">{{ $user->first_name }} {{ $user->last_name }}</h5>
         <p class="text-muted small mb-2">
-          {{ $user->telegram_id }}
+          ID:  <code>{{ $user->telegram_id }}</code>
         </p>
         @if($user->username)
         <p class="text-muted small mb-2">
