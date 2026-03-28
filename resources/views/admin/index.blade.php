@@ -18,6 +18,9 @@
         <img src="{{ Avatar::create($fullName)->setDimension(80, 80)->setBackground('#00580d')->toBase64() }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
         @endif
         <h5 class="card-title mb-1">{{ $user->first_name }} {{ $user->last_name }}</h5>
+        <p class="text-muted small mb-2">
+          {{ $user->telegram_id }}
+        </p>
         @if($user->username)
         <p class="text-muted small mb-2">
           <span>@</span>{{ $user->username }}
