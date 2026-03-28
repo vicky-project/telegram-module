@@ -35,6 +35,7 @@ class UpdateHandler
       $update = $this->telegram->getWebhookUpdate();
 
       Log::debug("Webhook update received.", [
+        "text" => $update->has("message") ? $update->getMessage()->getText() : null,
         "update_id" => $update->getUpdateId,
         "has_message" => $update->has("message"),
         "has_edited_message" => $update->has("edited_message"),
@@ -119,6 +120,11 @@ class UpdateHandler
         $telegramUser->photo_url = $data["photo_url"];
         $changed = true;
       }
+
+      $oldData = $telegramUser->data ?? [];
+      $oldData["auth_date"] = $data["auth_date"];
+      $telegramUser->data = $oldData;
+      $changed = true;
 
       if ($changed) {
         $telegramUser->save();
