@@ -13,6 +13,7 @@ use RecursiveIteratorIterator;
 use Nwidart\Modules\Facades\Module;
 use Modules\Telegram\Services;
 use Modules\Telegram\Channels\TelegramChannel;
+use Modules\SocialAccount\Enums\Provider;
 
 class TelegramServiceProvider extends ServiceProvider
 {
@@ -47,6 +48,14 @@ class TelegramServiceProvider extends ServiceProvider
     if (Module::has('SocialAccount') && Module::isEnabled('SocialAccount') && class_exists($managerService = \Modules\SocialAccount\Services\SocialProviderManager::class)) {
       $manager = app($managerService);
       $manager->register(new TelegramProvider());
+      Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+        $event->extendSocialite('telegram', \SocialiteProviders\Telegram\Provider::class);
+      });
+
+      $userModel = config('auth.providers.users.model');
+      $userModel::macro("routeNotificationForTelegram", function($user) {
+        return $user->socialAccount->byProvider(Provider::TELEGRAM)->providerable->telegram_id;
+      });
     }
 
     if (
@@ -56,9 +65,6 @@ class TelegramServiceProvider extends ServiceProvider
       $this->registerHooks($class);
     }
 
-    Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
-      $event->extendSocialite('telegram', \SocialiteProviders\Telegram\Provider::class);
-    });
 
     $this->mergeConfigFrom(module_path($this->name, 'config/telegram.php'), 'services');
   }
