@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Notifications\Notifiable;
 use Modules\SocialAccount\Models\SocialAccount;
 use Modules\SocialAccount\Interfaces\SocialAccountInterface;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Traits\CausesActivity;
 use Spatie\Activitylog\LogOptions;
@@ -38,6 +39,10 @@ class TelegramUser extends Model implements SocialAccountInterface
 
   public function routeNotificationForTelegram() {
     return $this->telegram_id;
+  }
+
+  public function activities() {
+    return $this->hasMany(Activity::class, 'causer_id')->where('causer_type', static::class);
   }
 
   /**

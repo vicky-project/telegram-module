@@ -12,4 +12,10 @@ class TelegramController extends Controller
 
     return view("telegram::admin.index", compact('tgUsers'));
   }
+
+  public function show(Request $request, int $id) {
+    $telegramUser = TelegramUser::find($id);
+
+    return view("telegram::admin.show", compact("telegramUser"));
+  }
 }
