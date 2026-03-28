@@ -6,10 +6,15 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Notifications\Notifiable;
 use Modules\SocialAccount\Models\SocialAccount;
 use Modules\SocialAccount\Interfaces\SocialAccountInterface;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Traits\CausesActivity;
+use Spatie\Activitylog\LogOptions;
 
 class TelegramUser extends Model implements SocialAccountInterface
 {
-  use Notifiable;
+  use Notifiable,
+  LogsActivity,
+  CausesActivity;
 
   protected $fillable = [
     'telegram_id',
@@ -33,5 +38,18 @@ class TelegramUser extends Model implements SocialAccountInterface
 
   public function routeNotificationForTelegram() {
     return $this->telegram_id;
+  }
+
+  /**
+  * Activity Log Options
+  */
+  public function getActivitylogOptions(): LogOptions
+  {
+    return LogOptions::defaults()
+    ->logOnly(['telegram_id', 'first_name', 'last_name', 'username', 'language_code'])
+    ->logOnlyDirty()
+    ->dontSubmitEmptyLogs()
+    ->setDescriptionForEvent(fn(string $eventName) => "Telegram user {$eventName}")
+    ->useLogName('telegram_users');
   }
 }

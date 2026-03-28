@@ -11,7 +11,8 @@ Route::prefix("admin")
   Route::prefix("telegram")
   ->name("telegram.")
   ->group(function() {
-    Route::get("index", [TelegramController::class, "index"])->name('index');
+    Route::get("/", [TelegramController::class, "index"])->name('index');
+    Route::get("/{id}/show", [TelegramController::class, "show"])->name("show");
   });
 });
 

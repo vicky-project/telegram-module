@@ -66,6 +66,14 @@ class TelegramMiniApp {
     ]);
     view()->share('telegramUser', $telegramUser);
     session(["is_telegram_app" => true]);
+    activity()->causedBy($telegramUser)
+    ->withProperties([
+      "telegram_id" => $telegramId,
+      "username" => $telegramUser->username,
+      "url" => $request->url(),
+      "ip" => $request->ips()
+    ])
+    ->log("Telegram accessed.");
 
     return $next($request);
   }
