@@ -24,7 +24,7 @@ class TelegramChannel
 
     $telegramId = $notifiable->routeNotificationFor("telegram");
     if (!$telegramId) {
-      \Log::warning("User Telegram with {id} not found.", ["id" => $telegramId]);
+      \Log::warning("Telegram ID not found.", ["notifiable" => $notifiable]);
       return;
     }
 
