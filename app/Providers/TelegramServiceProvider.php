@@ -51,11 +51,6 @@ class TelegramServiceProvider extends ServiceProvider
       Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
         $event->extendSocialite('telegram', \SocialiteProviders\Telegram\Provider::class);
       });
-
-      $userModel = config('auth.providers.users.model');
-      $userModel::macro("routeNotificationForTelegram", function($user) {
-        return $user->socialAccount->byProvider(Provider::TELEGRAM)->providerable->telegram_id;
-      });
     }
 
     if (
