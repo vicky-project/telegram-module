@@ -23,7 +23,7 @@ class TelegramChannel
       return;
     }
 
-    $resolver = app(config("telegram.telegram_id_resolver"));
+    $resolver = app(config("telegram.telegram_id_resolver", TelegramNotificationResolver::class));
     $resolver->setNotifiable($notifiable);
     $telegramId = $resolver->getTelegramId();
     if (!$telegramId) {
