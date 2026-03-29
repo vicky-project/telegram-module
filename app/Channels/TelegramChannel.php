@@ -23,7 +23,8 @@ class TelegramChannel
       return;
     }
 
-    $resolver = new TelegramNotificationResolver($notifiable);
+    $resolver = app(config("telegram.telegram_id_resolver"));
+    $resolver->setNotifiable($notifiable);
     $telegramId = $resolver->getTelegramId();
     if (!$telegramId) {
       \Log::warning("Telegram ID not found.", [
