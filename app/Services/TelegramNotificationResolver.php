@@ -18,8 +18,10 @@ class TelegramNotificationResolver
   }
 
   public function getTelegramId() {
+    $notifiable = $this->notifiable;
+
     try {
-      if (!$this->notifiable || empty($this->notifiable)) {
+      if (!$notifiable || empty($notifiable)) {
         throw new \Exception("You must set notifiable first.");
       }
 
