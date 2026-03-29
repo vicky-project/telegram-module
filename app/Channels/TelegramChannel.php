@@ -51,7 +51,8 @@ class TelegramChannel
       \Log::error("Failed to send telegram notification", [
         "message" => $e->getMessage(),
         "notifiable_type" => get_class($notifiable),
-        "notifiable_id" => $notifiable->getKey() ?? null
+        "notifiable_id" => $notifiable->getKey() ?? null,
+        "trace" => $e->getTraceAsString()
       ]);
       return;
     }
