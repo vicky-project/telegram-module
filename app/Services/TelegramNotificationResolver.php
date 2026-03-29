@@ -8,7 +8,7 @@ class TelegramNotificationResolver
 {
   protected $notifiable;
 
-  public function __construct(?$notifiable = null) {
+  public function __construct($notifiable = null) {
     $this->notifiable = $notifiable;
   }
 
