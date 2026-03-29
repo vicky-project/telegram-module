@@ -45,11 +45,21 @@ class TelegramServiceProvider extends ServiceProvider
       \Modules\Telegram\Http\Middleware\TelegramOrWebAuth::class
     );
 
-    if (Module::has('SocialAccount') && Module::isEnabled('SocialAccount') && class_exists($managerService = \Modules\SocialAccount\Services\SocialProviderManager::class)) {
+    $userModel = config('auth.providers.users.model');
+    $hasSocialAccount = Module::has("SocialAccount") && Module::isEnabled("SocialAccount");
+    $hasUsers = Module::has("Users") && Module::isEnabled("Users");
+
+    if ($hasSocialAccount && class_exists($managerService = \Modules\SocialAccount\Services\SocialProviderManager::class)) {
       $manager = app($managerService);
       $manager->register(new TelegramProvider());
       Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
         $event->extendSocialite('telegram', \SocialiteProviders\Telegram\Provider::class);
+      });
+    }
+
+    if ($hasSocialAccount && $hasUsers) {
+      $userModel::macro("routeNotificationForTelegram", function($user) {
+        return $user->socialAccounts()->byProvider(Provider::TELEGRAM)->first()->telegram_id;
       });
     }
 
