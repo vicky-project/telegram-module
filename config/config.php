@@ -24,5 +24,10 @@ return [
     "enabled" => false,
     "service" => \Modules\CoreUI\Services\UIService::class,
   ],
-  "timezone" => env("TELEGRAM_TIMEZONE", "Asia/Makassar")
+  "timezone" => env("TELEGRAM_TIMEZONE", "Asia/Makassar"),
+
+  /**
+  * Resolver id telegram in different model notifiable
+  */
+  "telegram_id_resolver" => \Modules\Telegram\Services\TelegramNotificationResolver::class
 ];
