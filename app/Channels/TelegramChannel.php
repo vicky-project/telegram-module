@@ -3,6 +3,7 @@
 namespace Modules\Telegram\Channels;
 
 use Illuminate\Notifications\Notification;
+use Modules\Telegram\Services\TelegramNotificationResolver;
 use Modules\Telegram\Services\Support\TelegramApi;
 use Modules\Telegram\Services\Support\TelegramMarkdownHelper;
 
@@ -22,7 +23,8 @@ class TelegramChannel
       return;
     }
 
-    $telegramId = $notifiable->routeNotificationFor("telegram");
+    $resolver = new TelegramNotificationResolver($notifiable);
+    $telegramId = $resolver->getTelegramId();
     if (!$telegramId) {
       \Log::warning("Telegram ID not found.", [
         "telegram_id" => $telegramId,
