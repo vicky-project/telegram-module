@@ -2,7 +2,7 @@
 namespace Modules\Telegram\Services;
 
 use Modules\SocialAccounts\Enums\Provider;
-use Throwable;
+use Exception;
 
 class TelegramNotificationResolver
 {
@@ -53,7 +53,7 @@ class TelegramNotificationResolver
       }
 
       return null;
-    } catch(Throwable $e) {
+    } catch(Exception $e) {
       throw $e;
     }
   }
