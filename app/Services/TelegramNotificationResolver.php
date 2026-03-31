@@ -29,12 +29,20 @@ class TelegramNotificationResolver
       if (method_exists($notifiable, "routeNotificationFor")) {
         $id = $notifiable->routeNotificationFor("telegram");
         if (!empty($id)) {
+          \Log::debug("Using method routeNotificationFor.", [
+            "telegram_id" => $id,
+            "notifiable" => $notifiable
+          ]);
           return $id;
         }
       }
 
       // Check model has property direct
       if (isset($notifiable->telegram_id) && !empty($notifiable->telegram_id)) {
+        \Log::debug("Using model property telegram_id", [
+          "telegram_id" => $notifiable->telegram_id,
+          "notifiable" => $notifiable
+        ]);
         return $notifiable->telegram_id;
       }
 
@@ -42,6 +50,11 @@ class TelegramNotificationResolver
       if (method_exists($notifiable, "telegram")) {
         $telegram = $notifiable->telegram;
         if ($telegram && isset($telegram->telegram_id)) {
+          \Log::debug("Using model relations.", [
+            "telegram_id" => $telegram->telegram_id,
+            "notifiable" => $notifiable,
+            "relation" => $telegram
+          ]);
           return $telegram->telegram_id;
         }
       }
@@ -50,10 +63,16 @@ class TelegramNotificationResolver
       if (method_exists($notifiable, "socialAccounts")) {
         $telegram = $notifiable->socialAccounts()->byProvider(Provider::TELEGRAM)->first();
         if ($telegram && $telegram->telegram_id) {
+          \Log::debug("Using relations SocialAccounts", [
+            "telegram_id" => $telegram->telegram_id,
+            "notifiable" => $notifiable,
+            "model" => $telegram
+          ]);
           return $telegram->telegram_id;
         }
       }
 
+      \Log::warning("Not found any telegram id.");
       return null;
     } catch(Exception $e) {
       throw $e;
