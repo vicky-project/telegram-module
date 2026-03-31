@@ -21,7 +21,7 @@ class TelegramChannel
     try {
       if (!method_exists($notification, 'toTelegram')) {
         \Log::warning("Method toTelegram not exist in class: {class}", ["class" => get_class($notification)]);
-        return;
+        return false;
       }
 
       $resolver = app(config("telegram.telegram_id_resolver", TelegramNotificationResolver::class));
@@ -33,7 +33,7 @@ class TelegramChannel
           "notifiable" => $notifiable,
           "notification" => $notification
         ]);
-        return;
+        return false;
       }
 
       $message = $notification->toTelegram($notifiable);
@@ -47,6 +47,8 @@ class TelegramChannel
 
         $this->telegramApi->sendMessage($telegramId, $text, $message["parse_mode"] ?? null, $message["reply_markup"] ?? null);
       }
+
+      return true;
     } catch(\Exception $e) {
       \Log::error("Failed to send telegram notification", [
         "message" => $e->getMessage(),
@@ -54,7 +56,7 @@ class TelegramChannel
         "notifiable_id" => $notifiable->getKey() ?? null,
         "trace" => $e->getTraceAsString()
       ]);
-      return;
+      return false;
     }
   }
 }
