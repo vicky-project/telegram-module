@@ -47,7 +47,7 @@ class TelegramNotificationResolver
       }
 
       // Check if model has relation to model SocialAccount
-      if (method_exists($notifiable, "socialAccounts")) {
+      if (method_exists($notifiable, "socialAccounts") || $notifiable->socialAccounts) {
         $telegram = $notifiable->socialAccounts()->byProvider(Provider::TELEGRAM)->first();
         if ($telegram && $telegram->telegram_id) {
           return $telegram->telegram_id;

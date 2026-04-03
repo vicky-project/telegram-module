@@ -84,10 +84,10 @@ class UpdateHandler
     $chatId = $chat->getId();
 
     $data = [
-      'first_name' => $chat->getFirstName() ?? '',
-      'last_name' => $chat->getLastName() ?? '',
-      'username' => $chat->getUsername() ?? '',
-      'photo_url' => $chat->getPhoto(),
+      'first_name' => $chat->getFirstName() ?? null,
+      'last_name' => $chat->getLastName() ?? null,
+      'username' => $chat->getUsername() ?? null,
+      'photo_url' => $chat->getPhoto() ?? null,
       "auth_date" => now()->format("d-m-Y H:i:s")
     ];
 
