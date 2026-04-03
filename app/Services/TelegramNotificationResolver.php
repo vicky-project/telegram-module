@@ -1,7 +1,7 @@
 <?php
 namespace Modules\Telegram\Services;
 
-use Modules\SocialAccounts\Enums\Provider;
+use Modules\SocialAccount\Enums\Provider;
 use Exception;
 
 class TelegramNotificationResolver
