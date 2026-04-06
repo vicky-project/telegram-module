@@ -1,9 +1,11 @@
 <?php
 namespace Modules\Telegram\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Modules\SocialAccount\Models\SocialAccount;
 use Modules\SocialAccount\Interfaces\SocialAccountInterface;
 use Spatie\Activitylog\Models\Activity;
@@ -11,11 +13,12 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\Traits\CausesActivity;
 use Spatie\Activitylog\LogOptions;
 
-class TelegramUser extends Model implements SocialAccountInterface
+class TelegramUser extends Authenticatable implements SocialAccountInterface
 {
   use Notifiable,
   LogsActivity,
-  CausesActivity;
+  CausesActivity,
+  HasApiTokens;
 
   protected $fillable = [
     'telegram_id',
