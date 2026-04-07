@@ -80,6 +80,18 @@ class TelegramServiceProvider extends ServiceProvider
     ->make("config")
     ->set("app.timezone",
       config("telegram.timezone", 'Asia/Jakarta'));
+    $this->app
+    ->make('config')
+    ->set('auth.guards.telegram', [
+      'driver' => 'sanctum',
+      'provider' => 'telegram_users'
+    ]);
+    $this->app
+    ->make('config')
+    ->set('auth.providers.telegram_users', [
+      'driver' => 'eloquent',
+      'model' => \Modules\Telegram\Models\TelegramUser::class
+    ]);
 
     Notification::resolved(function(ChannelManager $service): void {
       $service->extend("telegram", fn(Application $app) => $app->make(TelegramChannel::class));
