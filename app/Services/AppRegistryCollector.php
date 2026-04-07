@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use Modules\Telegram\Attributes\RegisterApp;
 use Modules\Telegram\Contracts\AppRegistry;
-use Modules\Telegram\Providers\CoreModuleServiceProvider;
+use Modules\Telegram\Providers\TelegramServiceProvider;
 use Modules\Telegram\Listeners\CollectAppListener;
 
 class AppRegistryCollector
@@ -23,7 +23,7 @@ class AppRegistryCollector
 
   public static function collect(): array
   {
-    $cacheKey = 'core.registered_apps_final';
+    $cacheKey = 'telegram.registered_apps_final';
 
     return Cache::remember($cacheKey, 3600, function () {
       $apps = [];
@@ -72,7 +72,7 @@ class AppRegistryCollector
   protected static function collectFromLazyExplicit(): array
   {
     try {
-      return CoreModuleServiceProvider::getExplicitApps();
+      return TelegramServiceProvider::getExplicitApps();
     } catch (\Throwable $e) {
       return [];
     }
@@ -188,6 +188,6 @@ class AppRegistryCollector
 
   public static function clearCache(): void
   {
-    Cache::forget('core.registered_apps_final');
+    Cache::forget('telegram.registered_apps_final');
   }
 }
