@@ -23,6 +23,8 @@ class TelegramServiceProvider extends ServiceProvider
 
   protected string $nameLower = 'telegram';
 
+  private static array $explicitApps = [];
+
   /**
   * Boot the application events.
   */
@@ -131,6 +133,18 @@ class TelegramServiceProvider extends ServiceProvider
 
   protected function registerHooks($hookService): void
   {}
+
+  public static function registerAppExplicit(array $app): void
+  {
+    self::$explicitApps[] = $app;
+    // Opsional: clear cache agar data terbaru segera tampil
+    Services\AppRegistryCollector::clearCache();
+  }
+
+  public static function getExplicitApps(): array
+  {
+    return self::$explicitApps;
+  }
 
   // Register middleware
   protected function registerMiddlewares(
