@@ -5,7 +5,7 @@ use Modules\Telegram\Http\Controllers\TelegramWebhookController;
 use Modules\Telegram\Http\Controllers\Auth\TelegramAuthController;
 
 Route::group(['prefix' => 'telegram', 'as' => 'telegram.'], function () {
-  Route::get('apps', [AppsController::class, 'index'])->name('apps');
+  Route::get('apps', [AppsController::class, 'index'])->name('apps')->middleware('auth:sanctum');
 
   Route::post("webhook", [TelegramWebhookController::class, "handleWebhook"])
   ->withoutMiddleware(["auth:sanctum", "auth"])

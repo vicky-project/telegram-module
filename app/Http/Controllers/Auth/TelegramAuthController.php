@@ -17,7 +17,7 @@ class TelegramAuthController extends Controller
   }
 
   public function authenticate(Request $request) {
-    $initData = $request->input('initData');
+    $initData = $this->getInitData($request);
     if (!$initData) {
       return response()->json(['error' => 'Missing initData'], 400);
     }
@@ -29,35 +29,42 @@ class TelegramAuthController extends Controller
 
     // Parse data user
     $telegramData = $this->authService->parseUserData($initData);
+    $telegramId = $telegramData['id'] ?? null;
+    if (!$telegramId) {
+      // Telegram id tidak ditemukan
+      \Log::error("No telegram user id in init data", $data);
+      abort(403, "Invalid user data");
+    }
+
     $telegramUser = TelegramUser::firstOrCreate(
-      ['telegram_id' => $telegramData['id']],
+      ['telegram_id' => $telegramId],
       [
-        'first_name' => $telegramData['first_name'] ?? '',
-        'last_name' => $telegramData['last_name'] ?? '',
-        'username' => $telegramData['username'] ?? '',
-        'language_code' => $telegramData['language_code'],
-        'photo_url' => $telegramData['photo_url'] ?? '',
+        'first_name' => $telegramData['first_name'] ?? null,
+        'last_name' => $telegramData['last_name'] ?? null,
+        'username' => $telegramData['username'] ?? null,
+        'language_code' => $telegramData['language_code'] ?? null,
+        'photo_url' => $telegramData['photo_url'] ?? null,
         'data' => $telegramData,
       ]
     );
 
-    // Cari social account yang terhubung
-    $socialAccount = SocialAccount::where('provider', Provider::TELEGRAM)
-    ->where('providerable_id', $telegramUser->id)
-    ->where('providerable_type', TelegramUser::class)
-    ->first();
+    $telegramUser->tokens()->delete();
 
-    if (!$socialAccount) {
-      return response()->json(['error' => 'Akun Telegram belum terhubung'], 403);
-    }
-
-    $user = $socialAccount->user;
-    $token = $user->createToken('telegram-token', ["*"], now()->plus(weeks: 1))->plainTextToken;
+    $token = $telegramUser->createToken('telegram-mini-app', ["access-app"], now()->plus(weeks: 1))->plainTextToken;
 
     return response()->json([
       'success' => true,
       'token' => $token,
-      'user' => $user,
+      'user' => $telegramUser->only([
+        'id',
+        'telegram_id',
+        'first_name',
+        'username'
+      ]),
     ]);
+  }
+
+  private function getInitData(Request $request) {
+    return $request->input('initData') ?? $request->header('X-Telegram-Init-Data') ?? $request->query('initData');
   }
 }
