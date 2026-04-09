@@ -96,6 +96,66 @@
     return response.json();
     }
 
+    function renderPagination(containerId, currentPage, lastPage, onPageChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    if (lastPage <= 1) {
+    container.innerHTML = '';
+    return;
+    }
+
+    let html = '<div class="pagination-wrapper"><ul class="pagination pagination-sm">';
+
+    // Tombol Previous
+    if (currentPage > 1) {
+    html += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage - 1}">«</a></li>`;
+    } else {
+    html += `<li class="page-item disabled"><span class="page-link">«</span></li>`;
+    }
+
+    // Halaman pertama
+    if (currentPage > 3) {
+    html += `<li class="page-item"><a class="page-link" href="#" data-page="1">1</a></li>`;
+    if (currentPage > 4) html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+    }
+
+    // Halaman di sekitar current
+    for (let i = Math.max(1, currentPage - 2); i <= Math.min(lastPage, currentPage + 2); i++) {
+    if (i === currentPage) {
+    html += `<li class="page-item active"><span class="page-link">${i}</span></li>`;
+    } else {
+    html += `<li class="page-item"><a class="page-link" href="#" data-page="${i}">${i}</a></li>`;
+    }
+    }
+
+    // Halaman terakhir
+    if (currentPage < lastPage - 2) {
+    if (currentPage < lastPage - 3) html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+    html += `<li class="page-item"><a class="page-link" href="#" data-page="${lastPage}">${lastPage}</a></li>`;
+    }
+
+    // Tombol Next
+    if (currentPage < lastPage) {
+    html += `<li class="page-item"><a class="page-link" href="#" data-page="${currentPage + 1}">»</a></li>`;
+    } else {
+    html += `<li class="page-item disabled"><span class="page-link">»</span></li>`;
+    }
+
+    html += '</ul></div>';
+    container.innerHTML = html;
+
+    // Event listener untuk semua link pagination
+    container.querySelectorAll('.page-link[data-page]').forEach(link => {
+    link.addEventListener('click', (e) => {
+    e.preventDefault();
+    const page = parseInt(link.dataset.page);
+    if (typeof onPageChange === 'function') {
+    onPageChange(page);
+    }
+    });
+    });
+    }
+
     // ----- Copy to clipboard -----
     function copyToClipboard(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -189,22 +249,13 @@
     copyToClipboard,
     showLoading,
     hideLoading,
-    escapeHtml
+    escapeHtml,
+    renderPagination
     };
     })();
 
     // Alias untuk kemudahan
     const tgApp = window.TelegramApp;
-
-    document.addEventListener('DOMContentLoaded', function() {
-    // Inisialisasi semua toast yang ada di halaman
-    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
-    var toastList = toastElList.map(function(toastEl) {
-    if(!toastEl) return;
-
-    return new bootstrap.Toast(toastEl).show();
-    });
-    })
   </script>
   @stack('scripts')
 </body>
