@@ -18,7 +18,8 @@
   <div id="app">
     @yield('content')
   </div>
-  <div id="toastMessage" class="toast-message"></div>
+  <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
+  </div>
 
   <script>
     // ======================== GLOBAL TELEGRAM APP FUNCTIONS ========================
@@ -37,14 +38,45 @@
     }
 
     // ----- Toast -----
-    let toastTimeout;
-    function showToast(message, duration = 2500) {
-    const toastEl = document.getElementById('toastMessage');
-    if (!toastEl) return;
-    if (toastTimeout) clearTimeout(toastTimeout);
-    toastEl.textContent = message;
-    toastEl.classList.add('show');
-    toastTimeout = setTimeout(() => toastEl.classList.remove('show'), duration);
+    // Fungsi toast
+    function showToast(message, type = 'success') {
+    let toastContainer = document.querySelector('.toast-container');
+    if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+    document.body.appendChild(toastContainer);
+
+    const toastEl = document.createElement('div');
+    toastEl.id = 'liveToast';
+    toastEl.className = 'toast';
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+    toastEl.innerHTML = `
+    <div class="toast-header">
+    <strong class="me-auto">Notifikasi</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body"></div>
+    `;
+    toastContainer.appendChild(toastEl);
+    }
+
+    const toastEl = document.getElementById('liveToast');
+    const toastBody = toastEl.querySelector('.toast-body');
+    toastBody.textContent = message;
+
+    toastEl.classList.remove('bg-success', 'bg-danger', 'text-white');
+    if (type === 'success') {
+    toastEl.classList.add('bg-success', 'text-white');
+    } else if (type === 'danger') {
+    toastEl.classList.add('bg-danger', 'text-white');
+    } else {
+    toastEl.classList.add('bg-info', 'text-white');
+    }
+
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
     }
 
     // ----- Fetch with auth -----
@@ -163,6 +195,16 @@
 
     // Alias untuk kemudahan
     const tgApp = window.TelegramApp;
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Inisialisasi semua toast yang ada di halaman
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+    var toastList = toastElList.map(function(toastEl) {
+    if(!toastEl) return;
+
+    return new bootstrap.Toast(toastEl).show();
+    });
+    })
   </script>
   @stack('scripts')
 </body>
