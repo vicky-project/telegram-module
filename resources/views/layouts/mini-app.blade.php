@@ -163,7 +163,7 @@
     function copyToClipboard(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text).then(() => {
-    showToast(`Disalin: ${text}`);
+    TelegramApp.showToast(`Disalin: ${text}`);
     }).catch(() => fallbackCopy(text));
     } else {
     fallbackCopy(text);
@@ -178,9 +178,9 @@
     textarea.select();
     try {
     document.execCommand('copy');
-    showToast(`Disalin: ${text}`);
+    TelegramApp.showToast(`Disalin: ${text}`);
     } catch (err) {
-    showToast('Gagal menyalin');
+    TelegramApp.showToast('Gagal menyalin', 'danger');
     }
     document.body.removeChild(textarea);
     }
