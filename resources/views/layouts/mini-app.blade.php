@@ -96,7 +96,7 @@
     return response.json();
     }
 
-    function renderPagination(containerId, currentPage, lastPage, onPageChange) {
+    function renderPagination(containerId, currentPage, lastPage, onPageChange, scrollToTop = true) {
     const container = document.getElementById(containerId);
     if (!container) return;
     if (lastPage <= 1) {
@@ -151,6 +151,9 @@
     const page = parseInt(link.dataset.page);
     if (typeof onPageChange === 'function') {
     onPageChange(page);
+    }
+    if(scrollToTop) {
+    window.scrollTo({ top: 0, behavior: 'smooth'});
     }
     });
     });
