@@ -2,6 +2,7 @@
 namespace Modules\Telegram\Services;
 
 use Modules\SocialAccount\Enums\Provider;
+use Nwidart\Modules\Facades\Module;
 use Exception;
 
 class TelegramNotificationResolver
@@ -49,6 +50,14 @@ class TelegramNotificationResolver
       // Check if model has relation to model SocialAccount
       if (method_exists($notifiable, "socialAccounts") || $notifiable->socialAccounts) {
         $telegram = $notifiable->socialAccounts()->byProvider(Provider::TELEGRAM)->first();
+        if ($telegram && $telegram->telegram_id) {
+          return $telegram->telegram_id;
+        }
+      }
+
+      $hasSocialAccount = Module::has("SocialAccount") && Module::isEnabled("SocialAccount");
+      if ($hasSocialAccount && $notifiable->social_accounts) {
+        $telegram = $notifiable->social_accounts->filter(fn($social) => $social->provider === Provider::TELEGRAM)->first();
         if ($telegram && $telegram->telegram_id) {
           return $telegram->telegram_id;
         }

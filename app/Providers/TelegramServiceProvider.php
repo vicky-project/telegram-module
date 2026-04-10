@@ -82,7 +82,7 @@ class TelegramServiceProvider extends ServiceProvider
       config("telegram.timezone", 'Asia/Jakarta'));
     $this->app
     ->make('config')
-    ->set('auth.guards.telegram', [
+    ->set('auth.guards.sanctum', [
       'driver' => 'sanctum',
       'provider' => 'telegram_users'
     ]);
