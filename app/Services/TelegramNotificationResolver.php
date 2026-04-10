@@ -58,8 +58,8 @@ class TelegramNotificationResolver
       $hasSocialAccount = Module::has("SocialAccount") && Module::isEnabled("SocialAccount");
       if ($hasSocialAccount && $notifiable->social_accounts) {
         $telegram = $notifiable->social_accounts->filter(fn($social) => $social->provider === Provider::TELEGRAM)->first();
-        if ($telegram && $telegram->telegram_id) {
-          return $telegram->telegram_id;
+        if ($telegram && $telegram->providerable) {
+          return $telegram->providerable->telegram_id;
         }
       }
 
