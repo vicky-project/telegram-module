@@ -19,12 +19,12 @@ class TelegramAuthController extends Controller
   public function authenticate(Request $request) {
     $initData = $this->getInitData($request);
     if (!$initData) {
-      return response()->json(['error' => 'Missing initData'], 400);
+      return response()->json(['error' => 'Missing initData', 'message' => 'Missing initData'], 400);
     }
 
     // Validasi initData
     if (!$this->authService->verifyTelegramData($initData, config("telegram.bot.token"), true)) {
-      return response()->json(['error' => 'Invalid initData'], 403);
+      return response()->json(['error' => 'Invalid initData', 'message' => 'Invalid initData'], 403);
     }
 
     // Parse data user
