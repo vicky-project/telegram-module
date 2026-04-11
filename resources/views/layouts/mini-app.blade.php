@@ -89,13 +89,13 @@
     'Accept': 'application/json',
     ...options.headers
     };
-    if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    // Jika method POST/PUT/PATCH dan ada body, set Content-Type secara otomatis
+    if (options.body && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
     }
     const response = await fetch(url, { ...options, headers });
-    if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return response.json();
     }
 
