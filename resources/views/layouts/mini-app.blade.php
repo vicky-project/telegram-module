@@ -88,13 +88,30 @@
     ...options.headers
     };
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    // Jika method POST/PUT/PATCH dan ada body, set Content-Type secara otomatis
     if (options.body && !headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
     }
+
     const response = await fetch(url, { ...options, headers });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return response.json();
+
+    // Coba parse JSON meskipun response tidak ok
+    let data;
+    try {
+    data = await response.json();
+    } catch (e) {
+    data = null;
+    }
+
+    if (!response.ok) {
+    // Lempar error dengan pesan dari server jika ada
+    const message = data?.message || data?.error || `HTTP ${response.status}`;
+    const error = new Error(message);
+    error.status = response.status;
+    error.data = data;
+    throw error;
+    }
+
+    return data;
     }
 
     function renderPagination(containerId, currentPage, lastPage, onPageChange, scrollToTop = true) {
