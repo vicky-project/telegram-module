@@ -177,4 +177,59 @@ class TelegramApi
 
     return false;
   }
+
+  /**
+  * Send a document/file to a chat.
+  */
+  public function sendDocument(
+    int $chatId,
+    string $filePath,
+    ?string $caption = null,
+    ?string $parseMode = null,
+    ?array $replyMarkup = null,
+    array $options = [],
+    ?bool $withResponse = false,
+  ): bool|Message {
+    try {
+      if (!file_exists($filePath)) {
+        throw new \InvalidArgumentException("File not found: {$filePath}");
+      }
+
+      $resource = fopen($filePath, 'r');
+
+      $params = array_merge([
+        'chat_id' => $chatId,
+        'document' => $resource,
+        'caption' => $caption,
+        'parse_mode' => $parseMode,
+      ], $options);
+
+      if ($replyMarkup) {
+        $params['reply_markup'] = json_encode($replyMarkup);
+      }
+
+      if ($this->telegram) {
+        $result = $this->telegram->sendDocument($params);
+
+        // Tutup resource file
+        if (is_resource($resource)) {
+          fclose($resource);
+        }
+
+        Log::info("Document sent to chat {$chatId}");
+        return $withResponse ? $result : true;
+      }
+
+      if (is_resource($resource)) {
+        fclose($resource);
+      }
+      return false;
+    } catch (TelegramSDKException $e) {
+      Log::error("Failed to send document to chat {$chatId}", [
+        'file' => $filePath,
+        'error' => $e->getMessage(),
+      ]);
+      return false;
+    }
+  }
 }
