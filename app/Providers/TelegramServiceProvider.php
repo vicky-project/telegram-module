@@ -92,9 +92,6 @@ class TelegramServiceProvider extends ServiceProvider
       'driver' => 'eloquent',
       'model' => \Modules\Telegram\Models\TelegramUser::class
     ]);
-    $this->app
-    ->make('config')
-    ->set('sanctum.expiration', now()->addDays(7));
 
     Notification::resolved(function(ChannelManager $service): void {
       $service->extend("telegram", fn(Application $app) => $app->make(TelegramChannel::class));
