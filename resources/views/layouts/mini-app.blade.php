@@ -72,6 +72,8 @@
     toastEl.classList.add('bg-success', 'text-white');
     } else if (type === 'danger') {
     toastEl.classList.add('bg-danger', 'text-white');
+    } else if(type === 'warning') {
+    toastEl.classList.add('bg-warning', 'text-white');
     } else {
     toastEl.classList.add('bg-info', 'text-white');
     }
