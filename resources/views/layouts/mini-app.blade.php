@@ -56,16 +56,16 @@
 
     // Tentukan ikon dan kelas warna
     let iconClass = 'bi-info-circle';
-    let bgClass = 'bg-info text-white';
+    let bgClass = 'text-bg-info';
     if (type === 'success') {
     iconClass = 'bi-check-circle-fill text-success';
-    bgClass = 'bg-white';
+    bgClass = 'text-bg-success';
     } else if (type === 'danger') {
     iconClass = 'bi-exclamation-triangle-fill text-danger';
-    bgClass = 'bg-white';
+    bgClass = 'text-bg-danger';
     } else if (type === 'warning') {
-    iconClass = 'bi-exclamation-circle-fill text-warning';
-    bgClass = 'bg-white';
+    iconClass = 'bi-exclamation-circle-fill text-white';
+    bgClass = 'text-bg-warning';
     }
 
     // Buat elemen toast
