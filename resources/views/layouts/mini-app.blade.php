@@ -49,47 +49,55 @@
     let toastContainer = document.querySelector('.toast-container');
     if (!toastContainer) {
     toastContainer = document.createElement('div');
-    toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3 d-flex flex-column gap-2';
-    toastContainer.style.zIndex = '1060';
+    toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+    toastContainer.style.zIndex = '9999';
     document.body.appendChild(toastContainer);
     }
 
-    // Buat elemen toast baru
+    // Tentukan ikon dan kelas warna
+    let iconClass = 'bi-info-circle';
+    let bgClass = 'bg-info text-white';
+    if (type === 'success') {
+    iconClass = 'bi-check-circle-fill text-success';
+    bgClass = 'bg-white';
+    } else if (type === 'danger') {
+    iconClass = 'bi-exclamation-triangle-fill text-danger';
+    bgClass = 'bg-white';
+    } else if (type === 'warning') {
+    iconClass = 'bi-exclamation-circle-fill text-warning';
+    bgClass = 'bg-white';
+    }
+
+    // Buat elemen toast
     const toastEl = document.createElement('div');
-    toastEl.className = 'toast align-items-center border-0';
+    toastEl.className = 'toast';
     toastEl.setAttribute('role', 'alert');
     toastEl.setAttribute('aria-live', 'assertive');
     toastEl.setAttribute('aria-atomic', 'true');
-
-    // Warna latar sesuai tipe
-    let bgClass = 'bg-success text-white';
-    if (type === 'danger') bgClass = 'bg-danger text-white';
-    else if (type === 'warning') bgClass = 'bg-warning text-dark';
-    else if (type === 'info') bgClass = 'bg-info text-white';
-    toastEl.classList.add(...bgClass.split(' '));
-
-    // Struktur toast
     toastEl.innerHTML = `
-    <div class="d-flex">
-    <div class="toast-body">${message}</div>
-    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    <div class="toast-header">
+    <i class="bi ${iconClass} me-2"></i>
+    <strong class="me-auto">Notifikasi</strong>
+    <small>baru saja</small>
+    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body ${type === 'success' || type === 'danger' || type === 'warning' ? '' : 'text-white'}">
+    ${message}
     </div>
     `;
 
-    // Masukkan ke container di posisi pertama (atas)
+    // Tambahkan ke container di posisi pertama (paling atas)
     toastContainer.insertBefore(toastEl, toastContainer.firstChild);
 
     // Inisialisasi Bootstrap Toast
-    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
     toast.show();
 
     // Hapus elemen setelah tersembunyi
     toastEl.addEventListener('hidden.bs.toast', () => {
     toastEl.remove();
-    // Hapus container jika kosong
     if (toastContainer.children.length === 0) {
     toastContainer.remove();
-    toastContainer = null;
     }
     });
     }
