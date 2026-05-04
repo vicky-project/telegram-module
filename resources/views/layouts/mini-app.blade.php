@@ -44,47 +44,54 @@
     }
 
     // ----- Toast -----
-    // Fungsi toast
     function showToast(message, type = 'success') {
+    // Buat container toast jika belum ada
     let toastContainer = document.querySelector('.toast-container');
     if (!toastContainer) {
     toastContainer = document.createElement('div');
-    toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+    toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3 d-flex flex-column gap-2';
+    toastContainer.style.zIndex = '1060';
     document.body.appendChild(toastContainer);
+    }
 
+    // Buat elemen toast baru
     const toastEl = document.createElement('div');
-    toastEl.id = 'liveToast';
-    toastEl.className = 'toast';
+    toastEl.className = 'toast align-items-center border-0';
     toastEl.setAttribute('role', 'alert');
     toastEl.setAttribute('aria-live', 'assertive');
     toastEl.setAttribute('aria-atomic', 'true');
+
+    // Warna latar sesuai tipe
+    let bgClass = 'bg-success text-white';
+    if (type === 'danger') bgClass = 'bg-danger text-white';
+    else if (type === 'warning') bgClass = 'bg-warning text-dark';
+    else if (type === 'info') bgClass = 'bg-info text-white';
+    toastEl.classList.add(...bgClass.split(' '));
+
+    // Struktur toast
     toastEl.innerHTML = `
-    <div class="toast-header">
-    <strong class="me-auto">Notifikasi</strong>
-    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    <div class="d-flex">
+    <div class="toast-body">${message}</div>
+    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
-    <div class="toast-body"></div>
     `;
-    toastContainer.appendChild(toastEl);
-    }
 
-    const toastEl = document.getElementById('liveToast');
-    const toastBody = toastEl.querySelector('.toast-body');
-    toastBody.textContent = message;
+    // Masukkan ke container di posisi pertama (atas)
+    toastContainer.insertBefore(toastEl, toastContainer.firstChild);
 
-    toastEl.classList.remove('bg-success', 'bg-danger', 'text-white');
-    if (type === 'success') {
-    toastEl.classList.add('bg-success', 'text-white');
-    } else if (type === 'danger') {
-    toastEl.classList.add('bg-danger', 'text-white');
-    } else if(type === 'warning') {
-    toastEl.classList.add('bg-warning', 'text-dark');
-    } else {
-    toastEl.classList.add('bg-info', 'text-white');
-    }
-
-    const toast = new bootstrap.Toast(toastEl);
+    // Inisialisasi Bootstrap Toast
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
     toast.show();
+
+    // Hapus elemen setelah tersembunyi
+    toastEl.addEventListener('hidden.bs.toast', () => {
+    toastEl.remove();
+    // Hapus container jika kosong
+    if (toastContainer.children.length === 0) {
+    toastContainer.remove();
+    toastContainer = null;
+    }
+    });
     }
 
     // ----- Fetch with auth -----
