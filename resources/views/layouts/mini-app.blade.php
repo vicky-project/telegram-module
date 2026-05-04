@@ -54,18 +54,22 @@
     document.body.appendChild(toastContainer);
     }
 
-    // Tentukan ikon dan kelas warna
+    // Ikon dengan warna solid
     let iconClass = 'bi-info-circle';
-    let bgClass = 'text-bg-info';
+    let iconColor = "text-info";
+    let bgClass = 'bg-info'; // fallback
     if (type === 'success') {
-    iconClass = 'bi-check-circle-fill text-success';
-    bgClass = 'text-bg-success';
+    iconClass = 'bi-check-circle-fill';
+    iconColor = 'text-success';
+    bgClass = 'bg-success';
     } else if (type === 'danger') {
-    iconClass = 'bi-exclamation-triangle-fill text-danger';
-    bgClass = 'text-bg-danger';
+    iconClass = 'bi-exclamation-triangle-fill';
+    iconColor = 'text-danger';
+    bgClass = 'bg-danger';
     } else if (type === 'warning') {
-    iconClass = 'bi-exclamation-circle-fill text-white';
-    bgClass = 'text-bg-warning';
+    iconClass = 'bi-exclamation-circle-fill';
+    iconColor = 'text-warning';
+    bgClass = 'bg-warning';
     }
 
     // Buat elemen toast
@@ -74,14 +78,17 @@
     toastEl.setAttribute('role', 'alert');
     toastEl.setAttribute('aria-live', 'assertive');
     toastEl.setAttribute('aria-atomic', 'true');
+    toastEl.style.backgroundColor = 'var(--tg-theme-bg-color)';
+    toastEl.style.color = 'var(--tg-theme-text-color)';
+    toastEl.style.border = '1px solid var(--tg-theme-section-separator-color)';
     toastEl.innerHTML = `
-    <div class="toast-header">
-    <i class="bi ${iconClass} me-2"></i>
+    <div class="toast-header" style="background-color: var(--tg-theme-secondary-bg-color); color: var(--tg-theme-text-color); border-bottom: 1px solid var(--tg-theme-section-separator-color);">
+    <i class="bi ${iconClass} me-2 ${iconColor}"></i>
     <strong class="me-auto">Notifikasi</strong>
-    <small>baru saja</small>
-    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    <small style="color: var(--tg-theme-hint-color);">baru saja</small>
+    <button type="button" class="btn-close" data-bs-dismiss="toast" style="filter: invert(0.5);"></button>
     </div>
-    <div class="toast-body ${type === 'success' || type === 'danger' || type === 'warning' ? '' : 'text-white'}">
+    <div class="toast-body ${bgClass} bg-gradient bg-opacity-50" style="color: var(--tg-theme-text-color);">
     ${message}
     </div>
     `;
@@ -90,7 +97,9 @@
     toastContainer.insertBefore(toastEl, toastContainer.firstChild);
 
     // Inisialisasi Bootstrap Toast
-    const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+    const toast = new bootstrap.Toast(toastEl, {
+    delay: 4000
+    });
     toast.show();
 
     // Hapus elemen setelah tersembunyi
