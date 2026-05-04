@@ -38,6 +38,11 @@
     return authToken || localStorage.getItem('telegram_token');
     }
 
+    function clearToken() {
+    authToken = null;
+    localStorage.removeItem('telegram_token');
+    }
+
     // ----- Toast -----
     // Fungsi toast
     function showToast(message, type = 'success') {
@@ -73,7 +78,7 @@
     } else if (type === 'danger') {
     toastEl.classList.add('bg-danger', 'text-white');
     } else if(type === 'warning') {
-    toastEl.classList.add('bg-warning', 'text-white');
+    toastEl.classList.add('bg-warning', 'text-dark');
     } else {
     toastEl.classList.add('bg-info', 'text-white');
     }
@@ -267,6 +272,7 @@
     // Public API
     return {
     getToken,
+    clearToken,
     fetchWithAuth,
     showToast,
     copyToClipboard,
