@@ -12,7 +12,6 @@
     "joshbrw/laravel-module-installer": "^1.0",
     "laravel/sanctum": "^4.3",
     "irazasyed/telegram-bot-sdk": "^3.15",
-    "deepseek-php/deepseek-laravel": "^2.0",
     "laravel/socialite":"^5.24",
     "socialiteproviders/telegram":"^4.1",
     "spatie/laravel-activitylog": "^4.10",
