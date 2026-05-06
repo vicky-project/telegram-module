@@ -273,6 +273,7 @@
     // ----- Apply Telegram theme -----
     const tg = window.Telegram?.WebApp;
     if (tg) {
+    tg.LocationManager.init();
     tg.ready();
     tg.expand();
     const updateTheme = () => {
