@@ -95,41 +95,7 @@ class MessageHandler
   */
   private function handleTextMessage(int $chatId, string $text): array
   {
-    $useDeepseek = config("telegram.use_deepseek_ai", false);
-
-    if (!$useDeepseek) {
-      Log::debug("Using default message text sent.", ["chat_id" => $chatId]);
-      return $this->sendDefaultMessage($chatId);
-    }
-
-    // Pastikan kelas DeepSeek tersedia
-    if (!class_exists(\DeepSeek\DeepSeekClient::class)) {
-      Log::error("DeepSeek class not found. Check installation.");
-      return $this->sendDefaultMessage($chatId);
-    }
-
-    try {
-      $deepseek = app(\DeepSeek\DeepSeekClient::class);
-      $response = $deepseek->query($text, 'user')
-      ->withModel("deepseek-chat")
-      ->setTemperature(1.5)
-      ->run();
-      Log::debug("Message replied by deepseek.ai", ["chat_id" => $chatId]);
-      $response = json_decode($response);
-
-      if (isset($response->error)) {
-        throw new \Exception($response->error->message);
-      }
-
-      return [
-        "status" => "deepseek_replied",
-        "chat_id" => $chatId,
-        "response" => $response->success->message
-      ];
-    } catch (\Exception $e) {
-      Log::error("DeepSeek API error: " . $e->getMessage());
-      return $this->sendDefaultMessage($chatId);
-    }
+    return $this->sendDefaultMessage($chatId);
   }
 
   private function sendDefaultMessage(int $chatId): array
