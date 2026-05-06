@@ -4,7 +4,6 @@ return [
   'name' => 'Telegram',
   'base_url' => env('APP_URL').'/telegram',
   "logo_url" => env("LOGO_URL", "/homeserver.png"),
-  "use_deepseek_ai" => env("TELEGRAM_DEEPSEEK_ENABLED", false),
 
   "bot" => [
     "token" => env("TELEGRAM_BOT_TOKEN"),
@@ -29,5 +28,7 @@ return [
   /**
   * Resolver id telegram in different model notifiable
   */
-  "telegram_id_resolver" => \Modules\Telegram\Services\TelegramNotificationResolver::class
+  "telegram_id_resolver" => \Modules\Telegram\Services\TelegramNotificationResolver::class,
+
+  'app_cache_key' => 'telegram.registered_apps_final',
 ];

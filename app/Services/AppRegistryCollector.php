@@ -23,7 +23,7 @@ class AppRegistryCollector
 
   public static function collect(): array
   {
-    $cacheKey = 'telegram.registered_apps_final';
+    $cacheKey = config('telegram.app_cache_key', 'telegram.registered_apps_final');
 
     return Cache::remember($cacheKey, 3600, function () {
       $apps = [];
@@ -188,6 +188,6 @@ class AppRegistryCollector
 
   public static function clearCache(): void
   {
-    Cache::forget('telegram.registered_apps_final');
+    Cache::forget(config('telegram.app_cache_key', 'telegram.registered_apps_final'));
   }
 }
