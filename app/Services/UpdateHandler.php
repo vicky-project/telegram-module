@@ -34,14 +34,6 @@ class UpdateHandler
     try {
       $update = $this->telegram->getWebhookUpdate();
 
-      Log::debug("Webhook update received.", [
-        "text" => $update->has("message") ? $update->getMessage()->getText() : null,
-        "update_id" => $update->getUpdateId,
-        "has_message" => $update->has("message"),
-        "has_edited_message" => $update->has("edited_message"),
-        "has_callback_query" => $update->has("callback_query")
-      ]);
-
       activity()->withProperties([
         "telegram_id" => $update->getMessage()->getChat()->getId(),
         "text" => $update->getMessage()->getText()

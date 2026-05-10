@@ -26,10 +26,6 @@ class ReplyDispatcher
     if (!empty($middleware)) {
       $this->handlerMiddleware[$identifier] = $middleware;
     }
-
-    Log::info("Reply handler registered with middleware", [
-      "handler" => get_class($handler),
-    ]);
   }
 
   /**
@@ -40,7 +36,6 @@ class ReplyDispatcher
     TelegramMiddlewareInterface $middleware
   ): void {
     $this->middleware[$name] = $middleware;
-    Log::info("Reply middleware registered: ". $name);
   }
 
   /**
@@ -97,10 +92,6 @@ class ReplyDispatcher
       // Cek apakah middleware memblokir handler
       if ($this->isBlocked($result)) {
         // Hapus state karena request diblokir
-        Log::info("Reply blocked", [
-          "status" => $result["status"],
-          "answer" => $result["answer"],
-        ]);
         CacheReplyStateManager::forgetReply($chatId, $replyToMessageId);
       }
 

@@ -45,8 +45,6 @@ class CommandDispatcher
     if (!empty($middleware)) {
       $this->commandMiddleware[$commandName] = $middleware;
     }
-
-    Log::info("Command registered: ". $commandName);
   }
 
   /**
@@ -57,7 +55,6 @@ class CommandDispatcher
     TelegramMiddlewareInterface $middleware
   ): void {
     $this->middleware[$name] = $middleware;
-    Log::info("Command Middleware registered: ". $name);
   }
 
   /**
@@ -72,12 +69,6 @@ class CommandDispatcher
       $parsed = $this->parseCommand($text);
       $commandName = $parsed["command"];
       $params = $parsed["params"];
-
-      Log::info("Processing command", [
-        "command" => $commandName,
-        "chat_id" => $chatId,
-        "username" => $username,
-      ]);
 
       // Check if command exists
       if (!isset($this->commands[$commandName])) {

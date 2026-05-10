@@ -54,8 +54,6 @@ class CallbackHandler
     if (!empty($middleware)) {
       $this->handlerMiddleware[$pattern] = $middleware;
     }
-
-    Log::info("Callback handler registered: ". $handler->getName());
   }
 
   /**
@@ -66,7 +64,6 @@ class CallbackHandler
     TelegramMiddlewareInterface $middleware,
   ): void {
     $this->middleware[$name] = $middleware;
-    Log::info("Callback middleware registered: ". $name);
   }
 
   /**
@@ -89,14 +86,6 @@ class CallbackHandler
       $username = $from->getUsername();
       $firstName = $from->getFirstName();
       $lastName = $from->getLastName();
-
-      Log::info("Callback received", [
-        "callback_id" => $callbackId,
-        "chat_id" => $chatId,
-        "message_id" => $messageId,
-        "user_id" => $userId,
-        "username" => $username,
-      ]);
 
       // Parse callback data
       $parsedData = $this->parseCallbackData($callbackData);
