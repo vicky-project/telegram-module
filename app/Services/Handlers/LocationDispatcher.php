@@ -51,8 +51,6 @@ class LocationDispatcher
     if (!empty($middleware)) {
       $this->handlerMiddleware[$name] = $middleware;
     }
-
-    Log::info("Location handler registered: " . $name);
   }
 
   /**
@@ -61,7 +59,6 @@ class LocationDispatcher
   public function registerMiddleware(string $name, TelegramMiddlewareInterface $middleware): void
   {
     $this->middleware[$name] = $middleware;
-    Log::info("Location middleware registered: " . $name);
   }
 
   /**

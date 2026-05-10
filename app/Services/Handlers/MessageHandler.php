@@ -38,13 +38,6 @@ class MessageHandler
     $replyToMessage = $message->getReplyToMessage();
     $location = $message->getLocation();
 
-    Log::debug("Telegram message received", [
-      "chat_id" => $chatId,
-      "has_text" => !empty($text),
-      "has_location" => (bool) $location,
-      "is_reply" => (bool) $replyToMessage
-    ]);
-
     // Handle command
     if ($this->isCommand($text)) {
       return $this->commandDispatcher->handleCommand($chatId, $text, $username);
@@ -74,11 +67,6 @@ class MessageHandler
   */
   public function handleEditedMessage(Message $message): array
   {
-    Log::info("Telegram edited message", [
-      "chat_id" => $message->getChat()->getId(),
-      "message_id" => $message->getMessageId(),
-    ]);
-
     return ["status" => "edited_message_ignored"];
   }
 
