@@ -132,7 +132,7 @@ class TelegramServiceProvider extends ServiceProvider
     });
 
     $this->app->singleton(Services\Handlers\InlineQueryHandler::class, function($app) {
-      $queryHandler = new Services\Handlers\InlineQueryHandler($this->make(Services\Support\TelegramApi::class));
+      $queryHandler = new Services\Handlers\InlineQueryHandler($app->make(Services\Support\TelegramApi::class));
       return $queryHandler;
     });
 
