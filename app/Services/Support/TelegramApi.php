@@ -232,4 +232,43 @@ class TelegramApi
       return false;
     }
   }
+
+  /**
+  * Answer an inline query.
+  *
+  * @param string $inlineQueryId
+  * @param array  $results      Array of InlineQueryResult objects
+  * @param array  $params       cache_time, is_personal, next_offset, switch_pm_text, switch_pm_parameter
+  */
+  public function answerInlineQuery(
+    string $inlineQueryId,
+    array $results,
+    array $params = []
+  ): bool {
+    if (!$this->telegram) {
+      return false;
+    }
+
+    try {
+      $payload = [
+        'inline_query_id' => $inlineQueryId,
+        'results' => json_encode($results),
+        'cache_time' => $params['cache_time'] ?? 300,
+        'is_personal' => $params['is_personal'] ?? true,
+        'next_offset' => $params['next_offset'] ?? '',
+        'switch_pm_text' => $params['switch_pm_text'] ?? '',
+        'switch_pm_parameter' => $params['switch_pm_parameter'] ?? '',
+      ];
+
+      $this->telegram->answerInlineQuery($payload);
+      Log::info("Inline query answered", ['query_id' => $inlineQueryId]);
+      return true;
+    } catch (TelegramSDKException $e) {
+      Log::error("Failed to answer inline query", [
+        'inline_query_id' => $inlineQueryId,
+        'error' => $e->getMessage(),
+      ]);
+      return false;
+    }
+  }
 }
