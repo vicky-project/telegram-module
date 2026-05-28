@@ -131,6 +131,11 @@ class TelegramServiceProvider extends ServiceProvider
       return $locationDispatcher;
     });
 
+    $this->app->singleton(Services\Handlers\InlineQueryHandler::class, function($app) {
+      $queryHandler = new Services\Handlers\InlineQueryHandler($this->make(Services\Support\TelegramApi::class));
+      return $queryHandler;
+    });
+
     $this->app->bind(Services\Handlers\MessageHandler::class, function ($app) {
       return new Services\Handlers\MessageHandler(
         $this->app->make(Services\Handlers\CommandDispatcher::class),
