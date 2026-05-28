@@ -160,4 +160,12 @@ class InlineQueryHandler
       $handler
     );
   }
+
+  /**
+  * Get all registered inline handlers.
+  */
+  public function getHandlers(): array
+  {
+    return $this->handlers;
+  }
 }
