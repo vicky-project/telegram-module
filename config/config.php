@@ -11,7 +11,12 @@ return [
     "webhook_url" => env("TELEGRAM_WEBHOOK_URL", "/api/telegram/webhook"),
     "webhook_secret" => env("TELEGRAM_WEBHOOK_SECRET"),
     "admin" => env("TELEGRAM_ADMINS", ""), // String of id with comma separated
-    "allowed_updates" => ["message", "callback_query", "edited_message"],
+    "allowed_updates" => [
+      "message",
+      "callback_query",
+      "edited_message",
+      "inline_query"
+    ],
     "cache" => [
       "prefix" => env("TELEGRAM_BOT_CACHE_PREFIX", "telegram_reply:"),
       "duration" => env("TELEGRAM_BOT_CACHE_DURATION", 60), // in minutes

@@ -7,24 +7,18 @@ use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Illuminate\Support\Facades\Log;
 use Modules\Telegram\Models\TelegramUser;
-use Modules\Telegram\Services\Handlers\MessageHandler;
 use Modules\Telegram\Services\Handlers\CallbackHandler;
+use Modules\Telegram\Services\Handlers\InlineQueryHandler;
+use Modules\Telegram\Services\Handlers\MessageHandler;
 
 class UpdateHandler
 {
-  protected Api $telegram;
-  protected MessageHandler $messageHandler;
-  protected CallbackHandler $callbackHandler;
-
   public function __construct(
-    Api $telegram,
-    MessageHandler $messageHandler,
-    CallbackHandler $callbackHandler
-  ) {
-    $this->telegram = $telegram;
-    $this->messageHandler = $messageHandler;
-    $this->callbackHandler = $callbackHandler;
-  }
+    protected Api $telegram,
+    protected MessageHandler $messageHandler,
+    protected CallbackHandler $callbackHandler,
+    protected InlineQueryHandler $inlineHandler
+  ) {}
 
   /**
   * Handle incoming webhook update
@@ -52,6 +46,10 @@ class UpdateHandler
 
       if ($update->has("callback_query")) {
         return $this->callbackHandler->handle($update->getCallbackQuery());
+      }
+
+      if ($update->has('inline_query')) {
+        return $this->inlineHandler->handle($update->getInlineQuery());
       }
 
       Log::warning("Unhandled update type", [
