@@ -261,8 +261,9 @@ class TelegramServiceProvider extends ServiceProvider
   protected function registerCommands(): void
   {
     $this->commands([
-      \Modules\Telegram\Console\TelegramSetup::class,
       \Modules\Telegram\Console\AppCacheClear::class,
+      \Modules\Telegram\Console\ListHandlersCommand::class,
+      \Modules\Telegram\Console\TelegramSetup::class,
     ]);
   }
 
