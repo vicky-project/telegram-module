@@ -29,8 +29,8 @@ class UpdateHandler
       $update = $this->telegram->getWebhookUpdate();
 
       activity()->withProperties([
-        "telegram_id" => $update->getMessage()->getChat()->getId(),
-        "text" => $update->getMessage()->getText()
+        "telegram_id" => $update->getMessage()?->getChat()?->getId() ?? null,
+        "text" => $update->getMessage()?->getText() ?? ''
       ])->log("Mengirim pesan ke bot.");
 
       if ($update->has("message")) {
