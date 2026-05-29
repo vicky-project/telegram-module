@@ -4,51 +4,42 @@ namespace Modules\Telegram\Services\Handlers\InlineQueries;
 use Telegram\Bot\Objects\InlineQuery;
 use Modules\Telegram\Interfaces\TelegramInlineQueryHandlerInterface;
 use Modules\Telegram\Services\Support\TelegramApi;
+use Modules\Telegram\Services\Support\TelegramMarkdownHelper;
 
 abstract class BaseInlineQueryHandler implements TelegramInlineQueryHandlerInterface
 {
   protected TelegramApi $telegramApi;
 
+  /**
+  * Parse mode default untuk hasil inline.
+  * Override di child class jika ingin semua hasil pakai parse mode tertentu.
+  * null = tidak ada parse mode.
+  */
+  protected ?string $defaultParseMode = null;
+
   public function __construct(TelegramApi $telegramApi) {
     $this->telegramApi = $telegramApi;
   }
 
-  /**
-  * Nama handler (wajib dioverride).
-  */
   abstract public function getName(): string;
 
-  /**
-  * Pattern default (override jika ingin filter spesifik).
-  */
   public function getPattern(): string
   {
     return '*';
   }
 
-  /**
-  * Implementasi interface: mengekstrak data dari InlineQuery,
-  * lalu memanggil process() yang akan dioverride child.
-  */
   final public function handle(InlineQuery $inlineQuery, array $context): array
   {
-    // Gabungkan data dari InlineQuery ke context
     $context = array_merge($context, [
       'query_text' => $inlineQuery->getQuery() ?? '',
       'offset' => $inlineQuery->getOffset() ?? '',
     ]);
-
-    // Panggil method abstrak yang diimplementasi child
     return $this->process($context);
   }
 
-  /**
-  * Method utama yang harus dioverride oleh child class.
-  * Semua data sudah tersedia di $context.
-  */
   abstract protected function process(array $context): array;
 
-  // ─── Helper methods ────────────────
+  // ─── Helper Methods ──────────────────────────────
 
   protected function answerInlineQuery(
     string $inlineQueryId,
@@ -58,20 +49,43 @@ abstract class BaseInlineQueryHandler implements TelegramInlineQueryHandlerInter
     return $this->telegramApi->answerInlineQuery($inlineQueryId, $results, $params);
   }
 
+  /**
+  * Escape teks sesuai parse mode.
+  */
+  protected function escapeText(string $text, ?string $parseMode = 'Markdown'): string
+  {
+    return TelegramMarkdownHelper::safeText($text, $parseMode);
+  }
+
+  /**
+  * Buat satu artikel hasil inline.
+  *
+  * @param string $id
+  * @param string $title
+  * @param string $messageText (harus sudah di-escape jika pakai parse_mode)
+  * @param string $description
+  * @param array $extra
+  * @param string|null $parseMode null = tidak pakai parse mode
+  * @return array
+  */
   protected function makeArticleResult(
     string $id,
     string $title,
     string $messageText,
     string $description = '',
-    array $extra = []
+    array $extra = [],
+    ?string $parseMode = null
   ): array {
+    $content = ['message_text' => $messageText];
+    if ($parseMode !== null) {
+      $content['parse_mode'] = $parseMode;
+    }
+
     return array_merge([
       'type' => 'article',
       'id' => $id,
       'title' => $title,
-      'input_message_content' => [
-        'message_text' => $messageText,
-      ],
+      'input_message_content' => $content,
       'description' => $description,
     ], $extra);
   }
@@ -83,7 +97,8 @@ abstract class BaseInlineQueryHandler implements TelegramInlineQueryHandlerInter
     ?string $title = null,
     ?string $description = null,
     ?string $caption = null,
-    array $extra = []
+    array $extra = [],
+    ?string $parseMode = null
   ): array {
     $result = [
       'type' => 'photo',
@@ -93,7 +108,10 @@ abstract class BaseInlineQueryHandler implements TelegramInlineQueryHandlerInter
     ];
     if ($title) $result['title'] = $title;
     if ($description) $result['description'] = $description;
-    if ($caption) $result['caption'] = $caption;
+    if ($caption) {
+      $result['caption'] = $caption;
+      if ($parseMode) $result['parse_mode'] = $parseMode;
+    }
     return array_merge($result, $extra);
   }
 
