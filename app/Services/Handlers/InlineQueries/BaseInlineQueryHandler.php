@@ -78,6 +78,7 @@ abstract class BaseInlineQueryHandler implements TelegramInlineQueryHandlerInter
   ): array {
     $content = ['message_text' => $messageText];
     if ($parseMode !== null) {
+      $content['message_text'] = $this->escapeText($messageText, $parseMode);
       $content['parse_mode'] = $parseMode;
     }
 

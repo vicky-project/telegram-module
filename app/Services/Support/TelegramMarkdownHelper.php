@@ -7,13 +7,13 @@ class TelegramMarkdownHelper
   * Characters that need to be escaped in MarkdownV2
   */
   private const MARKDOWNV2_ESCAPE_CHARS = [
-    //"_",
-    //"*",
+    "_",
+    "*",
     "[",
     "]",
     "(",
     ")",
-    //"~",
+    "~",
     //"`",
     ">",
     "#",
@@ -25,6 +25,7 @@ class TelegramMarkdownHelper
     "}",
     ".",
     "!",
+    "\\"
   ];
 
   /**
@@ -32,10 +33,22 @@ class TelegramMarkdownHelper
   */
   public static function escapeMarkdownV2(string $text): string
   {
-    foreach (self::MARKDOWNV2_ESCAPE_CHARS as $char) {
-      $text = str_replace($char, "\\" . $char, $text);
+    $escaped = "";
+    if (function_exists('mb_str_split')) {
+      $chars = mb_str_split($text);
+    } else {
+      $chars = preg_split('//u', $text, -1, PREG_SPLIT_NO_EMPTY);
     }
-    return $text;
+
+    foreach ($chars as $char) {
+      if (in_array($char, self::MARKDOWNV2_ESCAPE_CHARS, true)) {
+        $escaped .= "\\". $char;
+      } else {
+        $escaped .= $char;
+      }
+    }
+
+    return $escaped;
   }
 
   /**
@@ -43,17 +56,7 @@ class TelegramMarkdownHelper
   */
   public static function escapeHtml(string $text): string
   {
-    $htmlEntities = [
-      "&" => "&amp;",
-      "<" => "&lt;",
-      ">" => "&gt;",
-    ];
-
-    return str_replace(
-      array_keys($htmlEntities),
-      array_values($htmlEntities),
-      $text
-    );
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
   }
 
   /**
