@@ -82,17 +82,7 @@ class TelegramService
         return false;
       }
 
-      $socialAccounts = $this->service->getByUserId($userId);
-
-      // Social Account not exists
-      if (!$socialAccounts || $socialAccounts->isEmpty()) {
-        return false;
-      }
-
-      $telegram = $socialAccounts->where("provider", Provider::TELEGRAM)->first();
-
-      // Social Account not have provider
-      if (!$telegram || !$telegram->providerable) {
+      if (!self::findTelegramId($userId)) {
         return false;
       }
 
@@ -159,5 +149,27 @@ class TelegramService
     } catch (\Exception $e) {
       throw $e;
     }
+  }
+
+  public static function findTelegramId($userId): ?int
+  {
+    if (!class_exists(SocialAccountService::class)) {
+      return null;
+    }
+
+    $service = app(SocialAccountService::class);
+    $socialAccounts = $service->getByUserId($userId);
+
+    if (!$socialAccounts || $socialAccounts->isEmpty()) {
+      return null;
+    }
+
+    $telegram = $socialAccounts->where('provider', Provider::TELEGRAM)->first();
+
+    if (!$telegram || !$telegram->providerable) {
+      return null;
+    }
+
+    return $telegram->telegram_id;
   }
 }
