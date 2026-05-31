@@ -26,9 +26,4 @@ Route::group([
     Route::get("/", [TelegramLoginController::class, "index"])->name("index");
     Route::post("/process", [TelegramLoginController::class, "process"])->name("process");
   });
-
-  // Halaman Mini App (dilindungi middleware validasi)
-  Route::group(['middleware' => ['web', 'telegram.miniapp']], function () {
-    Route::get("/home", [MiniAppController::class, "index"])->name("home");
-  });
 });

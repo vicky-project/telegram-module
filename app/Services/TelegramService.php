@@ -153,6 +153,9 @@ class TelegramService
 
   public static function findTelegramId($userId): ?int
   {
+    if (!$userId || $userId === null) {
+      return null;
+    }
     if (!class_exists(SocialAccountService::class)) {
       return null;
     }
