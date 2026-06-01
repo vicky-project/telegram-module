@@ -154,11 +154,9 @@ class TelegramService
   public static function findTelegramId($userId): ?int
   {
     if (!$userId || $userId === null) {
-      \Log::error("User id null", ['user_id' => $userId]);
       return null;
     }
     if (!class_exists(SocialAccountService::class)) {
-      \Log::error("Social Account not installed.", ['social' => SocialAccountService::class]);
       return null;
     }
 
@@ -166,18 +164,15 @@ class TelegramService
     $socialAccounts = $service->getByUserId($userId);
 
     if (!$socialAccounts || $socialAccounts->isEmpty()) {
-      \Log::error('Social account empty.', ['social' => $socialAccounts]);
       return null;
     }
 
-    $telegram = $socialAccounts->where('provider', Provider::TELEGRAM)->first();
+    $telegramProvider = $socialAccounts->where('provider', Provider::TELEGRAM)->first();
 
-    if (!$telegram || !$telegram->providerable) {
-      \Log::error('Telegram tidak ada.', ['telegram' => $telegram]);
+    if (!$telegramProvider || !$telegramProvider->providerable) {
       return null;
     }
 
-    \Log::debug('result', ['telegram' => $telegram]);
-    return $telegram->telegram_id;
+    return $telegram->providerable->telegram_id;
   }
 }
