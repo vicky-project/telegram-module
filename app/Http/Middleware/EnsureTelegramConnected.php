@@ -12,7 +12,7 @@ class EnsureTelegramConnected
   * Handle an incoming request.
   */
   public function handle(Request $request, Closure $next) {
-    $telegramId = TelegramService::findTelegramId($request->user()?->id);
+    $telegramId = TelegramService::findTelegramId($request->user()->id);
 
     if (!$telegramId || $telegramId === null) {
       if ($request->expectsJson()) {
