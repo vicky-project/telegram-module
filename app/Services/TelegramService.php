@@ -173,6 +173,6 @@ class TelegramService
       return null;
     }
 
-    return $telegram->providerable->telegram_id;
+    return $telegramProvider->providerable->telegram_id;
   }
 }
