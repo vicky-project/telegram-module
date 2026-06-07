@@ -36,6 +36,10 @@ class TelegramUser extends Authenticatable implements SocialAccountInterface
     return $this->morphOne(SocialAccount::class, "providerable");
   }
 
+  public function openLink(): string {
+    return 'admin.telegram.show@'. $this->id;
+  }
+
   public function scopeByTelegramId($query, $telegramId) {
     return $query->where("telegram_id", $telegramId);
   }
