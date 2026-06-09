@@ -37,7 +37,7 @@ class TelegramUser extends Authenticatable implements SocialAccountInterface
   }
 
   public function openLink(): string {
-    return 'admin.telegram.show@'. $this->id;
+    return 'telegram.profile';
   }
 
   public function scopeByTelegramId($query, $telegramId) {
