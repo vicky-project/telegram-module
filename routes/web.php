@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Modules\Telegram\Http\Controllers\TelegramProfileController;
 use Modules\Telegram\Http\Controllers\MiniApp\MiniAppController;
 use Modules\Telegram\Http\Controllers\Admin\TelegramController;
 use Modules\Telegram\Http\Controllers\Auth\TelegramLoginController;
@@ -18,6 +19,7 @@ Route::prefix("admin")
 
 Route::group([
   "prefix" => "telegram", "as" => "telegram.", "middleware" => "web"], function() {
+  Route::get('profile', [TelegramProfileController::class, 'show'])->name('profile')->middleware('auth');
   Route::view("/", "telegram::entry")->name("entry");
 
   Route::view("/not-connected", "telegram::not-connected")->name("not-connected");
