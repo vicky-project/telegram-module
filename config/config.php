@@ -4,6 +4,7 @@ return [
   'name' => 'Telegram',
   'base_url' => env('APP_URL').'/telegram',
   "logo_url" => env("LOGO_URL", "/homeserver.png"),
+  "back_url" => env('APP_URL') . '/profile',
 
   "bot" => [
     "token" => env("TELEGRAM_BOT_TOKEN"),

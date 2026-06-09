@@ -29,6 +29,8 @@
       padding: 1rem;
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      /* title ke kanan */
       border-bottom: 1px solid #e0e0e0;
     }
     .telegram-header .back-link {
@@ -46,7 +48,6 @@
       font-weight: 600;
       color: var(--tg-text);
       margin: 0;
-      flex-grow: 1;
     }
     .telegram-card {
       background-color: var(--tg-card);
@@ -86,6 +87,22 @@
     }
     .telegram-btn-outline:hover {
       background-color: var(--tg-blue);
+      color: white;
+    }
+    .telegram-btn-danger {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.5rem;
+      border-radius: 20px;
+      font-weight: 500;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .telegram-btn-danger:hover {
+      background-color: #c82333;
       color: white;
     }
     .list-group-item {
