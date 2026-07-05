@@ -13,9 +13,11 @@
         <img src="{{ $user->photo_url}}" alt="{{ $user->first_name }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
         @else
         @php
-        $fullName = $user->first_name . $user->last_name ? ' '. $user->last_name : '';
+        $fullName = trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? ''));
+        // Jika nama benar-benar kosong, gunakan inisial default
+        $fullName = $fullName ?: 'User';
         @endphp
-        <img src="{{ Avatar::create($fullName)->setDimension(80, 80)->setBackground('#00580d')->toBase64() }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
+        <img src="{{ Avatar::create($fullName)->setDimension(80, 80)->setBackground('#00580d')->setFontAlignment('center')->toBase64() }}" class="rounded-circle mb-3" width="80" height="80" style="object-fit: cover;">
         @endif
         <h5 class="card-title mb-1">{{ $user->first_name }} {{ $user->last_name }}</h5>
         <p class="text-muted small mb-2">
